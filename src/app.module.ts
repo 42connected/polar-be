@@ -6,9 +6,20 @@ import { CadetsService } from './cadets/cadets.service';
 import { MentorsService } from './mentors/mentors.service';
 import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthController } from './auth/auth.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [
+    ConfigModule.forRoot(),
+    JwtModule.registerAsync({
+      useFactory: () => {
+        return {
+          secret: process.env.JWT_SECRET,
+          signOptions: { expiresIn: '1m' },
+        };
+      },
+    }),
+  ],
   controllers: [AppController, AuthController],
   providers: [AppService, CadetsService, MentorsService, FortyTwoStrategy],
 })

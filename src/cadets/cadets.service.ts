@@ -5,6 +5,7 @@ import { CreateCadetDto } from '../dto/create-cadet.dto';
 export class CadetsService {
   createUser(user: CreateCadetDto) {
     console.log('Create cadet', user);
+    return { id: 1, username: 'nakkim' };
   }
 
   findByIntra(intraId: string) {

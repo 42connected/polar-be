@@ -33,13 +33,14 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       alumnized_at: isCommon,
     } = profile._json;
     // 첫 로그인이면 가입 처리
+    let result;
     if (intraId.startsWith('m-')) {
       if (this.mentorsService.findByIntra(intraId) === null) {
         const user: CreateMentorDto = {
           intraId,
           profileImage,
         };
-        this.mentorsService.createUser(user);
+        result = this.mentorsService.createUser(user);
       }
     } else {
       if (this.cadetsService.findByIntra(intraId) === null) {
@@ -48,11 +49,9 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
           profileImage,
           isCommon: isCommon === null ? true : false,
         };
-        this.cadetsService.createUser(user);
+        result = this.cadetsService.createUser(user);
       }
     }
-    // 토큰 생성
-
-    cb(null, profile);
+    cb(null, { id: result.id, name: result.name });
   }
 }

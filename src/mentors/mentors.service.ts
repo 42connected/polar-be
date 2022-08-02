@@ -5,6 +5,7 @@ import { CreateMentorDto } from '../dto/create-mentor.dto';
 export class MentorsService {
   createUser(user: CreateMentorDto) {
     console.log('Create mentor', user);
+    return { id: 1, username: 'nakkim' };
   }
   findByIntra(intraId: string) {
     // 찾아서 없으면

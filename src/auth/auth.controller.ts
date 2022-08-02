@@ -1,13 +1,20 @@
-import { Controller, Get, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { FortyTwoGuard } from 'src/guards/forty-two.guard';
 
 @UseGuards(FortyTwoGuard)
 @Controller('auth')
 export class AuthController {
+  constructor(private jwtService: JwtService) {}
+
   @Get('/oauth/callback')
-  callback(@Res() res: Response) {
-    console.log('callback');
-    res.redirect('/');
+  createJwt(@Req() req) {
+    const { user } = req;
+    console.log(user);
+    const jwt = this.jwtService.sign({
+      id: user.id,
+      username: user.name,
+    });
+    return jwt;
   }
 }
