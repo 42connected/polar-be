@@ -25,7 +25,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     accessToken: string,
     refreshToken: string,
     profile: any,
-    cb: any,
+    done: any,
   ) {
     const {
       login: intraId,
@@ -52,6 +52,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         result = this.cadetsService.createUser(user);
       }
     }
-    cb(null, { id: result.id, name: result.name });
+    done(null, { id: result.id, name: result.name });
   }
 }
