@@ -13,7 +13,6 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "noImplicitAny": true,
     "noImplicitReturns": true,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
