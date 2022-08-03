@@ -1,10 +1,10 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { Injectable } from '@nestjs/common';
-import { CadetsService } from 'src/cadets/cadets.service';
-import { MentorsService } from 'src/mentors/mentors.service';
 import { CreateMentorDto } from 'src/v1/dto/create-mentor.dto';
 import { CreateCadetDto } from 'src/v1/dto/create-cadet.dto';
+import { CadetsService } from '../cadets/service/cadets.service';
+import { MentorsService } from '../mentors/service/mentors.service';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
