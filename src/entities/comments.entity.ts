@@ -1,7 +1,6 @@
 import {
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -23,12 +22,12 @@ export class Comments {
   @Column({ type: 'text', nullable: false })
   content: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'boolean', nullable: false })
   isDeleted: boolean;
 
-  @DeleteDateColumn()
+  @Column({ type: 'timestamp' })
   deletedAt: Date;
 
-  @CreateDateColumn({ nullable: false })
+  @CreateDateColumn({ type: 'timestamp', nullable: false })
   updateAt: Date;
 }

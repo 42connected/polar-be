@@ -14,22 +14,22 @@ export class Cadets {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 15, nullable: false })
+  @Column({ type: 'varchar', length: 15, nullable: false })
   intraId: string;
 
-  @Column({ length: 10 })
+  @Column({ type: 'varchar', length: 10 })
   name: string;
 
-  @Column({ nullable: false })
-  isCommon: boolean;
-
-  @Column({ length: 1000 })
+  @Column({ type: 'varchar', length: 1000 })
   profileImage: string;
 
-  @Column()
+  @Column({ type: 'boolean', nullable: false })
+  isCommon: boolean;
+
+  @Column({ type: 'timestamp', nullable: false })
   deletedAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp', nullable: false })
   updateAt: Date;
 
   @OneToMany(() => Comments, Comments => Comments.cadets)

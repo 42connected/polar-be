@@ -5,15 +5,15 @@ export class Admins {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ length: 10 })
+  @Column({ type: 'varchar', length: 10 })
   name: string;
 
-  @Column({ length: 15, nullable: false })
+  @Column({ type: 'varchar', length: 15, nullable: false })
   intraId: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'timestamp', nullable: false })
   createdAt: Date;
 
-  @Column({ nullable: false })
+  @Column({ type: 'timestamp', nullable: false })
   updatedAt: Date;
 }

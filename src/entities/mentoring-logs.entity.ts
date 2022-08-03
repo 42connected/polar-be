@@ -12,7 +12,7 @@ import { Reports } from './reports.entity';
 
 @Entity()
 export class MentoringLogs {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id: string;
 
   @ManyToOne(() => Mentors, Mentors => Mentors.mentoringLogs)
@@ -21,31 +21,31 @@ export class MentoringLogs {
   @ManyToOne(() => Cadets, Cadets => Cadets.mentoringLogs)
   cadets: Cadets;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   meetingAt: Date;
 
-  @Column({ nullable: false, length: 100 })
+  @Column({ type: 'varchar', nullable: false, length: 100 })
   topic: string;
 
-  @Column({ nullable: false, length: 1000 })
+  @Column({ type: 'varchar', nullable: false, length: 1000 })
   content: string;
 
-  @Column({ nullable: false, length: 10 })
+  @Column({ type: 'varchar', nullable: false, length: 10 })
   status: string;
 
-  @Column({ length: 500 })
+  @Column({ type: 'varchar', length: 500 })
   rejectMessage: string;
 
   @Column({ nullable: false, length: 10 })
   reportStatus: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'timestamp', nullable: false })
   requestTime1: Date;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   requestTime2: Date;
 
-  @Column()
+  @Column({ type: 'timestamp' })
   requestTime3: Date;
 
   @OneToOne(() => Reports, Reports => Reports.mentors)

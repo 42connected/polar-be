@@ -20,16 +20,16 @@ export class Reports {
   @ManyToOne(() => Cadets, Cadets => Cadets.Reports)
   cadets: Cadets;
 
-  @Column({ length: 150 })
+  @Column({ type: 'varchar', length: 150 })
   topic: string;
 
-  @Column({ length: 5000 })
+  @Column({ type: 'varchar', length: 5000 })
   content: string;
 
-  @Column({ type: 'text', default: [] })
+  @Column({ type: 'varchar', default: [], length: 1000 })
   imageUrl: string[];
 
-  @Column({ length: 3000 })
+  @Column({ type: 'varchar', length: 3000 })
   feedbackMessage: string;
 
   @Column('smallint')

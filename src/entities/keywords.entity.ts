@@ -6,7 +6,7 @@ export class Keywords {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false, length: 15 })
+  @Column({ type: 'varchar', nullable: false, length: 15 })
   name: string;
 
   @OneToMany(() => MentorKeywords, MentorKeywords => MentorKeywords.keywords)
