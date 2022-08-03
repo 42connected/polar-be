@@ -16,31 +16,31 @@ export class Mentors {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 15 })
+  @Column({ type: 'varchar', length: 15 })
   intraId: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 10 })
+  @Column({ type: 'varchar', length: 10, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 1000 })
+  @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
   @Column({ type: 'time', array: true, default: [[]] })
   availabeTime: Date[][];
 
-  @Column({ type: 'varchar', length: 150 })
+  @Column({ type: 'varchar', length: 150, nullable: true })
   introduction: string;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ type: 'boolean' })
   isActive: boolean;
 
-  @Column({ type: 'varchar', length: 10000 })
+  @Column({ type: 'varchar', length: 10000, nullable: true })
   markdownContent: string;
 
-  @CreateDateColumn({ type: 'timestamp', nullable: false })
+  @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', nullable: false })
+  @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
   @OneToMany(() => MentorKeywords, MentorKeywords => MentorKeywords.mentors)

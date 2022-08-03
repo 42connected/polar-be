@@ -12,7 +12,7 @@ import { Reports } from './reports.entity';
 
 @Entity()
 export class MentoringLogs {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @ManyToOne(() => Mentors, Mentors => Mentors.mentoringLogs)

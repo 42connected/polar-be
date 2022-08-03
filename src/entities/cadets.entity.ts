@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -14,22 +15,22 @@ export class Cadets {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 15, nullable: false })
+  @Column({ type: 'varchar', length: 15 })
   intraId: string;
 
-  @Column({ type: 'varchar', length: 10 })
+  @Column({ type: 'varchar', length: 10, nullable: true })
   name: string;
 
-  @Column({ type: 'varchar', length: 1000 })
+  @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ type: 'boolean' })
   isCommon: boolean;
 
-  @Column({ type: 'timestamp', nullable : true})
-  deletedAt: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp', nullable: false })
+  @UpdateDateColumn({ type: 'timestamp' })
   updateAt: Date;
 
   @OneToMany(() => Comments, Comments => Comments.cadets)
