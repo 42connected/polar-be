@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions, TypeOrmOptionsFactory } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
@@ -14,6 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [process.env.TYPEORM_ENTITIES || ' '],
       logging: true,
       synchronize: false,
+      namingStrategy: new SnakeNamingStrategy(),
     };
   }
 }
