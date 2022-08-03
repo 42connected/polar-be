@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { FortyTwoGuard } from './guards/forty-two.guard';
+import { FortyTwoGuard } from './v1/guards/forty-two.guard';
 
 @Controller()
 export class AppController {

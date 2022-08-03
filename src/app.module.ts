@@ -5,10 +5,11 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CadetsService } from './cadets/cadets.service';
 import { MentorsService } from './mentors/mentors.service';
-import { FortyTwoStrategy } from './strategies/forty-two.strategy';
-import { AuthController } from './auth/auth.controller';
+import { FortyTwoStrategy } from './v1/strategies/forty-two.strategy';
+import { AuthController } from './v1/auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { TypeOrmConfigService } from './config/typeorm.config';
+import { TypeOrmConfigService } from './v1/config/typeorm.config';
+import { V1Module } from './v1/v1.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TypeOrmConfigService } from './config/typeorm.config';
         };
       },
     }),
+    V1Module,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, CadetsService, MentorsService, FortyTwoStrategy],
