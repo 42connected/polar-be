@@ -8,11 +8,16 @@ import { MentorsService } from './mentors/mentors.service';
 import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthController } from './auth/auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmConfigService } from './config/typeorm.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({}),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: TypeOrmConfigService,
+    }),
     JwtModule.registerAsync({
       useFactory: () => {
         return {
