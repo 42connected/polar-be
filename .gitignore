@@ -33,3 +33,12 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Environment
+.env
+
+# Data-source
+data-source.ts
+
+# Migrations
+/src/migrations
