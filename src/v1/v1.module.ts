@@ -10,6 +10,12 @@ import { BocalsModule } from './bocals/bocals.module';
 @Module({
   controllers: [V1Controller],
   providers: [V1Service],
-  imports: [KeywordsModule, MentorsModule, ReportsModule, CadetsModule, BocalsModule]
+  imports: [
+    KeywordsModule,
+    MentorsModule,
+    ReportsModule,
+    CadetsModule,
+    BocalsModule,
+  ],
 })
 export class V1Module {}
