@@ -6,7 +6,8 @@ export const appDataSource = new DataSource({
   entities: ['**/*.entity.ts'],
   migrations: [__dirname + '/migrations/*.ts'],
   host: 'localhost',
-  port: 55001,
+  port: 55000,
   username: 'postgres',
   password: 'postgrespw',
+  synchronize: false,
 } as DataSourceOptions);
