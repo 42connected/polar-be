@@ -31,7 +31,7 @@ export class Cadets {
   createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
-  updateAt: Date;
+  updatedAt: Date;
 
   @OneToMany(() => Comments, Comments => Comments.cadets)
   comments: Comments[];
@@ -40,5 +40,5 @@ export class Cadets {
   mentoringLogs: MentoringLogs[];
 
   @OneToMany(() => Reports, Reports => Reports.cadets)
-  Reports: Reports[];
+  reports: Reports[];
 }
