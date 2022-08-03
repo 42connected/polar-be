@@ -19,15 +19,15 @@ export class Comments {
   @ManyToOne(() => Cadets, Cadets => Cadets.comments)
   cadets: Cadets;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text' })
   content: string;
 
-  @Column({ type: 'boolean', nullable: false })
+  @Column({ type: 'boolean' })
   isDeleted: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
   deletedAt: Date;
 
-  @CreateDateColumn({ type: 'timestamp', nullable: false })
-  updateAt: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
