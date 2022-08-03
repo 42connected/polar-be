@@ -25,7 +25,7 @@ export class Comments {
   @Column({ type: 'boolean', nullable: false })
   isDeleted: boolean;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   deletedAt: Date;
 
   @CreateDateColumn({ type: 'timestamp', nullable: false })

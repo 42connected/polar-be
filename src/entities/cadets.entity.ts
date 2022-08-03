@@ -26,7 +26,7 @@ export class Cadets {
   @Column({ type: 'boolean', nullable: false })
   isCommon: boolean;
 
-  @Column({ type: 'timestamp'})
+  @Column({ type: 'timestamp', nullable : true})
   deletedAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp', nullable: false })
