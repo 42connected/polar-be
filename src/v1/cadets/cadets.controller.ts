@@ -23,6 +23,6 @@ export class CadetsController {
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
-    return await this.cadetsService.getMentoringLogs(user.id);;
+    return await this.cadetsService.getMentoringLogs(user.id);
   }
 }
