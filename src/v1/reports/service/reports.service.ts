@@ -82,4 +82,15 @@ export class ReportsService {
     await this.reportsRepository.save(report);
     return { ok: true };
   }
+
+  async getAllReport() {
+    const reports = await this.reportsRepository.find({
+      relations: {
+        cadets: true,
+        mentors: true,
+        mentoringLogs: true,
+      },
+    });
+    return reports;
+  }
 }

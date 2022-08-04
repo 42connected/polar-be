@@ -19,4 +19,9 @@ export class ReportsController {
   async putReport(@Body() req: any) {
     return await this.putReport(req);
   }
+
+  @Get()
+  async getAllReport() {
+    return await this.reportsService.getAllReport();
+  }
 }

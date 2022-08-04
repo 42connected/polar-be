@@ -2,11 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMentorDto } from 'src/v1/dto/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
-import {
-  EditMentorDetailsDto,
-  ReturnEditMentorDetails,
-  ReturnMentorDetails,
-} from 'src/v1/mentors/interface/mentors.interface';
+
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -26,7 +22,7 @@ export class MentorsService {
     return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
   }
 
-  async getMentorDetails(intraId: string): Promise<ReturnMentorDetails> {
+  async getMentorDetails(intraId: string) {
     const mentorDetails: Mentors = await this.mentorsRepository.findOne({
       where: {
         intraId: intraId,
@@ -44,8 +40,8 @@ export class MentorsService {
 
   async postMentorDetails(
     intraId: string,
-    req: EditMentorDetailsDto,
-  ): Promise<ReturnEditMentorDetails> {
+    req,
+  ) {
     const mentorDetails: Mentors = await this.mentorsRepository.findOneBy({
       intraId: intraId,
     });

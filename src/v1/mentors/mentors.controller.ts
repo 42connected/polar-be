@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import {
-  EditMentorDetailsDto,
-  ReturnEditMentorDetails,
-  ReturnMentorDetails,
-} from './interface/mentors.interface';
+// import {
+//   EditMentorDetailsDto,
+//   ReturnEditMentorDetails,
+//   ReturnMentorDetails,
+// } from './interface/mentors.interface';
 import { MentorsService } from './service/mentors.service';
 
 @Controller()
@@ -13,7 +13,7 @@ export class MentorsController {
   @Get(':intraId')
   async getMentorDetails(
     @Param('intraId') intraId: string,
-  ): Promise<ReturnMentorDetails> {
+  ){
     return await this.mentorsService.getMentorDetails(intraId);
   }
 
@@ -21,8 +21,8 @@ export class MentorsController {
   @Post(':intraId')
   async postMentorDetails(
     @Param('intraId') intraId: string,
-    @Body() req: EditMentorDetailsDto,
-  ): Promise<ReturnEditMentorDetails> {
+    @Body() req
+  ) {
     return await this.mentorsService.postMentorDetails(intraId, req);
   }
 }
