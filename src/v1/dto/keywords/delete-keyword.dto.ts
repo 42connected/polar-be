@@ -1,3 +1,3 @@
-export interface DeleteKeywordDto {
+export class DeleteKeywordDto {
   name: string;
 }

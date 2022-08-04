@@ -1,3 +1,3 @@
-export interface CreateKeywordDto {
+export class CreateKeywordDto {
   name: string;
 }

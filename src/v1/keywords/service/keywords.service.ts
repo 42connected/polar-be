@@ -40,7 +40,7 @@ export class KeywordsService {
   async deleteKeyword(name: string): Promise<void> {
     const result = await this.keywordsRepository.delete({ name: name });
     if (result.affected === 0) {
-      throw new NotFoundException('찾을수없는 분야입니다');
+      throw new NotFoundException('등록되지 않은 분야입니다');
     }
     return;
   }
