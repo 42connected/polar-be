@@ -1,12 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateMentorDto } from 'src/v1/dto/create-mentor.dto';
+import { CreateMentorDatailDto } from 'src/v1/dto/mentors/create-mentor-detail.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
-import {
-  EditMentorDetailsDto,
-  ReturnEditMentorDetails,
-  ReturnMentorDetails,
-} from 'src/v1/mentors/interface/mentors.interface';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -16,7 +12,7 @@ export class MentorsService {
   ) {}
 
   async createUser(user: CreateMentorDto) {
-    const createdUser = await this.mentorsRepository.create(user);
+    const createdUser = this.mentorsRepository.create(user);
     await this.mentorsRepository.save(createdUser);
     return { id: createdUser.id, intraId: createdUser.intraId, role: 'mentor' };
   }
@@ -26,7 +22,7 @@ export class MentorsService {
     return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
   }
 
-  async getMentorDetails(intraId: string): Promise<ReturnMentorDetails> {
+  async getMentorDetails(intraId: string): Promise<Mentors> {
     const mentorDetails: Mentors = await this.mentorsRepository.findOne({
       where: {
         intraId: intraId,
@@ -42,27 +38,24 @@ export class MentorsService {
     return mentorDetails;
   }
 
-  async postMentorDetails(
-    intraId: string,
-    req: EditMentorDetailsDto,
-  ): Promise<ReturnEditMentorDetails> {
+  async postMentorDetails(intraId: string, body: CreateMentorDatailDto) {
     const mentorDetails: Mentors = await this.mentorsRepository.findOneBy({
       intraId: intraId,
     });
     if (mentorDetails === null) {
       throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
     }
-    mentorDetails.availableTime = req.availableTime
-      ? req.availableTime
+    mentorDetails.availableTime = body.availableTime
+      ? body.availableTime
       : mentorDetails.availableTime;
-    mentorDetails.introduction = req.introduction
-      ? req.introduction
+    mentorDetails.introduction = body.introduction
+      ? body.introduction
       : mentorDetails.introduction;
-    mentorDetails.isActive = req.isActive
-      ? req.isActive
+    mentorDetails.isActive = body.isActive
+      ? body.isActive
       : mentorDetails.isActive;
-    mentorDetails.markdownContent = req.markdownContent
-      ? req.markdownContent
+    mentorDetails.markdownContent = body.markdownContent
+      ? body.markdownContent
       : mentorDetails.markdownContent;
     await this.mentorsRepository.save(mentorDetails);
     return { ok: true };
