@@ -118,6 +118,8 @@ export class ReportsService {
         })
         .getMany();
     }
+
+    console.log(reports)
     const room = [];
     const data = reports.forEach((data) => {
       room.push({

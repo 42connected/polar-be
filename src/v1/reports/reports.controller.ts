@@ -63,7 +63,6 @@ export class ReportsController {
   // FIXME: add to "bocal"
   // @UseGuards(JwtGuard, RolesGuard)
   async getAllReport() {
-    console.log('here');
     return await this.reportsService.getAllReport();
   }
 
