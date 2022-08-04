@@ -4,16 +4,16 @@ import {
   Get,
   Param,
   Post,
-  Put,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { jwtUser } from '../dto/jwt-user.interface';
-import {
-  CreateReportDto,
-  UpdateReportDto,
-} from '../dto/reports/create-report.dto';
+import { CreateReportDto } from '../dto/reports/create-report.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
@@ -24,27 +24,36 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get(':reportId')
-  @Roles('mentor')
+  @Roles('mentor', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async getReport(@Param('reportId') reportId: string): Promise<Reports> {
     return await this.reportsService.getReport(reportId);
   }
 
   @Post()
-  @Roles('mentor')
+  @Roles('cadet', 'mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async postReport(@User() user: jwtUser, @Body() body: CreateReportDto) {
-    return await this.reportsService.postReport(user.intraId, body);
-  }
-
-  @Put(':reportId')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  async putReport(
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
+      storage: diskStorage({
+        destination: './uploads',
+      }),
+    }),
+  )
+  async postReport(
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[];
+    },
     @User() user: jwtUser,
-    @Param('reportId') reportId: string,
-    @Body() body: UpdateReportDto,
+    @Body() body: CreateReportDto,
   ) {
-    return await this.reportsService.putReport(user.intraId, reportId, body);
+    const filePaths: string[] = [];
+    if (files) {
+      files.image.map(img => {
+        filePaths.push(img.path);
+      });
+    }
+    return await this.reportsService.postReport(filePaths, user.intraId, body);
   }
 }
