@@ -112,9 +112,7 @@ export class ReportsService {
       await this.reportsRepository.save(newReport);
       return 'ok';
     } catch {
-      throw new ConflictException(
-        '해당 멘토링 로그에는 이미 레포트가 존재합니다',
-      );
+      throw new ConflictException('저장중 예기치 못한 에러가 발생하였습니다');
     }
   }
 
