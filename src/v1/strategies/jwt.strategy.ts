@@ -13,7 +13,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any, done: any) {
-    // 에러 처리?
     done(null, {
       id: payload.sub,
       intraId: payload.username,
