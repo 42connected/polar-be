@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
+import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
 import { jwtUser } from '../dto/jwt-user.interface';
-import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
@@ -22,10 +22,9 @@ export class CadetsController {
   @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  async getMentoringLogs(@User() user: jwtUser): Promise<MentoringLogs[]> {
-    const logs: MentoringLogs[] = await this.cadetsService.getMentoringLogs(
-      user.id,
-    );
-    return logs;
+  async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
+    const mentoringInfo: CadetMentoringInfo =
+      await this.cadetsService.getMentoringLogs(user.id);
+    return mentoringInfo;
   }
 }
