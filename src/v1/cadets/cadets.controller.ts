@@ -22,7 +22,7 @@ export class CadetsController {
   @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  async getMentoringLogs(@User() user: jwtUser) {
+  async getMentoringLogs(@User() user: jwtUser): Promise<MentoringLogs[]> {
     const logs: MentoringLogs[] = await this.cadetsService.getMentoringLogs(
       user.id,
     );

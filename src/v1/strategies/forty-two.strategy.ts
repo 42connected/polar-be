@@ -5,6 +5,7 @@ import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { MentorsService } from '../mentors/service/mentors.service';
+import { jwtUser } from '../dto/jwt-user.interface';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -33,7 +34,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       alumnized_at: isCommon,
     } = profile._json;
     // 첫 로그인이면 가입 처리
-    let result;
+    let result: jwtUser;
     if (intraId.startsWith('m-')) {
       result = await this.mentorsService.findByIntra(intraId);
       if (result.id === undefined) {
