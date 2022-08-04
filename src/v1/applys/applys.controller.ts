@@ -8,8 +8,9 @@ import {
   Param,
 } from '@nestjs/common';
 import { RolesGuard } from 'src/v1/guards/role.guard';
-import { CreateApplyDto } from '../../dto/create-apply.dto';
-import { ApplyService } from './apply.service';
+import { CreateApplyDto } from '../dto/create-apply.dto';
+import { JwtGuard } from '../guards/jwt.guard';
+import { ApplyService } from './applys.service';
 
 @Controller()
 export class ApplyController {
@@ -21,7 +22,7 @@ export class ApplyController {
     //return this.applyService.findAll();
   }
 
-  @UseGuards(RolesGuard)
+  @UseGuards(JwtGuard, RolesGuard)
   @Post(':mentorId')
   create(
     @Param('mentorId') mentorId: string,
