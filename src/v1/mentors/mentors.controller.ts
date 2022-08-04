@@ -11,7 +11,7 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { jwtUser } from '../dto/jwt-user.interface';
-import { CreateMentorDatailDto } from '../dto/mentors/create-mentor-detail.dto';
+import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
 import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
@@ -31,11 +31,12 @@ export class MentorsController {
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async postMentorDetails(
+  async updateMentorDetails(
     @User() user: jwtUser,
-    @Body() body: CreateMentorDatailDto,
+    @Body() body: UpdateMentorDatailDto,
   ) {
-    return await this.mentorsService.postMentorDetails(user.intraId, body);
+    console.log(body);
+    return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
   @Get('mentorings')
