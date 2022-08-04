@@ -35,23 +35,23 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // 첫 로그인이면 가입 처리
     let result;
     if (intraId.startsWith('m-')) {
-      if (this.mentorsService.findByIntra(intraId) === null) {
+      if ((await this.mentorsService.findByIntra(intraId)) === null) {
         const user: CreateMentorDto = {
           intraId,
           profileImage,
         };
-        result = this.mentorsService.createUser(user);
+        result = await this.mentorsService.createUser(user);
       }
     } else {
-      if (this.cadetsService.findByIntra(intraId) === null) {
+      if ((await this.cadetsService.findByIntra(intraId)) === null) {
         const user: CreateCadetDto = {
           intraId,
           profileImage,
           isCommon: isCommon === null ? true : false,
         };
-        result = this.cadetsService.createUser(user);
+        result = await this.cadetsService.createUser(user);
       }
     }
-    done(null, { id: result.id, name: result.name });
+    done(null, { id: result.id, name: result.name, role: result.role });
   }
 }
