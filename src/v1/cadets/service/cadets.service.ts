@@ -12,7 +12,7 @@ export class CadetsService {
 
   async createUser(user: CreateCadetDto) {
     console.log('Create cadet', user);
-    return { id: 1, username: 'nakkim' };
+    return { id: 1, name: 'nakkim', role: 'cadet' };
   }
 
   findByIntra(intraId: string) {

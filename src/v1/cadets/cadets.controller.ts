@@ -1,4 +1,15 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Roles } from 'src/v1/decorators/roles.decorator';
+import { JwtGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/role.guard';
 
-@Controller('cadets')
-export class CadetsController {}
+@Controller()
+export class CadetsController {
+  @Get('test')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  hello(@Req() req) {
+    console.log(req);
+    return 'hi';
+  }
+}

@@ -8,6 +8,7 @@ import { CadetsModule } from './cadets/cadets.module';
 import { BocalsModule } from './bocals/bocals.module';
 import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [V1Controller],
-  providers: [V1Service, FortyTwoStrategy],
+  providers: [V1Service, FortyTwoStrategy, JwtStrategy],
 })
 export class V1Module {}
