@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
-import { Roles } from '../decorators/roles.decorator';
-import { ReportsSortDto } from '../dto/reports/reports-sort.dto';
-=======
 import {
   Body,
   Controller,
@@ -20,7 +15,6 @@ import {
   UpdateReportDto,
 } from '../dto/reports/create-report.dto';
 import { Reports } from '../entities/reports.entity';
->>>>>>> a3a8f46727b6d02d5c4e9cc989e13edf17ded345
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
