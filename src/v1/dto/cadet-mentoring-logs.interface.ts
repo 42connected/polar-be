@@ -10,7 +10,7 @@ export interface CadetMentoringLogs {
   meta: {
     isCommon: boolean;
     topic: string;
-    requestTime: Date[];
+    requestTime: Date[][];
     meetingAt: Date;
     rejectMessage: string;
   };
