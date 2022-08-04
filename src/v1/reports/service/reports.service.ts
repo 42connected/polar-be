@@ -1,13 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  CreateReportDto,
-  UpdateReportDto,
-} from 'src/v1/dto/reports/create-report.dto';
+import { CreateReportDto } from 'src/v1/dto/reports/create-report.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
@@ -38,10 +31,15 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
+
     return report;
   }
 
-  async postReport(intraId: string, body: CreateReportDto) {
+  async postReport(
+    filePaths: string[],
+    intraId: string,
+    body: CreateReportDto,
+  ) {
     const authorMentor = await this.mentorsRepository.findOneBy({
       intraId: intraId,
     });
@@ -64,6 +62,7 @@ export class ReportsService {
       mentors: authorMentor,
       cadets: cadet,
       mentoringLogs: mentoringLog,
+      imageUrl: filePaths,
       topic: body.topic,
       content: body.content,
       feedbackMessage: body.feedbackMessage,
@@ -161,4 +160,5 @@ export class ReportsService {
       return { "reports": room };
     
   }
+}
 }

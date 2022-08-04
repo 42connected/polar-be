@@ -39,3 +39,6 @@ lerna-debug.log*
 
 # Migrations
 /src/migrations
+
+# Uploads
+/uploads
