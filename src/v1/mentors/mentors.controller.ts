@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -14,6 +15,7 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
+import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
 
 @Controller()
 export class MentorsController {
@@ -21,13 +23,6 @@ export class MentorsController {
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
   ) {}
-
-  @Get(':intraId')
-  @Roles('mentor', 'cadet')
-  @UseGuards(JwtGuard, RolesGuard)
-  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
-    return await this.mentorsService.getMentorDetails(intraId);
-  }
 
   @Post()
   @Roles('mentor')
@@ -37,10 +32,25 @@ export class MentorsController {
     return await this.mentorsService.postMentorDetails(jwtUser.intraId, body);
   }
 
-  @Get('metorings')
+  // cadet -> mentor로 바꿀 것
+  @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  async getMentoringslists(@Req() req) {
-    return await this.mentoringsService.getMentoringslists(req);
+  async getMentoringsLists(@Req() req) {
+    return await this.mentoringsService.getMentoringsLists(req);
+  }
+
+  @Patch('mentorings')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  async setMeetingAt(@Req() req, @Body() body: UpdateMentoringDto) {
+    return await this.mentoringsService.setMeetingAt(req, body);
+  }
+
+  @Get(':intraId')
+  @Roles('mentor', 'cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
+    return await this.mentorsService.getMentorDetails(intraId);
   }
 }
