@@ -74,31 +74,20 @@ export class ReportsService {
 
 
   async getAllReport() {
-    console.log('there')
-    let reports;
-    try {
-      // const cadet = await this.cadetsRepository.findOneBy({
-      //   intraId: "jojoo",
-      // });
-       reports = await this.cadetsRepository.findOneBy(
-        // relations: {
-        //   // cadets: true,
-        //   // mentors: true,
-        //   mentoringLogs: true,
-        // },
-         {intraId: "jojoo"}
-      );
-    }catch(error) {
-      console.log("888"+error)
-    }
+      const reports = await this.reportsRepository.find({
+        relations: {
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
+        },
+      });
     
-    console.log(reports)
     const room = [];
     const data = reports?.forEach((data) => {
       room.push({
         "mentor": { "name": data.mentors.name },
         "cadet": { "name": data.cadets.name },
-        "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
+        "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs, "meetingAt": data.mentoringLogs.meetingAt }
         // FIXME: content to place
       })
     })
