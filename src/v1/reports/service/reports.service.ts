@@ -4,14 +4,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-<<<<<<< HEAD
-import { ReportsSortDto } from 'src/v1/dto/reports/reports-sort.dto';
-=======
 import {
   CreateReportDto,
   UpdateReportDto,
 } from 'src/v1/dto/reports/create-report.dto';
->>>>>>> a3a8f46727b6d02d5c4e9cc989e13edf17ded345
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
