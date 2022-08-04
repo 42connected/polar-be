@@ -27,8 +27,9 @@ export class ReportsController {
   @Get()
   @Roles('')
   // FIXME: add to "bocal"
-  @UseGuards(JwtGuard, RolesGuard)
+  // @UseGuards(JwtGuard, RolesGuard)
   async getAllReport() {
+    console.log('here');
     return await this.reportsService.getAllReport();
   }
 

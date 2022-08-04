@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ReportsSortDto } from 'src/v1/dto/reports/reports-sort.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class ReportsService {
@@ -17,7 +18,7 @@ export class ReportsService {
     private readonly cadetsRepository: Repository<Cadets>,
     @InjectRepository(MentoringLogs)
     private readonly mentoringLogsRepository: Repository<MentoringLogs>,
-  ) {}
+  ) { }
 
   async getReport(reportId: string) {
     const report = await this.reportsRepository.findOne({
@@ -84,16 +85,23 @@ export class ReportsService {
   }
 
   async getAllReport() {
-    const reports = await this.reportsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-        mentoringLogs: true,
-      },
-    });
+    console.log('there')
+    let reports;
+    try {
+       reports = await this.reportsRepository.find(
+        // relations: {
+        //   // cadets: true,
+        //   // mentors: true,
+        //   mentoringLogs: true,
+        // },
+      );
+    }catch(error) {
+      console.log(error)
+    }
+    
     console.log(reports)
     const room = [];
-    const data = reports.map((data) => {
+    const data = reports.forEach((data) => {
       room.push({
         "mentor": { "name": data.mentors.name },
         "cadet": { "name": data.cadets.name },
@@ -102,17 +110,32 @@ export class ReportsService {
       })
     })
     
-    return {"reports": room};
+    return { "reports": room };
   }
 
-  async sortReport(req: any) {
-    const reports = await this.reportsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-        mentoringLogs: true,
-      },
-    });
+  async sortReport(reportsSortDto: ReportsSortDto) {
+    let reports;
+    if (reportsSortDto.mentorName === "undefined") {
+      reports = await this.mentoringLogsRepository
+        .createQueryBuilder('reports')
+        .leftJoinAndSelect('reports.mentors', 'mentors')
+        .leftJoinAndSelect('reports.cadets', 'cadets')
+        .orderBy({
+          "reports.meetingAt": reportsSortDto.up ? 'ASC' : 'DESC',
+        })
+        .getMany();
+    }
+    else {
+      reports = await this.mentoringLogsRepository
+        .createQueryBuilder('reports')
+        .leftJoinAndSelect('reports.mentors', 'mentors')
+        .leftJoinAndSelect('reports.cadets', 'cadets')
+        .where('mentors.name = :name', { name: reportsSortDto.mentorName })
+        .orderBy({
+          "reports.meetingAt": reportsSortDto.up ? 'ASC' : 'DESC',
+        })
+        .getMany();
+    }
     const room = [];
     const data = reports.forEach((data) => {
       room.push({
@@ -120,4 +143,10 @@ export class ReportsService {
         "cadet": { "name": data.cadets.name },
         "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
       })
-    }
+    })
+
+    
+      return { "reports": room };
+    
+  }
+}
