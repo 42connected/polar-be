@@ -91,12 +91,14 @@ export class ReportsService {
         mentoringLogs: true,
       },
     });
+    console.log(reports)
     const room = [];
     const data = reports.map((data) => {
       room.push({
         "mentor": { "name": data.mentors.name },
         "cadet": { "name": data.cadets.name },
-        "mentoringLogs":{"id" : data.mentoringLogs.id, "place": data.mentoringLogs.place, "meetingAt": data.mentoringLogs.meetingAt}
+        "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
+        // FIXME: content to place
       })
     })
     
