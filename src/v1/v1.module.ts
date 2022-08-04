@@ -6,16 +6,20 @@ import { MentorsModule } from './mentors/mentors.module';
 import { ReportsModule } from './reports/reports.module';
 import { CadetsModule } from './cadets/cadets.module';
 import { BocalsModule } from './bocals/bocals.module';
+import { FortyTwoStrategy } from './strategies/forty-two.strategy';
+import { AuthModule } from './auth/auth.module';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
-  controllers: [V1Controller],
-  providers: [V1Service],
   imports: [
     KeywordsModule,
     MentorsModule,
     ReportsModule,
     CadetsModule,
     BocalsModule,
+    AuthModule,
   ],
+  controllers: [V1Controller],
+  providers: [V1Service, FortyTwoStrategy, JwtStrategy],
 })
 export class V1Module {}

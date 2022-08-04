@@ -1,4 +1,11 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { FortyTwoGuard } from './guards/forty-two.guard';
 
-@Controller('v1')
-export class V1Controller {}
+@Controller()
+export class V1Controller {
+  @UseGuards(FortyTwoGuard)
+  @Get('login')
+  login() {
+    return;
+  }
+}
