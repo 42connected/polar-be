@@ -9,6 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
+import { User } from '../decorators/user.decorator';
+import { jwtUser } from '../dto/jwt-user.interface';
 import { CreateMentorDatailDto } from '../dto/mentors/create-mentor-detail.dto';
 import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -27,14 +29,15 @@ export class MentorsController {
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async postMentorDetails(@Req() req, @Body() body: CreateMentorDatailDto) {
-    const jwtUser = req.user;
-    return await this.mentorsService.postMentorDetails(jwtUser.intraId, body);
+  async postMentorDetails(
+    @User() user: jwtUser,
+    @Body() body: CreateMentorDatailDto,
+  ) {
+    return await this.mentorsService.postMentorDetails(user.intraId, body);
   }
 
-  // cadet -> mentor로 바꿀 것
   @Get('mentorings')
-  @Roles('cadet')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringsLists(@Req() req) {
     return await this.mentoringsService.getMentoringsLists(req);
