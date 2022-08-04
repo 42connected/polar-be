@@ -44,13 +44,13 @@ export class MentoringLogs {
   reportStatus: string;
 
   @Column({ type: 'timestamp' })
-  requestTime1: Date;
+  requestTime1: Date[];
 
   @Column({ type: 'timestamp', nullable: true })
-  requestTime2: Date;
+  requestTime2: Date[];
 
   @Column({ type: 'timestamp', nullable: true })
-  requestTime3: Date;
+  requestTime3: Date[];
 
   @OneToOne(() => Reports, Reports => Reports.mentoringLogs)
   reports: Reports;

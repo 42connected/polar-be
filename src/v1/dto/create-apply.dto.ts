@@ -6,7 +6,7 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreateApplyDto {
   topic: string;
   content: string;
-  requestTime1: Date;
-  requestTime2: Date;
-  requestTime3: Date;
+  requestTime1: Date[];
+  requestTime2: Date[];
+  requestTime3: Date[];
 }

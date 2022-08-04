@@ -12,7 +12,6 @@ import { ReportsModule } from './v1/reports/reports.module';
 import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
-import { ApplysModule } from './v1/applys/applys.module';
 
 @Module({
   imports: [
@@ -39,10 +38,6 @@ import { ApplysModule } from './v1/applys/applys.module';
           {
             path: 'cadets',
             module: CadetsModule,
-          },
-          {
-            path: 'applys/mentoring',
-            module: ApplysModule,
           },
           {
             path: 'mentors',

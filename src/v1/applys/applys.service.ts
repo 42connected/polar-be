@@ -17,16 +17,14 @@ export class ArrayApply {
   status: string;
   rejectMessage: string;
   reportStatus: string;
-  requestTime1: Date;
-  requestTime2: Date;
-  requestTime3: Date;
+  requestTime1: Date[];
+  requestTime2: Date[];
+  requestTime3: Date[];
   reports: Reports;
 }
 
 @Injectable()
 export class ApplyService {
-  private readonly arrayApplys: ArrayApply[] = [];
-
   constructor(
     @InjectRepository(MentoringLogs)
     private readonly mentoringlogsRepository: Repository<MentoringLogs>,
@@ -35,25 +33,26 @@ export class ApplyService {
   ) {}
 
   async create(cadetId, mentorId, createApplyDto: CreateApplyDto) {
+    const arrayApplys: ArrayApply[] = [];
     const findmentor = await this.mentorsRepository.findOne({
       where: { id: mentorId },
     });
     if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
-    this.arrayApplys[0].cadets = cadetId;
-    this.arrayApplys[0].mentors = findmentor;
-    this.arrayApplys[0].createdAt = new Date();
-    this.arrayApplys[0].meetingAt = null;
-    this.arrayApplys[0].topic = createApplyDto.topic;
-    this.arrayApplys[0].content = createApplyDto.content;
-    this.arrayApplys[0].status = '대기중';
-    this.arrayApplys[0].rejectMessage = null;
-    this.arrayApplys[0].reportStatus = '대기중';
-    this.arrayApplys[0].requestTime1 = createApplyDto.requestTime1;
-    this.arrayApplys[0].requestTime2 = createApplyDto.requestTime2;
-    this.arrayApplys[0].requestTime3 = createApplyDto.requestTime3;
+    arrayApplys[0].cadets = cadetId;
+    arrayApplys[0].mentors = findmentor;
+    arrayApplys[0].createdAt = new Date();
+    arrayApplys[0].meetingAt = null;
+    arrayApplys[0].topic = createApplyDto.topic;
+    arrayApplys[0].content = createApplyDto.content;
+    arrayApplys[0].status = '대기중';
+    arrayApplys[0].rejectMessage = null;
+    arrayApplys[0].reportStatus = '대기중';
+    arrayApplys[0].requestTime1 = createApplyDto.requestTime1;
+    arrayApplys[0].requestTime2 = createApplyDto.requestTime2;
+    arrayApplys[0].requestTime3 = createApplyDto.requestTime3;
 
-    await this.mentoringlogsRepository.save(this.arrayApplys);
-    return this.arrayApplys;
+    await this.mentoringlogsRepository.save(arrayApplys);
+    return arrayApplys;
   }
 
   findAll() {
