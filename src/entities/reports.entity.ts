@@ -42,5 +42,5 @@ export class Reports {
   feedback3: number;
 
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
-  mentoringLods: MentoringLogs;
+  mentoringLogs: MentoringLogs;
 }
