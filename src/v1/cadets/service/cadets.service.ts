@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
+import { jwtUser } from 'src/v1/dto/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
@@ -11,14 +12,16 @@ export class CadetsService {
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
-  async createUser(user: CreateCadetDto) {
-    const createdUser = await this.cadetsRepository.create(user);
+  async createUser(user: CreateCadetDto): Promise<jwtUser> {
+    const createdUser: Cadets = await this.cadetsRepository.create(user);
     await this.cadetsRepository.save(createdUser);
     return { id: createdUser.id, intraId: createdUser.intraId, role: 'cadet' };
   }
 
-  async findByIntra(intraId: string) {
-    const foundUser = await this.cadetsRepository.findOneBy({ intraId });
+  async findByIntra(intraId: string): Promise<jwtUser> {
+    const foundUser: Cadets = await this.cadetsRepository.findOneBy({
+      intraId,
+    });
     return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
   }
 
