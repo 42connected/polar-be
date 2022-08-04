@@ -22,6 +22,7 @@ export class ReportsController {
 
   @Get()
   async getAllReport() {
+    console.log("all report");
     return await this.reportsService.getAllReport();
   }
 }

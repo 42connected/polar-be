@@ -91,6 +91,7 @@ export class ReportsService {
         mentoringLogs: true,
       },
     });
+    console.log(reports);
     return reports;
   }
 }
