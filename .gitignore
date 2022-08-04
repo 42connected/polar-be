@@ -37,8 +37,5 @@ lerna-debug.log*
 # Environment
 .env
 
-# Data-source
-data-source.ts
-
 # Migrations
 /src/migrations
