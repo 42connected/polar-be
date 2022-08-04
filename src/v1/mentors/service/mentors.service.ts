@@ -10,14 +10,15 @@ export class MentorsService {
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
   ) {}
 
-  createUser(user: CreateMentorDto) {
-    console.log('Create mentor', user);
-    return { id: 1, username: 'nakkim' };
+  async createUser(user: CreateMentorDto) {
+    const createdUser = await this.mentorsRepository.create(user);
+    await this.mentorsRepository.save(createdUser);
+    return { id: createdUser.id, intraId: createdUser.intraId, role: 'mentor' };
   }
 
-  findByIntra(intraId: string) {
-    // 찾아서 없으면
-    return null;
+  async findByIntra(intraId: string) {
+    const foundUser = await this.mentorsRepository.findOneBy({ intraId });
+    return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
   }
   async getMentorDetails(mentorId: string) {
     return 'mentorId';

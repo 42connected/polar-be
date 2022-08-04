@@ -9,7 +9,7 @@ export class CadetsController {
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   hello(@Req() req) {
-    console.log(req);
+    console.log('guard test', req.user);
     return 'hi';
   }
 }

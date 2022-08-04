@@ -35,7 +35,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     // 첫 로그인이면 가입 처리
     let result;
     if (intraId.startsWith('m-')) {
-      if ((await this.mentorsService.findByIntra(intraId)) === null) {
+      result = await this.mentorsService.findByIntra(intraId);
+      if (result.id === undefined) {
         const user: CreateMentorDto = {
           intraId,
           profileImage,
@@ -43,7 +44,8 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         result = await this.mentorsService.createUser(user);
       }
     } else {
-      if ((await this.cadetsService.findByIntra(intraId)) === null) {
+      result = await this.cadetsService.findByIntra(intraId);
+      if (result.id === undefined) {
         const user: CreateCadetDto = {
           intraId,
           profileImage,
@@ -52,6 +54,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
         result = await this.cadetsService.createUser(user);
       }
     }
-    done(null, { id: result.id, name: result.name, role: result.role });
+    done(null, { id: result.id, name: result.intraId, role: result.role });
   }
 }

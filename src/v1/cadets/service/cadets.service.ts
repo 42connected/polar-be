@@ -11,13 +11,13 @@ export class CadetsService {
   ) {}
 
   async createUser(user: CreateCadetDto) {
-    console.log('Create cadet', user);
-    return { id: 1, name: 'nakkim', role: 'cadet' };
+    const createdUser = await this.cadetsRepository.create(user);
+    await this.cadetsRepository.save(createdUser);
+    return { id: createdUser.id, intraId: createdUser.intraId, role: 'cadet' };
   }
 
-  findByIntra(intraId: string) {
-    // 찾아서 없으면
-    console.log(`Find By ${intraId}`);
-    return null;
+  async findByIntra(intraId: string) {
+    const foundUser = await this.cadetsRepository.findOneBy({ intraId });
+    return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
   }
 }
