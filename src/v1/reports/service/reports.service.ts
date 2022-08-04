@@ -1,5 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import {
+  CreateReportDto,
+  UpdateReportDto,
+} from 'src/v1/dto/reports/create-report.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
@@ -19,7 +27,7 @@ export class ReportsService {
     private readonly mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
-  async getReport(reportId: string) {
+  async getReport(reportId: string): Promise<Reports> {
     const report = await this.reportsRepository.findOne({
       where: { id: reportId },
       relations: {
@@ -33,53 +41,54 @@ export class ReportsService {
     return report;
   }
 
-  async postReport(req: any) {
-    console.log(req);
+  async postReport(intraId: string, body: CreateReportDto) {
     const authorMentor = await this.mentorsRepository.findOneBy({
-      intraId: req.mentorIntraId,
+      intraId: intraId,
     });
     if (!authorMentor) {
       throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
     }
     const cadet = await this.cadetsRepository.findOneBy({
-      intraId: req.cadetIntraId,
+      intraId: body.cadetIntraId,
     });
     if (!cadet) {
       throw new NotFoundException(`해당 카뎃를 찾을 수 없습니다`);
     }
     const mentoringLog = await this.mentoringLogsRepository.findOneBy({
-      id: req.mentoringLogId,
+      id: body.mentoringLogId,
     });
     if (!mentoringLog) {
       throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
     }
-    const newReport = this.reportsRepository.create();
-    newReport.mentors = authorMentor;
-    newReport.cadets = cadet;
-    newReport.mentoringLogs = mentoringLog;
-    newReport.topic = req.topic;
-    newReport.content = req.content;
-    newReport.feedbackMessage = req.feedbackMessage;
-    //newReport.imageUrl = ['asasd'];
-    newReport.feedback1 = +req.feedback1;
-    newReport.feedback2 = +req.feedback2;
-    newReport.feedback3 = +req.feedback3;
-    //console.log(newReport);
-    await this.reportsRepository.save(newReport);
-    return { ok: true };
+    const newReport = this.reportsRepository.create({
+      mentors: authorMentor,
+      cadets: cadet,
+      mentoringLogs: mentoringLog,
+      topic: body.topic,
+      content: body.content,
+      feedbackMessage: body.feedbackMessage,
+      feedback1: +body.feedback1,
+      feedback2: +body.feedback2,
+      feedback3: +body.feedback3,
+    });
+    const ret = await this.reportsRepository.save(newReport);
+    return ret;
   }
 
-  async putReport(reportId: string, req: any) {
+  async putReport(intraId: string, reportId: string, body: UpdateReportDto) {
     const report = await this.reportsRepository.findOneBy({ id: reportId });
-    report.topic = req.topic ? req.topic : report.topic;
-    report.content = req.content ? req.content : report.content;
-    report.feedbackMessage = req.feedbackMessage
-      ? req.feedbackMessage
+    if (report.mentors.intraId !== intraId) {
+      throw new UnauthorizedException('해당 레포트에 대한 권한이 없습니다');
+    }
+    report.topic = body.topic ? body.topic : report.topic;
+    report.content = body.content ? body.content : report.content;
+    report.feedbackMessage = body.feedbackMessage
+      ? body.feedbackMessage
       : report.feedbackMessage;
-    report.feedback1 = req.feedback1 ? req.feedback1 : report.feedback1;
-    report.feedback2 = req.feedback2 ? req.feedback2 : report.feedback2;
-    report.feedback3 = req.feedback3 ? req.feedback3 : report.feedback3;
-    await this.reportsRepository.save(report);
-    return { ok: true };
+    report.feedback1 = body.feedback1 ? body.feedback1 : report.feedback1;
+    report.feedback2 = body.feedback2 ? body.feedback2 : report.feedback2;
+    report.feedback3 = body.feedback3 ? body.feedback3 : report.feedback3;
+    const ret = await this.reportsRepository.save(report);
+    return ret;
   }
 }
