@@ -88,20 +88,24 @@ export class ReportsService {
     console.log('there')
     let reports;
     try {
-       reports = await this.reportsRepository.find(
+      // const cadet = await this.cadetsRepository.findOneBy({
+      //   intraId: "jojoo",
+      // });
+       reports = await this.cadetsRepository.findOneBy(
         // relations: {
         //   // cadets: true,
         //   // mentors: true,
         //   mentoringLogs: true,
         // },
+         {intraId: "jojoo"}
       );
     }catch(error) {
-      console.log(error)
+      console.log("888"+error)
     }
     
     console.log(reports)
     const room = [];
-    const data = reports.forEach((data) => {
+    const data = reports?.forEach((data) => {
       room.push({
         "mentor": { "name": data.mentors.name },
         "cadet": { "name": data.cadets.name },

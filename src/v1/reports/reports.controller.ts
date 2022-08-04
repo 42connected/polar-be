@@ -25,7 +25,7 @@ export class ReportsController {
   }
 
   @Get()
-  @Roles('')
+  // @Roles('')
   // FIXME: add to "bocal"
   // @UseGuards(JwtGuard, RolesGuard)
   async getAllReport() {
