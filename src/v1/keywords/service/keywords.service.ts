@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Keywords } from 'src/v1/entities/keywords.entity';
 import { Repository } from 'typeorm';
@@ -25,23 +21,23 @@ export class KeywordsService {
     return sliced;
   }
 
-  async createKeyword(name: string): Promise<void> {
-    const newKeyword = this.keywordsRepository.create({
-      name: name,
-    });
-    try {
-      await this.keywordsRepository.save(newKeyword);
-    } catch {
-      throw new ConflictException('중복된 키워드를 등록하셨습니다');
-    }
-    return;
-  }
+  // async createKeyword(name: string): Promise<void> {
+  //   const newKeyword = this.keywordsRepository.create({
+  //     name: name,
+  //   });
+  //   try {
+  //     await this.keywordsRepository.save(newKeyword);
+  //   } catch {
+  //     throw new ConflictException('중복된 키워드를 등록하셨습니다');
+  //   }
+  //   return;
+  // }
 
-  async deleteKeyword(name: string): Promise<void> {
-    const result = await this.keywordsRepository.delete({ name: name });
-    if (result.affected === 0) {
-      throw new NotFoundException('등록되지 않은 분야입니다');
-    }
-    return;
-  }
+  // async deleteKeyword(name: string): Promise<void> {
+  //   const result = await this.keywordsRepository.delete({ name: name });
+  //   if (result.affected === 0) {
+  //     throw new NotFoundException('등록되지 않은 분야입니다');
+  //   }
+  //   return;
+  // }
 }
