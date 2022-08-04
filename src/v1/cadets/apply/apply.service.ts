@@ -33,20 +33,12 @@ export class ApplyService {
     @InjectRepository(Mentors)
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
-  /*
-  async foundMentor(mentorId: string) :Mentors{
+
+  async create(cadetId, mentorId, createApplyDto: CreateApplyDto) {
     const findmentor = await this.mentorsRepository.findOne({
       where: { id: mentorId },
     });
     if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
-    return findmentor;
-  }
-*/
-  async create(cadetId, MentorId, createApplyDto: CreateApplyDto) {
-    const findmentor = await this.mentorsRepository.findOne({
-      where: { id: MentorId },
-    });
-    if (!findmentor) throw new NotFoundException(`${MentorId} not found.`);
     this.arrayApplys[0].cadets = cadetId;
     this.arrayApplys[0].mentors = findmentor;
     this.arrayApplys[0].createdAt = new Date();
@@ -62,11 +54,9 @@ export class ApplyService {
 
     await this.mentoringlogsRepository.save(this.arrayApplys);
     return this.arrayApplys;
-    //return this.foundMentor(MentorId);
   }
 
   findAll() {
-    //return 'hello';
     return this.mentoringlogsRepository.find({});
   }
 }
