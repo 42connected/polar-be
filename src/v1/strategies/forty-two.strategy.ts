@@ -1,8 +1,8 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-42';
 import { Injectable } from '@nestjs/common';
-import { CreateMentorDto } from 'src/v1/dto/create-mentor.dto';
-import { CreateCadetDto } from 'src/v1/dto/create-cadet.dto';
+import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
+import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { MentorsService } from '../mentors/service/mentors.service';
 

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateCadetDto } from 'src/v1/dto/create-cadet.dto';
+import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { Repository } from 'typeorm';
 
