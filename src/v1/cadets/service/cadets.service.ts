@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
@@ -27,6 +27,9 @@ export class CadetsService {
       where: { id },
       relations: { mentoringLogs: true },
     });
+    if (cadet === null) {
+      throw new NotFoundException('존재하지 않는 카뎃입니다.');
+    }
     return cadet.mentoringLogs;
   }
 }
