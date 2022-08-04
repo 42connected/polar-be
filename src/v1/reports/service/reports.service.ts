@@ -104,4 +104,20 @@ export class ReportsService {
     
     return {"reports": room};
   }
-}
+
+  async sortReport(req: any) {
+    const reports = await this.reportsRepository.find({
+      relations: {
+        cadets: true,
+        mentors: true,
+        mentoringLogs: true,
+      },
+    });
+    const room = [];
+    const data = reports.forEach((data) => {
+      room.push({
+        "mentor": { "name": data.mentors.name },
+        "cadet": { "name": data.cadets.name },
+        "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
+      })
+    }
