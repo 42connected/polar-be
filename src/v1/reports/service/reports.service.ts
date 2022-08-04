@@ -1,9 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  MethodNotAllowedException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateReportDto } from 'src/v1/dto/reports/create-report.dto';
-import { Cadets } from 'src/v1/entities/cadets.entity';
+import {
+  CreateReportDto,
+  UpdateReportDto,
+} from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
-import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { Repository } from 'typeorm';
 
@@ -12,55 +19,86 @@ export class ReportsService {
   constructor(
     @InjectRepository(Reports)
     private readonly reportsRepository: Repository<Reports>,
-    @InjectRepository(Mentors)
-    private readonly mentorsRepository: Repository<Mentors>,
-    @InjectRepository(Cadets)
-    private readonly cadetsRepository: Repository<Cadets>,
     @InjectRepository(MentoringLogs)
     private readonly mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
-  async getReport(reportId: string): Promise<Reports> {
-    const report = await this.reportsRepository.findOne({
-      where: { id: reportId },
-      relations: {
-        cadets: true,
-        mentors: true,
-      },
-    });
-    if (!report) {
-      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+  /*
+   * File path in Object to array
+   */
+  getFilePaths(files) {
+    const filePaths: string[] = [];
+    if (files.image) {
+      files.image.map(img => {
+        filePaths.push(img.path);
+      });
+      return filePaths;
+    } else {
+      return undefined;
     }
+  }
 
+  async findReportById(reportId: string): Promise<Reports> {
+    try {
+      const report = await this.reportsRepository.findOne({
+        where: { id: reportId },
+        relations: {
+          cadets: true,
+          mentors: true,
+        },
+      });
+      if (!report) {
+        throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+      }
+      return report;
+    } catch {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+  }
+
+  async findMentoringLogById(mentoringLogId: string): Promise<MentoringLogs> {
+    try {
+      const mentoringLog = await this.mentoringLogsRepository.findOne({
+        where: { id: mentoringLogId },
+        relations: {
+          cadets: true,
+          mentors: true,
+        },
+      });
+      if (!mentoringLog) {
+        throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
+      }
+      return mentoringLog;
+    } catch {
+      throw new ConflictException('멘토링 로그를 찾는중 오류가 발생하였습니다');
+    }
+  }
+
+  /*
+   * @Get
+   */
+  async getReport(reportId: string): Promise<Reports> {
+    const report = await this.findReportById(reportId);
     return report;
   }
 
-  async postReport(
+  /*
+   * @Post
+   */
+  async createReport(
+    mentoringLogId: string,
     filePaths: string[],
-    intraId: string,
     body: CreateReportDto,
   ) {
-    const authorMentor = await this.mentorsRepository.findOneBy({
-      intraId: intraId,
-    });
-    if (!authorMentor) {
-      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-    }
-    const cadet = await this.cadetsRepository.findOneBy({
-      intraId: body.cadetIntraId,
-    });
-    if (!cadet) {
-      throw new NotFoundException(`해당 카뎃를 찾을 수 없습니다`);
-    }
-    const mentoringLog = await this.mentoringLogsRepository.findOneBy({
-      id: body.mentoringLogId,
-    });
-    if (!mentoringLog) {
-      throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
+    const mentoringLog = await this.findMentoringLogById(mentoringLogId);
+    if (mentoringLog.reports) {
+      throw new MethodNotAllowedException(
+        '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
+      );
     }
     const newReport = this.reportsRepository.create({
-      mentors: authorMentor,
-      cadets: cadet,
+      mentors: mentoringLog.mentors,
+      cadets: mentoringLog.cadets,
       mentoringLogs: mentoringLog,
       imageUrl: filePaths,
       topic: body.topic,
@@ -70,7 +108,43 @@ export class ReportsService {
       feedback2: +body.feedback2,
       feedback3: +body.feedback3,
     });
-    const ret = await this.reportsRepository.save(newReport);
-    return ret;
+    try {
+      await this.reportsRepository.save(newReport);
+      return 'ok';
+    } catch {
+      throw new ConflictException(
+        '해당 멘토링 로그에는 이미 레포트가 존재합니다',
+      );
+    }
+  }
+
+  /*
+   * @Put
+   */
+  async updateReport(
+    reportId: string,
+    mentorIntraId: string,
+    filePaths: string[],
+    body: UpdateReportDto,
+  ) {
+    const report = await this.findReportById(reportId);
+    if (report.mentors?.intraId !== mentorIntraId) {
+      throw new UnauthorizedException(
+        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
+      );
+    }
+    report.imageUrl = filePaths;
+    report.topic = body.topic;
+    report.content = body.content;
+    report.feedbackMessage = body.feedbackMessage;
+    report.feedback1 = +body.feedback1;
+    report.feedback2 = +body.feedback2;
+    report.feedback3 = +body.feedback3;
+    try {
+      await this.reportsRepository.save(report);
+      return 'ok';
+    } catch {
+      throw new ConflictException('수정중 예기치 못한 에러가 발생하였습니다');
+    }
   }
 }
