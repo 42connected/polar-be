@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   ManyToOne,
+  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -32,15 +33,16 @@ export class Reports {
   @Column({ type: 'varchar', length: 3000, nullable: true })
   feedbackMessage: string;
 
-  @Column('smallint')
+  @Column({ type: 'smallint', nullable: true })
   feedback1: number;
 
-  @Column('smallint')
+  @Column({ type: 'smallint', nullable: true })
   feedback2: number;
 
-  @Column('smallint')
+  @Column({ type: 'smallint', nullable: true })
   feedback3: number;
 
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
+  @JoinColumn()
   mentoringLogs: MentoringLogs;
 }

@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -21,34 +22,36 @@ export class MentoringLogs {
   @ManyToOne(() => Cadets, Cadets => Cadets.mentoringLogs)
   cadets: Cadets;
 
-  @Column({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
   meetingAt: Date;
 
-  @Column({ type: 'varchar', nullable: false, length: 100 })
+  @Column({ type: 'varchar', length: 100 })
   topic: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 1000 })
+  @Column({ type: 'varchar', length: 1000 })
   content: string;
 
-  @Column({ type: 'varchar', nullable: false, length: 10 })
+  @Column({ type: 'varchar', length: 10 })
   status: string;
 
-  @Column({ type: 'varchar', length: 500 })
+  @Column({ type: 'varchar', length: 500, nullable: true })
   rejectMessage: string;
 
-  @Column({ nullable: false, length: 10 })
+  @Column({ length: 10 })
   reportStatus: string;
 
-  @Column({ type: 'timestamp', nullable: false })
+  @Column({ type: 'timestamp' })
   requestTime1: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   requestTime2: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   requestTime3: Date;
 
-  @OneToOne(() => Reports, Reports => Reports.mentors)
-  @JoinColumn()
+  @OneToOne(() => Reports, Reports => Reports.mentoringLogs)
   reports: Reports;
 }
