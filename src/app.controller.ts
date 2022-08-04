@@ -1,6 +1,5 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { FortyTwoGuard } from './v1/guards/forty-two.guard';
 
 @Controller()
 export class AppController {
@@ -9,11 +8,5 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
-  }
-
-  @UseGuards(FortyTwoGuard)
-  @Get('login')
-  login() {
-    return;
   }
 }
