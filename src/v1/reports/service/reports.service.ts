@@ -91,7 +91,12 @@ export class ReportsService {
         mentoringLogs: true,
       },
     });
-    console.log(reports);
+    // console.log(reports);
+    // const return = {
+    //   "metor":
+    // }
+    const findSelect = await this.reportsRepository.find({
+      select:
     return reports;
   }
 }
