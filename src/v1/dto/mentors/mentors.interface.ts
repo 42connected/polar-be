@@ -1,5 +1,5 @@
-import { Comments } from 'src/entities/comments.entity';
-import { MentoringLogs } from 'src/entities/mentoring-logs.entity';
+import { Comments } from 'src/v1/entities/comments.entity';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 export interface ReturnMentorDetails {
   id: string;

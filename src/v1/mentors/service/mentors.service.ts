@@ -16,7 +16,7 @@ export class MentorsService {
   ) {}
 
   async createUser(user: CreateMentorDto) {
-    const createdUser = await this.mentorsRepository.create(user);
+    const createdUser = this.mentorsRepository.create(user);
     await this.mentorsRepository.save(createdUser);
     return { id: createdUser.id, intraId: createdUser.intraId, role: 'mentor' };
   }
