@@ -1,4 +1,7 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Roles } from '../decorators/roles.decorator';
+import { JwtGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
 
 @Controller()
@@ -21,6 +24,9 @@ export class ReportsController {
   }
 
   @Get()
+  @Roles('')
+    // FIXME: add to "bocal"
+  @UseGuards(JwtGuard, RolesGuard)
   async getAllReport() {
     return await this.reportsService.getAllReport();
   }
