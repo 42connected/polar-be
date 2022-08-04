@@ -24,14 +24,14 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get(':reportId')
-  @Roles('mentor', 'cadet')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   async getReport(@Param('reportId') reportId: string): Promise<Reports> {
     return await this.reportsService.getReport(reportId);
   }
 
   @Post()
-  @Roles('cadet', 'mentor')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
