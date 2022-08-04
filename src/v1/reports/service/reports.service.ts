@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateReportDto } from 'src/v1/dto/reports/create-report.dto';
+import { ReportsSortDto } from 'src/v1/dto/reports/reports-sort.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { DataSource, Repository } from 'typeorm';
-
 @Injectable()
 export class ReportsService {
   constructor(
@@ -19,8 +19,7 @@ export class ReportsService {
     private readonly cadetsRepository: Repository<Cadets>,
     @InjectRepository(MentoringLogs)
     private readonly mentoringLogsRepository: Repository<MentoringLogs>,
-  ) { }
-
+  ) {}
   async getReport(reportId: string): Promise<Reports> {
     const report = await this.reportsRepository.findOne({
       where: { id: reportId },
@@ -32,10 +31,8 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
-
     return report;
   }
-
   async postReport(
     filePaths: string[],
     intraId: string,
@@ -75,22 +72,6 @@ export class ReportsService {
     return ret;
   }
 
-  async putReport(intraId: string, reportId: string, body: UpdateReportDto) {
-    const report = await this.reportsRepository.findOneBy({ id: reportId });
-    if (report.mentors.intraId !== intraId) {
-      throw new UnauthorizedException('해당 레포트에 대한 권한이 없습니다');
-    }
-    report.topic = body.topic ? body.topic : report.topic;
-    report.content = body.content ? body.content : report.content;
-    report.feedbackMessage = body.feedbackMessage
-      ? body.feedbackMessage
-      : report.feedbackMessage;
-    report.feedback1 = body.feedback1 ? body.feedback1 : report.feedback1;
-    report.feedback2 = body.feedback2 ? body.feedback2 : report.feedback2;
-    report.feedback3 = body.feedback3 ? body.feedback3 : report.feedback3;
-    const ret = await this.reportsRepository.save(report);
-    return ret;
-  }
 
   async getAllReport() {
     console.log('there')
@@ -162,4 +143,4 @@ export class ReportsService {
     
   }
 }
-}
+

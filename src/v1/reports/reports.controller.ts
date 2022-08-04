@@ -14,6 +14,7 @@ import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { jwtUser } from '../dto/jwt-user.interface';
 import { CreateReportDto } from '../dto/reports/create-report.dto';
+import { ReportsSortDto } from '../dto/reports/reports-sort.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
