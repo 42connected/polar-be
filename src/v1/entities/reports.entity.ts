@@ -17,7 +17,7 @@ export class Reports {
   @ManyToOne(() => Mentors, Mentors => Mentors.reports)
   mentors: Mentors;
 
-  @ManyToOne(() => Cadets, Cadets => Cadets.Reports)
+  @ManyToOne(() => Cadets, Cadets => Cadets.reports)
   cadets: Cadets;
 
   @Column({ type: 'varchar', length: 150, nullable: true })
@@ -42,5 +42,5 @@ export class Reports {
   feedback3: number;
 
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
-  mentoringLods: MentoringLogs;
+  mentoringLogs: MentoringLogs;
 }
