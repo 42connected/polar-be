@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateMentorDto } from 'src/v1/dto/create-mentor.dto';
 import { CreateMentorDatailDto } from 'src/v1/dto/mentors/create-mentor-detail.dto';
+import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 
