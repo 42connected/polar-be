@@ -5,7 +5,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 export const appDataSource = new DataSource({
   type: 'postgres',
   database: process.env.POSTGRES_DATABASE,
-  entities: ['**/*.entity.ts'],
+  entities: ['src/v1/entities/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT, 10),
