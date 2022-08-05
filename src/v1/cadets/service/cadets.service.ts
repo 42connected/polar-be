@@ -40,9 +40,6 @@ export class CadetsService {
       const foundUser: Cadets = await this.cadetsRepository.findOneBy({
         intraId,
       });
-      if (foundUser === null) {
-        throw new NotFoundException(`${intraId}를 찾을 수 없습니다.`);
-      }
       return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
     } catch (err) {
       throw new ConflictException(
