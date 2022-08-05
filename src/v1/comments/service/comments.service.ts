@@ -57,10 +57,12 @@ export class CommentsService {
     }
   }
 
-  async findCommentById(commentId: string): Promise<Comments> {
+  async findCommentNotDeletedById(commentId: string): Promise<Comments> {
     try {
-      const comment: Comments = await this.commentsRepository.findOneBy({
-        id: commentId,
+      const comment: Comments = await this.commentsRepository.findOne({
+        where: { id: commentId, isDeleted: false },
+        relations: { mentors: true, cadets: true },
+        select: { mentors: { intraId: true }, cadets: { intraId: true } },
       });
       if (!comment) {
         throw new NotFoundException(`해당 코멘트를 찾을 수 없습니다`);
@@ -77,7 +79,7 @@ export class CommentsService {
    * @Get
    */
   async getComment(commentId: string) {
-    return await this.findCommentById(commentId);
+    return await this.findCommentNotDeletedById(commentId);
   }
 
   /*
@@ -112,7 +114,7 @@ export class CommentsService {
     updateCommentDto: UpdateCommentDto,
   ) {
     const cadet = await this.findCadetByIntraId(cadetIntraId);
-    const comment = await this.findCommentById(commentId);
+    const comment = await this.findCommentNotDeletedById(commentId);
     if (cadet.id !== comment.cadets.id) {
       throw new UnauthorizedException(
         `해당 코멘트를 수정할 수 있는 권한이 없습니다`,
@@ -132,8 +134,8 @@ export class CommentsService {
    */
   async deleteComment(cadetIntraId: string, commentId: string) {
     const cadet = await this.findCadetByIntraId(cadetIntraId);
-    const comment = await this.findCommentById(commentId);
-    if (cadet.id !== comment.cadets.id) {
+    const comment = await this.findCommentNotDeletedById(commentId);
+    if (cadet.id !== comment.cadets?.id) {
       throw new UnauthorizedException(
         `해당 코멘트를 삭제할 수 있는 권한이 없습니다`,
       );
