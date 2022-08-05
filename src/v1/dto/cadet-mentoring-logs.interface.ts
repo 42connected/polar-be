@@ -1,7 +1,7 @@
 export interface CadetMentoringLogs {
   id: string;
   mentor: {
-    intra: string;
+    intraId: string;
     name: string;
   };
   createdAt: Date;
