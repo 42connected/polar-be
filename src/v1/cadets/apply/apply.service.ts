@@ -32,9 +32,9 @@ export class ApplyService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async create(cadetId, mentorId, createApplyDto: CreateApplyDto) {
+  async create(cadetId, mentorId, createApplyDto: CreateApplyDto): Promise<ArrayApply[]> {
     const arrayApplys: ArrayApply[] = [];
-    const findmentor = await this.mentorsRepository.findOne({
+    const findmentor: Mentors = await this.mentorsRepository.findOne({
       where: { id: mentorId },
     });
     if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
@@ -55,7 +55,7 @@ export class ApplyService {
     return arrayApplys;
   }
 
-  findAll() {
+  findAll(): Promise<MentoringLogs[]> {
     return this.mentoringlogsRepository.find({});
   }
 }
