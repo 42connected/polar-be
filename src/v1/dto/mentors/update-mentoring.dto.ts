@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class UpdateMentoringDto {
@@ -12,6 +13,7 @@ export class UpdateMentoringDto {
   rejectMessage: string;
 
   @IsDate()
+  @Type(() => Date)
   @IsOptional()
   meetingAt: Date;
 }

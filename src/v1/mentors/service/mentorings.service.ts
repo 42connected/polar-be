@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MentorMentoringInfo } from 'src/v1/dto/mentor-mentoring-info.interface';
 import { MentorMentoringLogs } from 'src/v1/dto/mentor-mentoring-logs.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
@@ -16,7 +17,7 @@ export class MentoringsService {
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
-  async getMentoringsLists(@Req() req) {
+  async getMentoringsLists(@Req() req): Promise<MentorMentoringInfo> {
     const mentorIntraId = req.user.intraId;
     let mentorDb;
 
@@ -65,7 +66,7 @@ export class MentoringsService {
     return { intra: mentorIntraId, mentorings };
   }
 
-  async setMeetingAt(@Req() req, body: UpdateMentoringDto) {
+  async setMeetingAt(body: UpdateMentoringDto): Promise<MentoringLogs> {
     const mentoringsData = await this.mentoringsLogsRepository.findOne({
       where: { id: body.id },
     });

@@ -18,6 +18,8 @@ import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
 import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
+import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { MentorMentoringInfo } from '../dto/mentor-mentoring-info.interface';
 
 @Controller()
 export class MentorsController {
@@ -39,15 +41,15 @@ export class MentorsController {
   @Get('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async getMentoringsLists(@Req() req) {
+  async getMentoringsLists(@Req() req): Promise<MentorMentoringInfo> {
     return await this.mentoringsService.getMentoringsLists(req);
   }
 
   @Patch('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async setMeetingAt(@Req() req, @Body() body: UpdateMentoringDto) {
-    return await this.mentoringsService.setMeetingAt(req, body);
+  async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
+    return await this.mentoringsService.setMeetingAt(body);
   }
 
   @Get(':intraId')
