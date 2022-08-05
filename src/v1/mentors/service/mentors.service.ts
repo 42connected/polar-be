@@ -38,9 +38,6 @@ export class MentorsService {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,
       });
-      if (foundUser === null) {
-        throw new NotFoundException(`${intraId}를 찾을 수 없습니다.`);
-      }
       return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
     } catch (err) {
       throw new ConflictException(
