@@ -19,11 +19,6 @@ import { ApplyService } from './apply.service';
 export class ApplyController {
   constructor(private applyService: ApplyService) {}
 
-  @Get()
-  findAll(): Promise<MentoringLogs[]> {
-    return this.applyService.findAll();
-  }
-
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   @Post(':mentorId')
