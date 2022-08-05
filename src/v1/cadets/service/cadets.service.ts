@@ -1,10 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CadetMentoringInfo } from 'src/v1/dto/cadet-mentoring-info.interface';
 import { CadetMentoringLogs } from 'src/v1/dto/cadet-mentoring-logs.interface';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { jwtUser } from 'src/v1/dto/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -14,51 +19,87 @@ export class CadetsService {
   ) {}
 
   async createUser(user: CreateCadetDto): Promise<jwtUser> {
-    const createdUser: Cadets = await this.cadetsRepository.create(user);
-    await this.cadetsRepository.save(createdUser);
-    return { id: createdUser.id, intraId: createdUser.intraId, role: 'cadet' };
+    try {
+      const createdUser: Cadets = await this.cadetsRepository.create(user);
+      await this.cadetsRepository.save(createdUser);
+      return {
+        id: createdUser.id,
+        intraId: createdUser.intraId,
+        role: 'cadet',
+      };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 생성 중 에러가 발생했습니다.',
+      );
+    }
   }
 
   async findByIntra(intraId: string): Promise<jwtUser> {
-    const foundUser: Cadets = await this.cadetsRepository.findOneBy({
-      intraId,
+    try {
+      const foundUser: Cadets = await this.cadetsRepository.findOneBy({
+        intraId,
+      });
+      if (foundUser === null) {
+        throw new NotFoundException(`${intraId}를 찾을 수 없습니다.`);
+      }
+      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 검색 중 에러가 발생했습니다.',
+      );
+    }
+  }
+
+  formatMentorings(
+    logs: MentoringLogs[],
+    isCommon: boolean,
+  ): CadetMentoringLogs[] {
+    return logs.map(mentoring => {
+      return {
+        id: mentoring.id,
+        mentor: {
+          intraId: mentoring.mentors.intraId,
+          name: mentoring.mentors.name,
+        },
+        createdAt: mentoring.createdAt,
+        status: mentoring.status,
+        content: mentoring.content,
+        meta: {
+          isCommon,
+          topic: mentoring.topic,
+          requestTime: [
+            mentoring.requestTime1,
+            mentoring.requestTime2,
+            mentoring.requestTime3,
+          ],
+          meetingAt: mentoring.meetingAt,
+          rejectMessage: mentoring.rejectMessage,
+        },
+      };
     });
-    return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
   }
 
   async getMentoringLogs(id: string): Promise<CadetMentoringInfo> {
-    const cadet: Cadets = await this.cadetsRepository.findOne({
-      where: { id },
-      relations: { mentoringLogs: { mentors: true } },
-    });
-    if (cadet === null) {
-      throw new NotFoundException('존재하지 않는 카뎃입니다.');
+    try {
+      const cadet: Cadets = await this.cadetsRepository.findOne({
+        where: { id },
+        relations: { mentoringLogs: { mentors: true } },
+      });
+      if (cadet === null) {
+        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      }
+      const mentorings: CadetMentoringLogs[] = this.formatMentorings(
+        cadet.mentoringLogs,
+        cadet.isCommon,
+      );
+      return { username: cadet.name, mentorings };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '멘토링 데이터 검색 중 에러가 발생했습니다.',
+      );
     }
-    const mentorings: CadetMentoringLogs[] = cadet.mentoringLogs.map(
-      mentoring => {
-        return {
-          id: mentoring.id,
-          mentor: {
-            intra: mentoring.mentors.intraId,
-            name: mentoring.mentors.name,
-          },
-          createdAt: mentoring.createdAt,
-          status: mentoring.status,
-          content: mentoring.content,
-          meta: {
-            isCommon: cadet.isCommon,
-            topic: mentoring.topic,
-            requestTime: [
-              mentoring.requestTime1,
-              mentoring.requestTime2,
-              mentoring.requestTime3,
-            ],
-            meetingAt: mentoring.meetingAt,
-            rejectMessage: mentoring.rejectMessage,
-          },
-        };
-      },
-    );
-    return { username: cadet.name, mentorings };
   }
 }
