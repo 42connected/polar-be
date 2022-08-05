@@ -39,14 +39,16 @@ export class MentorsController {
   }
 
   @Get('mentorings')
-  @Roles('mentor')
+  @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  async getMentoringsLists(@Req() req): Promise<MentorMentoringInfo> {
-    return await this.mentoringsService.getMentoringsLists(req);
+  async getMentoringsLists(
+    @User() user: jwtUser,
+  ): Promise<MentorMentoringInfo> {
+    return await this.mentoringsService.getMentoringsLists(user);
   }
 
   @Patch('mentorings')
-  @Roles('mentor')
+  @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
     return await this.mentoringsService.setMeetingAt(body);

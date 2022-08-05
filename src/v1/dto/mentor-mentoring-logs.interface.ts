@@ -10,7 +10,7 @@ export interface MentorMentoringLogs {
   status: string;
   reportStatus: string;
   meta: {
-    requestTime: Date[];
+    requestTime: Date[][2];
     isCommon: boolean;
     rejectMessage: string;
     content: string;
