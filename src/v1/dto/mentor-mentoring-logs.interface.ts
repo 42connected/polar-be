@@ -4,7 +4,7 @@ export interface MentorMentoringLogs {
   meetingAt: Date;
   cadet: {
     name: string;
-    intra: string;
+    intraId: string;
   };
   topic: string;
   status: string;

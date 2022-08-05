@@ -46,7 +46,7 @@ export class MentoringsService {
     if (mentorDb === null)
       throw new NotFoundException('데이터를 찾을 수 없습니다');
 
-    const mentorings: MentorMentoringLogs[] = mentorDb.mentoringLogs.map(
+    const mentoringLogs: MentorMentoringLogs[] = mentorDb.mentoringLogs.map(
       mentoring => {
         return {
           id: mentoring.id,
@@ -72,7 +72,7 @@ export class MentoringsService {
         };
       },
     );
-    return { intra: mentorIntraId, mentorings };
+    return { intraId: mentorIntraId, mentoringLogs };
   }
 
   async setMeetingAt(body: UpdateMentoringDto): Promise<MentoringLogs> {
