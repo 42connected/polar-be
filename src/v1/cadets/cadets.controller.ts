@@ -28,9 +28,9 @@ export class CadetsController {
     return await this.cadetsService.getMentoringLogs(user.id);
   }
 
+  @Post('mentorings/apply/:mentorId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  @Post('mentorings/apply/:mentorId')
   create(
     @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
