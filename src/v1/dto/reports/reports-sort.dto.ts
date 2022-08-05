@@ -1,5 +1,13 @@
+import { IsBoolean, IsNumber, IsString } from "class-validator";
+
 export class ReportsSortDto {
-    "mentorName": string;
-    "month": number;
-    "up": boolean;
+    @IsString()
+    mentorName: string;
+    
+    @IsNumber()
+    month: number;
+
+    @IsBoolean()
+    isUp: boolean;
+
 }

@@ -96,6 +96,7 @@ export class ReportsService {
   }
 
   async sortReport(reportsSortDto: ReportsSortDto) {
+    console.log('here')
     let reports;
     if (reportsSortDto.mentorName === "undefined") {
       reports = await this.mentoringLogsRepository
@@ -103,7 +104,7 @@ export class ReportsService {
         .leftJoinAndSelect('reports.mentors', 'mentors')
         .leftJoinAndSelect('reports.cadets', 'cadets')
         .orderBy({
-          "reports.meetingAt": reportsSortDto.up ? 'ASC' : 'DESC',
+          "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
         })
         .getMany();
     }
@@ -114,7 +115,7 @@ export class ReportsService {
         .leftJoinAndSelect('reports.cadets', 'cadets')
         .where('mentors.name = :name', { name: reportsSortDto.mentorName })
         .orderBy({
-          "reports.meetingAt": reportsSortDto.up ? 'ASC' : 'DESC',
+          "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
         })
         .getMany();
     }

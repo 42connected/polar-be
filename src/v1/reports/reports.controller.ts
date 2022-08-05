@@ -66,8 +66,9 @@ export class ReportsController {
     return await this.reportsService.getAllReport();
   }
 
-  @Post('/sort')
+  @Post('sort')
   async sortReport(@Body() reportsSortDto: ReportsSortDto) {
+    console.log("there")
     return await this.reportsService.sortReport(reportsSortDto);
   }
 }
