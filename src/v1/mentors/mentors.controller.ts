@@ -19,7 +19,7 @@ import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
 import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
-import { MentorMentoringInfo } from '../dto/mentor-mentoring-info.interface';
+import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 
 @Controller()
 export class MentorsController {

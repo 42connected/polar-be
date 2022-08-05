@@ -54,7 +54,7 @@ export class MentoringsService {
           meetingAt: mentoring.meetingAt,
           cadet: {
             name: mentoring.cadets.name,
-            intra: mentoring.cadets.intraId,
+            intraId: mentoring.cadets.intraId,
           },
           topic: mentoring.topic,
           status: mentoring.status,
