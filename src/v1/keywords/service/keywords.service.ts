@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Keywords } from 'src/v1/entities/keywords.entity';
 import { Repository } from 'typeorm';
@@ -11,14 +15,20 @@ export class KeywordsService {
   ) {}
 
   async getKeywords(): Promise<Keywords[]> {
-    const found = await this.keywordsRepository
-      .createQueryBuilder()
-      .select('keywords.name')
-      .from(Keywords, 'keywords')
-      .orderBy('RANDOM()')
-      .getMany();
-    const sliced = found.slice(0, 8);
-    return sliced;
+    try {
+      const found = await this.keywordsRepository
+        .createQueryBuilder()
+        .select('keywords.name')
+        .from(Keywords, 'keywords')
+        .orderBy('RANDOM()')
+        .getMany();
+      if (!found) {
+        throw new NotFoundException();
+      }
+      return found.slice(0, 8);
+    } catch {
+      throw new ConflictException();
+    }
   }
 
   // async createKeyword(name: string): Promise<void> {

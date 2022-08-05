@@ -40,7 +40,7 @@ export class MentorsController {
   }
 
   @Get('mentorings')
-  @Roles('cadet')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringsLists(
     @User() user: jwtUser,
@@ -49,7 +49,7 @@ export class MentorsController {
   }
 
   @Patch('mentorings')
-  @Roles('cadet')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
     return await this.mentoringsService.setMeetingAt(body);
