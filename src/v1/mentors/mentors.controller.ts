@@ -3,6 +3,10 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
   Post,
   UseGuards,
   Query,
@@ -15,6 +19,10 @@ import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
+import { MentoringsService } from './service/mentorings.service';
+import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
+import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 
@@ -22,8 +30,25 @@ import { MentorsList } from '../interface/mentors/mentors-list.interface';
 export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
+    private readonly mentoringsService: MentoringsService,
     private readonly searchMentorsService: SearchMentorsService,
   ) {}
+
+  @Get('mentorings')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  async getMentoringsLists(
+    @User() user: jwtUser,
+  ): Promise<MentorMentoringInfo> {
+    return await this.mentoringsService.getMentoringsLists(user);
+  }
+
+  @Patch('mentorings')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
+    return await this.mentoringsService.setMeetingAt(body);
+  }
 
   @Get(':intraId')
   @Roles('mentor', 'cadet')
@@ -41,6 +66,12 @@ export class MentorsController {
   ) {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
+  
+  @Get(':intraId')
+  @Roles('mentor', 'cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
+    return await this.mentorsService.getMentorDetails(intraId);
 
   @Get()
   getMentors(
