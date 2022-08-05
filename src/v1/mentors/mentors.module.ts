@@ -15,5 +15,6 @@ import { SearchMentorsService } from './service/search-mentors.service';
   ],
   controllers: [MentorsController],
   providers: [MentorsService, SearchMentorsService],
+  exports: [MentorsService],
 })
 export class MentorsModule {}
