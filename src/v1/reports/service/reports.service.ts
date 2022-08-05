@@ -80,10 +80,23 @@ export class ReportsService {
           mentors: true,
           mentoringLogs: true,
         },
+        select: {
+          mentors: {
+            name: true,
+          },
+          cadets: {
+            name: true,
+          },
+          //FIXME: content to place
+          mentoringLogs: {
+            content: true,
+            meetingAt: true,
+          },
+        },
       });
     
     const room = [];
-    const data = reports?.forEach((data) => {
+    reports?.forEach((data) => {
       room.push({
         "mentor": { "name": data.mentors.name },
         "cadet": { "name": data.cadets.name },
@@ -96,44 +109,46 @@ export class ReportsService {
   }
 
   async sortReport(reportsSortDto: ReportsSortDto) {
-    let reports;
-    if (reportsSortDto.mentorName !== "") {
-      reports = await this.reportsRepository
-        .createQueryBuilder('reports')
-        .leftJoinAndSelect('reports.mentors', 'mentors')
-        .leftJoinAndSelect('reports.cadets', 'cadets')
-        .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
-        .where('mentors.intra_id = :intra_id', { intra_id: reportsSortDto.mentorName })
-        .orderBy({
-          "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-        })
-        .getMany();
-    }
-    else {
-      reports = await this.reportsRepository
-        .createQueryBuilder('reports')
-        .leftJoinAndSelect('reports.mentors', 'mentors')
-        .leftJoinAndSelect('reports.cadets', 'cadets')
-        .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
-        .orderBy({
-          "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-        })
-        .getMany();
-    }
+      const reports = await this.reportsRepository.find({
+        relations: { 
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
+        },
+        order: {
+          mentoringLogs: {
+            meetingAt: reportsSortDto.isUp ? "ASC" : "DESC",
+          },
+        },
+        select: {
+          mentors: {
+            name: true,
+          },
+          cadets: {
+            name: true,
+          },
+          //FIXME: content to place
+          mentoringLogs: {
+            content: true,
+            meetingAt: true,
+          },
+        },
+      })
+   
     reportsSortDto.month--;
     const room = [];
-    const data = reports.forEach((data) => {
+    reports.forEach((data) => {
       if (data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month) {
         room.push({
           "mentor": { "name": data.mentors.name },
           "cadet": { "name": data.cadets.name },
           "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
+          //FIXME: content to place
         })
       }
     })
-
-    
-      return { "reports": room };
+    reportsSortDto.mentorName ? room.filter((data) => data.mentor.name === reportsSortDto.mentorName) : room;
+    return { "reports": room };
     
   }
 }
