@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { jwtUser } from 'src/v1/dto/jwt-user.interface';
-import { CreateMentorDatailDto } from 'src/v1/dto/mentors/create-mentor-detail.dto';
+import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
@@ -13,54 +17,101 @@ export class MentorsService {
   ) {}
 
   async createUser(user: CreateMentorDto): Promise<jwtUser> {
-    const createdUser: Mentors = this.mentorsRepository.create(user);
-    await this.mentorsRepository.save(createdUser);
-    return { id: createdUser.id, intraId: createdUser.intraId, role: 'mentor' };
+    try {
+      const createdUser: Mentors = this.mentorsRepository.create(user);
+      await this.mentorsRepository.save(createdUser);
+      return {
+        id: createdUser.id,
+        intraId: createdUser.intraId,
+        role: 'mentor',
+      };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 생성 중 에러가 발생했습니다.',
+      );
+    }
   }
 
   async findByIntra(intraId: string): Promise<jwtUser> {
-    const foundUser: Mentors = await this.mentorsRepository.findOneBy({
-      intraId,
-    });
-    return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+    try {
+      const foundUser: Mentors = await this.mentorsRepository.findOneBy({
+        intraId,
+      });
+      if (foundUser === null) {
+        throw new NotFoundException(`${intraId}를 찾을 수 없습니다.`);
+      }
+      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 검색 중 에러가 발생했습니다.',
+      );
+    }
   }
 
-  async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentorDetails: Mentors = await this.mentorsRepository.findOne({
-      where: {
+  async findMentorByIntraId(intraId: string) {
+    try {
+      const mentor: Mentors = await this.mentorsRepository.findOneBy({
         intraId: intraId,
-      },
-      relations: {
-        mentoringLogs: true,
-        comments: true,
-      },
-    });
-    if (mentorDetails === null) {
-      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+      });
+      if (!mentor) {
+        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+      }
+      return mentor;
+    } catch {
+      throw new ConflictException(
+        '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
+      );
     }
-    return mentorDetails;
   }
 
-  async postMentorDetails(intraId: string, body: CreateMentorDatailDto) {
-    const mentorDetails: Mentors = await this.mentorsRepository.findOneBy({
-      intraId: intraId,
-    });
-    if (mentorDetails === null) {
-      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+  async findMentorWithPropertiesByIntraId(intraId: string) {
+    try {
+      const mentorDetail: Mentors = await this.mentorsRepository.findOne({
+        where: {
+          intraId: intraId,
+        },
+        relations: {
+          mentoringLogs: true,
+          comments: true,
+        },
+      });
+      if (!mentorDetail) {
+        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+      }
+      return mentorDetail;
+    } catch {
+      throw new ConflictException(
+        '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
+      );
     }
-    mentorDetails.availableTime = body.availableTime
-      ? body.availableTime
-      : mentorDetails.availableTime;
-    mentorDetails.introduction = body.introduction
-      ? body.introduction
-      : mentorDetails.introduction;
-    mentorDetails.isActive = body.isActive
-      ? body.isActive
-      : mentorDetails.isActive;
-    mentorDetails.markdownContent = body.markdownContent
-      ? body.markdownContent
-      : mentorDetails.markdownContent;
-    await this.mentorsRepository.save(mentorDetails);
-    return { ok: true };
+  }
+
+  /*
+   * @Get
+   */
+  async getMentorDetails(intraId: string): Promise<Mentors> {
+    const mentorDetail: Mentors = await this.findMentorWithPropertiesByIntraId(
+      intraId,
+    );
+    return mentorDetail;
+  }
+
+  /*
+   * @Post
+   */
+  async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
+    const mentor: Mentors = await this.findMentorByIntraId(intraId);
+    mentor.availableTime = body.availableTime;
+    mentor.introduction = body.introduction;
+    mentor.isActive = body.isActive;
+    mentor.markdownContent = body.markdownContent;
+    try {
+      await this.mentorsRepository.save(mentor);
+      return 'ok';
+    } catch {
+      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+    }
   }
 }

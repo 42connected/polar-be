@@ -9,6 +9,7 @@ import { BocalsModule } from './bocals/bocals.module';
 import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     CadetsModule,
     BocalsModule,
     AuthModule,
+    CommentsModule,
   ],
   controllers: [V1Controller],
   providers: [V1Service, FortyTwoStrategy, JwtStrategy],
