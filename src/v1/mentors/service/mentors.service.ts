@@ -34,7 +34,7 @@ export class MentorsService {
       const mentor: Mentors = await this.mentorsRepository.findOneBy({
         intraId: intraId,
       });
-      if (mentor === null) {
+      if (!mentor) {
         throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
       }
       return mentor;
@@ -56,7 +56,7 @@ export class MentorsService {
           comments: true,
         },
       });
-      if (mentorDetail === null) {
+      if (!mentorDetail) {
         throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
       }
       return mentorDetail;
