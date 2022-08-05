@@ -20,9 +20,8 @@ export class ApplyController {
   constructor(private applyService: ApplyService) {}
 
   @Get()
-  findAll() {
-    return 'hi';
-    //return this.applyService.findAll();
+  findAll(): Promise<MentoringLogs[]> {
+    return this.applyService.findAll();
   }
 
   @Roles('cadet')
