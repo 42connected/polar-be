@@ -4,9 +4,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Mentors } from 'src/entities/mentors.entity';
-import { MentorKeywords } from 'src/entities/mentor-keywords.entity';
-import { Keywords } from 'src/entities/keywords.entity';
+import { Mentors } from 'src/v1/entities/mentors.entity';
+import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
+import { Keywords } from 'src/v1/entities/keywords.entity';
 import { Repository } from 'typeorm';
 import { MentorSimpleInfo } from 'src/v1/interface/mentors/mentor-simple-info.interface';
 import { MentorsListElement } from 'src/v1/interface/mentors/mentors-list-element.interface';

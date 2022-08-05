@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmConfigService } from './config/typeorm.config';
+import { JwtModule } from '@nestjs/jwt';
+import { TypeOrmConfigService } from './v1/config/typeorm.config';
 import { V1Module } from './v1/v1.module';
 import { RouterModule } from '@nestjs/core';
 import { MentorsModule } from './v1/mentors/mentors.module';
@@ -19,6 +20,14 @@ import { BocalsModule } from './v1/bocals/bocals.module';
     }),
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
+    }),
+    JwtModule.registerAsync({
+      useFactory: () => {
+        return {
+          secret: process.env.JWT_SECRET,
+          signOptions: { expiresIn: process.env.JWT_EXPIRE },
+        };
+      },
     }),
     V1Module,
     RouterModule.register([
