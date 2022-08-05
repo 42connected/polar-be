@@ -12,6 +12,7 @@ import { ReportsModule } from './v1/reports/reports.module';
 import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
+import { CommentsModule } from './v1/comments/comments.module';
 
 @Module({
   imports: [
@@ -54,6 +55,10 @@ import { BocalsModule } from './v1/bocals/bocals.module';
           {
             path: 'reports',
             module: ReportsModule,
+          },
+          {
+            path: 'comments',
+            module: CommentsModule,
           },
         ],
       },

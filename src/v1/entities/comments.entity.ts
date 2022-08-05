@@ -22,7 +22,7 @@ export class Comments {
   @Column({ type: 'text' })
   content: string;
 
-  @Column({ type: 'boolean' })
+  @Column({ type: 'boolean', default: false })
   isDeleted: boolean;
 
   @Column({ type: 'timestamp', nullable: true })
