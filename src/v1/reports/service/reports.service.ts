@@ -10,6 +10,7 @@ import {
   CreateReportDto,
   UpdateReportDto,
 } from 'src/v1/dto/reports/report.dto';
+import { ReportsSortDto } from 'src/v1/dto/reports/reports-sort.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { DataSource, Repository } from 'typeorm';
