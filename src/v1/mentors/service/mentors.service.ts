@@ -74,9 +74,6 @@ export class MentorsService {
     const mentorDetail: Mentors = await this.findMentorWithPropertiesByIntraId(
       intraId,
     );
-    if (mentorDetail === null) {
-      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-    }
     return mentorDetail;
   }
 
