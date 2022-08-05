@@ -42,13 +42,14 @@ export class MentoringLogs {
   @Column({ length: 10 })
   reportStatus: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', array: true })
   requestTime1: Date[];
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, array: true })
   requestTime2: Date[];
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamp', nullable: true, array: true })
+
   requestTime3: Date[];
 
   @OneToOne(() => Reports, Reports => Reports.mentoringLogs)
