@@ -11,7 +11,6 @@ import { ApplyService } from './apply/apply.service';
 
 @Controller()
 export class CadetsController {
-  applyService: any;
   constructor(
   private cadetsService: CadetsService,
   private applyService: ApplyService
