@@ -38,7 +38,7 @@ export class CadetsController {
     @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
-  ) {
+  ) :Promise<MentoringLogs> {
     return this.applyService.create(user, mentorId, createApplyDto);
   }
 }
