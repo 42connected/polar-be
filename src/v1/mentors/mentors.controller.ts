@@ -4,9 +4,7 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   Req,
-  UseGuards,
   Post,
   UseGuards,
   Query,
@@ -50,13 +48,6 @@ export class MentorsController {
     return await this.mentoringsService.setMeetingAt(body);
   }
 
-  @Get(':intraId')
-  @Roles('mentor', 'cadet')
-  @UseGuards(JwtGuard, RolesGuard)
-  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
-    return await this.mentorsService.getMentorDetails(intraId);
-  }
-
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
@@ -66,12 +57,13 @@ export class MentorsController {
   ) {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
-  
+
   @Get(':intraId')
   @Roles('mentor', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.getMentorDetails(intraId);
+  }
 
   @Get()
   getMentors(
