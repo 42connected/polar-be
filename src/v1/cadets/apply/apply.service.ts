@@ -23,29 +23,33 @@ export class ApplyService {
     mentorId: string,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    const findmentor: Mentors = await this.mentorsRepository.findOne({
-      where: { id: mentorId },
-    });
-    if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
-    const findcadet: Cadets = await this.cadetsRepository.findOne({
-      where: { id: cadet.id },
-    });
-    if (!findcadet) throw new NotFoundException(`${cadet.id} not found.`);
-    const tmpRepo = this.mentoringlogsRepository.create({
-      cadets: findcadet,
-      mentors: findmentor,
-      createdAt: new Date(),
-      meetingAt: null,
-      topic: createApplyDto.topic,
-      content: createApplyDto.content,
-      status: '대기중',
-      rejectMessage: null,
-      reportStatus: '대기중',
-      requestTime1: createApplyDto.requestTime1,
-      requestTime2: createApplyDto.requestTime2,
-      requestTime3: createApplyDto.requestTime3,
-    });
-    const updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
-    return updateRepo;
+     try {
+      const findmentor: Mentors = await this.mentorsRepository.findOne({
+        where: { id: mentorId },
+      });
+      if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
+      const findcadet: Cadets = await this.cadetsRepository.findOne({
+        where: { id: cadet.id },
+      });
+      if (!findcadet) throw new NotFoundException(`${cadet.id} not found.`);
+      const tmpRepo = this.mentoringlogsRepository.create({
+        cadets: findcadet,
+        mentors: findmentor,
+        createdAt: new Date(),
+        meetingAt: null,
+        topic: createApplyDto.topic,
+        content: createApplyDto.content,
+        status: '대기중',
+        rejectMessage: null,
+        reportStatus: '대기중',
+        requestTime1: createApplyDto.requestTime1,
+        requestTime2: createApplyDto.requestTime2,
+        requestTime3: createApplyDto.requestTime3,
+      });
+      const updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
+      return updateRepo;
+    } catch {
+      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+    }
   }
 }
