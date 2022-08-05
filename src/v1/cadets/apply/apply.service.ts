@@ -55,7 +55,4 @@ export class ApplyService {
     return arrayApplys;
   }
 
-  findAll(): Promise<MentoringLogs[]> {
-    return this.mentoringlogsRepository.find({});
-  }
 }
