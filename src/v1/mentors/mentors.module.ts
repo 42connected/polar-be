@@ -13,13 +13,23 @@ import { MentorsService } from './service/mentors.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 
 @Module({
-imports: [
-    TypeOrmModule.forFeature([Mentors, MentorKeywords, Keywords, MentoringLogs, Cadets]),
+  imports: [
+    TypeOrmModule.forFeature([
+      Mentors,
+      MentorKeywords,
+      Keywords,
+      MentoringLogs,
+      Cadets,
+    ]),
     AuthModule,
   ],
   controllers: [MentorsController],
-  providers: [MentorsService, SearchMentorsService, MentoringsService, AuthService],
+  providers: [
+    MentorsService,
+    SearchMentorsService,
+    MentoringsService,
+    AuthService,
+  ],
   exports: [MentorsService, MentoringsService],
 })
-
 export class MentorsModule {}

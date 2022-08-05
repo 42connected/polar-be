@@ -98,6 +98,4 @@ export class ReportsController {
   async getAllReport() {
     return await this.reportsService.getAllReport();
   }
-
-
 }
