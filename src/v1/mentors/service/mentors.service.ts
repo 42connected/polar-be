@@ -66,15 +66,18 @@ export class MentorsService {
     }
   }
 
-  async findMentorWithPropertiesByIntraId(intraId: string) {
+  async findMentorDetailsByIntraId(intraId: string) {
     try {
       const mentorDetail: Mentors = await this.mentorsRepository.findOne({
         where: {
           intraId: intraId,
+          comments: {
+            isDeleted: false,
+          },
         },
         relations: {
           mentoringLogs: true,
-          comments: true,
+          comments: { cadets: true },
         },
       });
       if (!mentorDetail) {
@@ -92,7 +95,7 @@ export class MentorsService {
    * @Get
    */
   async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentorDetail: Mentors = await this.findMentorWithPropertiesByIntraId(
+    const mentorDetail: Mentors = await this.findMentorDetailsByIntraId(
       intraId,
     );
     return mentorDetail;
