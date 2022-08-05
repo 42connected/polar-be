@@ -26,7 +26,6 @@ export class MentorsController {
     @User() user: jwtUser,
     @Body() body: UpdateMentorDatailDto,
   ) {
-    console.log(body);
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 }
