@@ -32,6 +32,11 @@ export class ReportsController {
     return await this.reportsService.getReport(reportId);
   }
 
+  @Post('sort')
+  async sortReport(@Body() reportsSortDto: ReportsSortDto) {
+    return await this.reportsService.sortReport(reportsSortDto);
+  }
+
   @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
@@ -94,8 +99,5 @@ export class ReportsController {
     return await this.reportsService.getAllReport();
   }
 
-  @Post('sort')
-  async sortReport(@Body() reportsSortDto: ReportsSortDto) {
-    return await this.reportsService.sortReport(reportsSortDto);
-  }
+
 }
