@@ -8,12 +8,13 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
 import { ApplyService } from './apply/apply.service';
+import { MentoringLogs } from '../entities/mentoring-logs.entity';
 
 @Controller()
 export class CadetsController {
   constructor(
-  private cadetsService: CadetsService,
-  private applyService: ApplyService
+    private cadetsService: CadetsService,
+    private applyService: ApplyService,
   ) {}
 
   @Get('test')
@@ -38,7 +39,7 @@ export class CadetsController {
     @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
-  ) :Promise<MentoringLogs> {
+  ): Promise<MentoringLogs> {
     return this.applyService.create(user, mentorId, createApplyDto);
   }
 }
