@@ -96,47 +96,40 @@ export class ReportsService {
   }
 
   async sortReport(reportsSortDto: ReportsSortDto) {
-    console.log('here')
-    let reports = await this.reportsRepository
-      .createQueryBuilder('reports')
-      .leftJoinAndSelect('reports.mentors', 'mentors')
-      .leftJoinAndSelect('reports.cadets', 'cadets')
-      .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
-      .where('mentors.intra_id = :intra_id', { intra_id: reportsSortDto.mentorName })
-      .orderBy({
-        "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-      })
-      .getMany();
-    console.log(reports);
-    // if (reportsSortDto.mentorName === "undefined") {
-    //   reports = await this.mentoringLogsRepository
-    //     .createQueryBuilder('reports')
-    //     .leftJoinAndSelect('reports.mentors', 'mentors')
-    //     .leftJoinAndSelect('reports.cadets', 'cadets')
-    //     .orderBy({
-    //       "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-    //     })
-    //     .getMany();
-    // }
-    // else {
-    //   reports = await this.mentoringLogsRepository
-    //     .createQueryBuilder('reports')
-    //     .leftJoinAndSelect('reports.mentors', 'mentors')
-    //     .leftJoinAndSelect('reports.cadets', 'cadets')
-    //     .where('mentors.name = :name', { name: reportsSortDto.mentorName })
-    //     .orderBy({
-    //       "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-    //     })
-    //     .getMany();
-    // }
-
+    let reports;
+    if (reportsSortDto.mentorName !== "") {
+      reports = await this.reportsRepository
+        .createQueryBuilder('reports')
+        .leftJoinAndSelect('reports.mentors', 'mentors')
+        .leftJoinAndSelect('reports.cadets', 'cadets')
+        .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
+        .where('mentors.intra_id = :intra_id', { intra_id: reportsSortDto.mentorName })
+        .orderBy({
+          "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
+        })
+        .getMany();
+    }
+    else {
+      reports = await this.reportsRepository
+        .createQueryBuilder('reports')
+        .leftJoinAndSelect('reports.mentors', 'mentors')
+        .leftJoinAndSelect('reports.cadets', 'cadets')
+        .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
+        .orderBy({
+          "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
+        })
+        .getMany();
+    }
+    reportsSortDto.month--;
     const room = [];
     const data = reports.forEach((data) => {
-      room.push({
-        "mentor": { "name": data.mentors.name },
-        "cadet": { "name": data.cadets.name },
-        "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
-      })
+      if (data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month) {
+        room.push({
+          "mentor": { "name": data.mentors.name },
+          "cadet": { "name": data.cadets.name },
+          "mentoringLogs": { "id": data.mentoringLogs.id, "place": data.mentoringLogs.content, "meetingAt": data.mentoringLogs.meetingAt }
+        })
+      }
     })
 
     
