@@ -97,30 +97,39 @@ export class ReportsService {
 
   async sortReport(reportsSortDto: ReportsSortDto) {
     console.log('here')
-    let reports;
-    if (reportsSortDto.mentorName === "undefined") {
-      reports = await this.mentoringLogsRepository
-        .createQueryBuilder('reports')
-        .leftJoinAndSelect('reports.mentors', 'mentors')
-        .leftJoinAndSelect('reports.cadets', 'cadets')
-        .orderBy({
-          "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-        })
-        .getMany();
-    }
-    else {
-      reports = await this.mentoringLogsRepository
-        .createQueryBuilder('reports')
-        .leftJoinAndSelect('reports.mentors', 'mentors')
-        .leftJoinAndSelect('reports.cadets', 'cadets')
-        .where('mentors.name = :name', { name: reportsSortDto.mentorName })
-        .orderBy({
-          "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
-        })
-        .getMany();
-    }
+    let reports = await this.reportsRepository
+      .createQueryBuilder('reports')
+      .leftJoinAndSelect('reports.mentors', 'mentors')
+      .leftJoinAndSelect('reports.cadets', 'cadets')
+      .leftJoinAndSelect('reports.mentoringLogs', 'mentoringLogs')
+      .where('mentors.intra_id = :intra_id', { intra_id: reportsSortDto.mentorName })
+      .orderBy({
+        "mentoringLogs.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
+      })
+      .getMany();
+    console.log(reports);
+    // if (reportsSortDto.mentorName === "undefined") {
+    //   reports = await this.mentoringLogsRepository
+    //     .createQueryBuilder('reports')
+    //     .leftJoinAndSelect('reports.mentors', 'mentors')
+    //     .leftJoinAndSelect('reports.cadets', 'cadets')
+    //     .orderBy({
+    //       "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
+    //     })
+    //     .getMany();
+    // }
+    // else {
+    //   reports = await this.mentoringLogsRepository
+    //     .createQueryBuilder('reports')
+    //     .leftJoinAndSelect('reports.mentors', 'mentors')
+    //     .leftJoinAndSelect('reports.cadets', 'cadets')
+    //     .where('mentors.name = :name', { name: reportsSortDto.mentorName })
+    //     .orderBy({
+    //       "reports.meetingAt": reportsSortDto.isUp ? 'ASC' : 'DESC',
+    //     })
+    //     .getMany();
+    // }
 
-    console.log(reports)
     const room = [];
     const data = reports.forEach((data) => {
       room.push({
