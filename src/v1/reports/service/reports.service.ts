@@ -46,6 +46,10 @@ export class ReportsService {
           cadets: true,
           mentors: true,
         },
+        select: {
+          cadets: { name: true },
+          mentors: { name: true },
+        },
       });
       if (!report) {
         throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
