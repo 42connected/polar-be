@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -13,8 +14,7 @@ import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { jwtUser } from '../dto/jwt-user.interface';
-import { CreateReportDto } from '../dto/reports/create-report.dto';
-import { ReportsSortDto } from '../dto/reports/reports-sort.dto';
+import { CreateReportDto, UpdateReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
@@ -31,7 +31,7 @@ export class ReportsController {
     return await this.reportsService.getReport(reportId);
   }
 
-  @Post()
+  @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @UseInterceptors(
@@ -41,21 +41,48 @@ export class ReportsController {
       }),
     }),
   )
-  async postReport(
+  async createReport(
+    @Param('mentoringLogId') mentoringLogId: string,
+    @Body() body: CreateReportDto,
     @UploadedFiles()
     files: {
       image?: Express.Multer.File[];
     },
-    @User() user: jwtUser,
-    @Body() body: CreateReportDto,
   ) {
-    const filePaths: string[] = [];
-    if (files) {
-      files.image.map(img => {
-        filePaths.push(img.path);
-      });
-    }
-    return await this.reportsService.postReport(filePaths, user.intraId, body);
+    const filePaths: string[] = this.reportsService.getFilePaths(files);
+    return await this.reportsService.createReport(
+      mentoringLogId,
+      filePaths,
+      body,
+    );
+  }
+
+  @Put(':reportId')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
+      storage: diskStorage({
+        destination: './uploads',
+      }),
+    }),
+  )
+  async updateReport(
+    @Param('reportId') reportId: string,
+    @User() user: jwtUser,
+    @Body() body: UpdateReportDto,
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[];
+    },
+  ) {
+    const filePaths: string[] = this.reportsService.getFilePaths(files);
+    return await this.reportsService.updateReport(
+      reportId,
+      user.intraId,
+      filePaths,
+      body,
+    );
   }
 
   @Get()
