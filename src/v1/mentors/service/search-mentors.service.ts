@@ -85,7 +85,7 @@ export class SearchMentorsService {
       );
     }
 
-    const mentorList: MentorsListElement[] = await this.getMentorList(
+    const mentorList: MentorsListElement[] = await this.getMentorListElements(
       matchMentors,
     );
     result.mentors = mentorList;
@@ -110,7 +110,7 @@ export class SearchMentorsService {
           '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
         );
       }
-      const mentorList: MentorsListElement[] = await this.getMentorList(
+      const mentorList: MentorsListElement[] = await this.getMentorListElements(
         matchMentors,
       );
       result.mentors = mentorList;
@@ -123,7 +123,7 @@ export class SearchMentorsService {
     return result;
   }
 
-  async getMentorList(
+  async getMentorListElements(
     matchMentors: MentorSimpleInfo[],
   ): Promise<MentorsListElement[]> {
     const mentorList: MentorsListElement[] = [];
