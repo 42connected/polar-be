@@ -8,11 +8,9 @@ import { Mentors } from 'src/entities/mentors.entity';
 import { MentorKeywords } from 'src/entities/mentor-keywords.entity';
 import { Keywords } from 'src/entities/keywords.entity';
 import { Repository } from 'typeorm';
-import {
-  MentorInfo,
-  MentorsListElement,
-  MentorsList,
-} from 'src/v1/dto/mentors/mentors.dto';
+import { MentorSimpleInfo } from 'src/v1/interface/mentors/mentor-simple-info.interface';
+import { MentorsListElement } from 'src/v1/interface/mentors/mentors-list-element.interface';
+import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
 
 @Injectable()
 export class SearchMentorsService {
@@ -29,7 +27,7 @@ export class SearchMentorsService {
     searchText?: string,
   ): Promise<MentorsList> {
     const result: MentorsList = {
-      keyword: { id: '', name: '' },
+      keyword: new Keywords(),
       mentorCount: 0,
       mentors: [],
     };
@@ -46,7 +44,7 @@ export class SearchMentorsService {
       );
     }
 
-    const matchMentors: MentorInfo[] = [];
+    const matchMentors: MentorSimpleInfo[] = [];
     try {
       const rawMentorInfos: MentorKeywords[] =
         await this.mentorKeywordsRepository.find({
@@ -102,10 +100,11 @@ export class SearchMentorsService {
     };
 
     try {
-      const matchMentors: MentorInfo[] = await this.mentorsRepository.find({
-        select: { id: true, name: true, intraId: true },
-        where: [{ intraId: searchText }, { name: searchText }],
-      });
+      const matchMentors: MentorSimpleInfo[] =
+        await this.mentorsRepository.find({
+          select: { id: true, name: true, intraId: true },
+          where: [{ intraId: searchText }, { name: searchText }],
+        });
       if (matchMentors.length === 0) {
         throw new NotFoundException(
           '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
@@ -125,7 +124,7 @@ export class SearchMentorsService {
   }
 
   async getMentorList(
-    matchMentors: MentorInfo[],
+    matchMentors: MentorSimpleInfo[],
   ): Promise<MentorsListElement[]> {
     const mentorList: MentorsListElement[] = [];
     for (const mentorInfo of matchMentors) {
