@@ -17,16 +17,37 @@ export class MentorsService {
   ) {}
 
   async createUser(user: CreateMentorDto): Promise<jwtUser> {
-    const createdUser: Mentors = this.mentorsRepository.create(user);
-    await this.mentorsRepository.save(createdUser);
-    return { id: createdUser.id, intraId: createdUser.intraId, role: 'mentor' };
+    try {
+      const createdUser: Mentors = this.mentorsRepository.create(user);
+      await this.mentorsRepository.save(createdUser);
+      return {
+        id: createdUser.id,
+        intraId: createdUser.intraId,
+        role: 'mentor',
+      };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 생성 중 에러가 발생했습니다.',
+      );
+    }
   }
 
   async findByIntra(intraId: string): Promise<jwtUser> {
-    const foundUser: Mentors = await this.mentorsRepository.findOneBy({
-      intraId,
-    });
-    return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+    try {
+      const foundUser: Mentors = await this.mentorsRepository.findOneBy({
+        intraId,
+      });
+      if (foundUser === null) {
+        throw new NotFoundException(`${intraId}를 찾을 수 없습니다.`);
+      }
+      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 검색 중 에러가 발생했습니다.',
+      );
+    }
   }
 
   async findMentorByIntraId(intraId: string) {
@@ -34,7 +55,7 @@ export class MentorsService {
       const mentor: Mentors = await this.mentorsRepository.findOneBy({
         intraId: intraId,
       });
-      if (mentor === null) {
+      if (!mentor) {
         throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
       }
       return mentor;
@@ -56,7 +77,7 @@ export class MentorsService {
           comments: true,
         },
       });
-      if (mentorDetail === null) {
+      if (!mentorDetail) {
         throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
       }
       return mentorDetail;

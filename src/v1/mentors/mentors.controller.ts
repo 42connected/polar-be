@@ -7,6 +7,9 @@ import {
   Post,
   Req,
   UseGuards,
+  Post,
+  UseGuards,
+  Query,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -20,24 +23,16 @@ import { MentoringsService } from './service/mentorings.service';
 import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
+import { SearchMentorsService } from './service/search-mentors.service';
+import { MentorsList } from '../interface/mentors/mentors-list.interface';
 
 @Controller()
 export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
+    private readonly searchMentorsService: SearchMentorsService,
   ) {}
-
-  @Post()
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  async updateMentorDetails(
-    @User() user: jwtUser,
-    @Body() body: UpdateMentorDatailDto,
-  ) {
-    console.log(body);
-    return await this.mentorsService.updateMentorDetails(user.intraId, body);
-  }
 
   @Get('mentorings')
   @Roles('mentor')
@@ -60,5 +55,35 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.getMentorDetails(intraId);
+  }
+
+  @Post()
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  async updateMentorDetails(
+    @User() user: jwtUser,
+    @Body() body: UpdateMentorDatailDto,
+  ) {
+    return await this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+  
+  @Get(':intraId')
+  @Roles('mentor', 'cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
+    return await this.mentorsService.getMentorDetails(intraId);
+
+  @Get()
+  getMentors(
+    @Query('keywordId') keywordId?: string,
+    @Query('searchText') searchText?: string,
+  ): Promise<MentorsList> {
+    if (keywordId)
+      return this.searchMentorsService.getMentorListByKeyword(
+        keywordId,
+        searchText,
+      );
+    if (searchText)
+      return this.searchMentorsService.getMentorListBySearch(searchText);
   }
 }
