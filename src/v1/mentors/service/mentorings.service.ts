@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { jwtUser } from 'src/v1/dto/jwt-user.interface';
-import { MentorMentoringInfo } from 'src/v1/dto/mentor-mentoring-info.interface';
-import { MentorMentoringLogs } from 'src/v1/dto/mentor-mentoring-logs.interface';
+import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
+import { MentorMentoringLogs } from 'src/v1/interface/mentors/mentor-mentoring-logs.interface';
 
 @Injectable()
 export class MentoringsService {
