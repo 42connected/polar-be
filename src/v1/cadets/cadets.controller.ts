@@ -7,11 +7,15 @@ import { jwtUser } from '../dto/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
+import { ApplyService } from './apply/apply.service';
 
 @Controller()
 export class CadetsController {
   applyService: any;
-  constructor(private cadetsService: CadetsService) {}
+  constructor(
+  private cadetsService: CadetsService,
+  private applyService: ApplyService
+  ) {}
 
   @Get('test')
   @Roles('cadet')
