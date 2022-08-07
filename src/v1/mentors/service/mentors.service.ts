@@ -28,6 +28,7 @@ export class MentorsService {
   async createUser(user: CreateMentorDto): Promise<jwtUser> {
     try {
       const createdUser: Mentors = this.mentorsRepository.create(user);
+      createdUser.isActive = false;
       await this.mentorsRepository.save(createdUser);
       return {
         id: createdUser.id,
@@ -150,7 +151,9 @@ export class MentorsService {
    */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
     const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    mentor.availableTime = JSON.stringify(body.availableTime);
+    mentor.availableTime = JSON.stringify(
+      this.validateAvailableTime(body.availableTime),
+    );
     mentor.introduction = body.introduction;
     mentor.isActive = body.isActive;
     mentor.markdownContent = body.markdownContent;
@@ -191,10 +194,36 @@ export class MentorsService {
     try {
       const foundUser: Mentors = await this.findMentorByIntraId(user.intraId);
       foundUser.name = name;
-      foundUser.availableTime = JSON.stringify(availableTime);
+      foundUser.availableTime = JSON.stringify(
+        this.validateAvailableTime(availableTime),
+      );
+      foundUser.isActive = true;
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }
+  }
+
+  isValidTime(time: availableTimeDto) {
+    if (
+      !(time.start_hour >= 0 && time.start_hour < 24) ||
+      !(time.start_minute === 0 || time.start_minute === 30) ||
+      !(time.end_hour >= 0 && time.end_hour < 24) ||
+      !(time.end_minute === 0 || time.end_minute === 30)
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  validateAvailableTime(time: availableTimeDto[][]): availableTimeDto[][] {
+    time.forEach(t =>
+      t.forEach(tt => {
+        if (!this.isValidTime(tt) || tt.start_hour >= tt.end_hour) {
+          throw new BadRequestException('올바르지 않은 시간 형식입니다');
+        }
+      }),
+    );
+    return time;
   }
 }
