@@ -204,12 +204,23 @@ export class MentorsService {
     }
   }
 
-  isValidTime(time: availableTimeDto) {
+  isValidTime(time: availableTimeDto): boolean {
     if (
       !(time.start_hour >= 0 && time.start_hour < 24) ||
       !(time.start_minute === 0 || time.start_minute === 30) ||
       !(time.end_hour >= 0 && time.end_hour < 24) ||
       !(time.end_minute === 0 || time.end_minute === 30)
+    ) {
+      return false;
+    }
+    if (time.start_hour >= time.end_hour) {
+      return false;
+    }
+    if (
+      time.end_hour -
+        time.start_hour * 60 +
+        (time.end_minute - time.start_minute) <
+      60
     ) {
       return false;
     }
@@ -219,7 +230,7 @@ export class MentorsService {
   validateAvailableTime(time: availableTimeDto[][]): availableTimeDto[][] {
     time.forEach(t =>
       t.forEach(tt => {
-        if (!this.isValidTime(tt) || tt.start_hour >= tt.end_hour) {
+        if (!this.isValidTime(tt)) {
           throw new BadRequestException('올바르지 않은 시간 형식입니다');
         }
       }),
