@@ -25,54 +25,57 @@ export class CommentsService {
     private cadetsRepository: Repository<Cadets>,
   ) {}
 
-  async findMentorByIntraId(intraId: string) {
+  async findMentorByIntraId(intraId: string): Promise<Mentors> {
+    let mentor: Mentors;
     try {
-      const mentor: Mentors = await this.mentorsRepository.findOneBy({
+      mentor = await this.mentorsRepository.findOneBy({
         intraId: intraId,
       });
-      if (!mentor) {
-        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-      }
-      return mentor;
     } catch {
       throw new ConflictException(
         '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!mentor) {
+      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    }
+    return mentor;
   }
 
-  async findCadetByIntraId(intraId: string) {
+  async findCadetByIntraId(intraId: string): Promise<Cadets> {
+    let cadet: Cadets;
     try {
-      const cadet: Cadets = await this.cadetsRepository.findOneBy({
+      cadet = await this.cadetsRepository.findOneBy({
         intraId: intraId,
       });
-      if (!cadet) {
-        throw new NotFoundException(`해당 카뎃을 찾을 수 없습니다`);
-      }
-      return cadet;
     } catch {
       throw new ConflictException(
         '해당 아이디의 카뎃 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!cadet) {
+      throw new NotFoundException(`해당 카뎃을 찾을 수 없습니다`);
+    }
+    return cadet;
   }
 
   async findCommentNotDeletedById(commentId: string): Promise<Comments> {
+    let comment: Comments;
     try {
-      const comment: Comments = await this.commentsRepository.findOne({
+      comment = await this.commentsRepository.findOne({
         where: { id: commentId, isDeleted: false },
         relations: { mentors: true, cadets: true },
         select: { mentors: { intraId: true }, cadets: { intraId: true } },
       });
-      if (!comment) {
-        throw new NotFoundException(`해당 코멘트를 찾을 수 없습니다`);
-      }
-      return comment;
     } catch {
       throw new ConflictException(
         '해당 아이디의 코멘트를 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!comment) {
+      throw new NotFoundException(`해당 코멘트를 찾을 수 없습니다`);
+    }
+    return comment;
   }
 
   /*

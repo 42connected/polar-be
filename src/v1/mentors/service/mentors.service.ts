@@ -47,25 +47,27 @@ export class MentorsService {
     }
   }
 
-  async findMentorByIntraId(intraId: string) {
+  async findMentorByIntraId(intraId: string): Promise<Mentors> {
+    let mentor: Mentors;
     try {
-      const mentor: Mentors = await this.mentorsRepository.findOneBy({
+      mentor = await this.mentorsRepository.findOneBy({
         intraId: intraId,
       });
-      if (!mentor) {
-        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-      }
-      return mentor;
     } catch {
       throw new ConflictException(
         '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!mentor) {
+      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    }
+    return mentor;
   }
 
-  async findMentorDetailsByIntraId(intraId: string) {
+  async findMentorDetailsByIntraId(intraId: string): Promise<Mentors> {
+    let mentor: Mentors;
     try {
-      const mentorDetail: Mentors = await this.mentorsRepository.findOne({
+      mentor = await this.mentorsRepository.findOne({
         where: {
           intraId: intraId,
           comments: {
@@ -77,15 +79,15 @@ export class MentorsService {
           comments: { cadets: true },
         },
       });
-      if (!mentorDetail) {
-        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-      }
-      return mentorDetail;
     } catch {
       throw new ConflictException(
         '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!mentor) {
+      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    }
+    return mentor;
   }
 
   /*
