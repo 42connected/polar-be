@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CadetMentoringInfo } from 'src/v1/dto/cadet-mentoring-info.interface';
 import { CadetMentoringLogs } from 'src/v1/dto/cadet-mentoring-logs.interface';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
+import { UpdateCadetDto } from 'src/v1/dto/cadets/update-cadet.dto';
 import { jwtUser } from 'src/v1/dto/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -143,5 +144,16 @@ export class CadetsService {
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }
+  }
+
+  async updateCadet(cadetIntraId: string, updateCadetDto: UpdateCadetDto) {
+    const cadet: Cadets = await this.findCadetByIntraId(cadetIntraId);
+    cadet.resumeUrl = updateCadetDto.resumeUrl;
+    try {
+      await this.cadetsRepository.save(cadet);
+    } catch {
+      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+    }
+    return 'ok';
   }
 }

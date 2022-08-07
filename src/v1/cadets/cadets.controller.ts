@@ -10,6 +10,7 @@ import { CadetsService } from './service/cadets.service';
 import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
+import { UpdateCadetDto } from '../dto/cadets/update-cadet.dto';
 
 @Controller()
 export class CadetsController {
@@ -24,6 +25,13 @@ export class CadetsController {
   hello(@User() user: jwtUser) {
     console.log('guard test', user);
     return 'hi';
+  }
+
+  @Post()
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  UpdateCadet(@User() user: jwtUser, @Body() updateCadetDto: UpdateCadetDto) {
+    return this.cadetsService.updateCadet(user.intraId, updateCadetDto);
   }
 
   @Get('mentorings')
