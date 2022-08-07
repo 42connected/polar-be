@@ -52,7 +52,6 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       if (result.id === undefined) {
         const user: CreateBocalDto = {
           intraId,
-          profileImage,
         };
         result = await this.bocalsService.createUser(user);
       }

@@ -4,7 +4,4 @@ export class CreateBocalDto {
   @IsString()
   @IsNotEmpty()
   intraId: string;
-
-  @IsString()
-  profileImage: string;
 }
