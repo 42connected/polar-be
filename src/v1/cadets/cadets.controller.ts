@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
@@ -9,6 +17,7 @@ import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
 import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { Request } from 'express';
 
 @Controller()
 export class CadetsController {
@@ -30,6 +39,14 @@ export class CadetsController {
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
     return await this.cadetsService.getMentoringLogs(user.id);
+  }
+
+  @Post('join')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Req() req: Request, @User() user: jwtUser) {
+    const { name } = req.body;
+    this.cadetsService.saveName(user, name);
   }
 
   @Post('mentorings/apply/:mentorId')
