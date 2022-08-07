@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNotEmptyObject, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { availableTimeDto } from '../available-time.dto';
 
 export class JoinMentorDto {
@@ -6,6 +6,6 @@ export class JoinMentorDto {
   @IsNotEmpty()
   name: string;
 
-  @IsNotEmptyObject()
-  availableTime: availableTimeDto[][2];
+  @IsNotEmpty()
+  availableTime: availableTimeDto[][];
 }
