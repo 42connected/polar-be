@@ -6,12 +6,15 @@ import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { jwtUser } from '../dto/jwt-user.interface';
+import { BocalsService } from '../bocals/service/bocals.service';
+import { CreateBocalDto } from '../dto/bocals/create-bocal.dto';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
   constructor(
     private cadetsService: CadetsService,
     private mentorsService: MentorsService,
+    private bocalsService: BocalsService,
   ) {
     super({
       authorizationURL: `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.UID_42}&redirect_uri=${process.env.REDIRECT_42}`,
@@ -43,6 +46,15 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
           profileImage,
         };
         result = await this.mentorsService.createUser(user);
+      }
+    } else if (profile._json['staff?']) {
+      result = await this.bocalsService.findByIntra(intraId);
+      if (result.id === undefined) {
+        const user: CreateBocalDto = {
+          intraId,
+          profileImage,
+        };
+        result = await this.bocalsService.createUser(user);
       }
     } else {
       result = await this.cadetsService.findByIntra(intraId);
