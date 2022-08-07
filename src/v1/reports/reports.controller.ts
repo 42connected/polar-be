@@ -3,8 +3,8 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -63,7 +63,7 @@ export class ReportsController {
     );
   }
 
-  @Put(':reportId')
+  @Patch(':reportId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @UseInterceptors(
