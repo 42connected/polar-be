@@ -129,7 +129,7 @@ export class ReportsService {
   }
 
   /*
-   * @Put
+   * @Patch
    */
   async updateReport(
     reportId: string,
