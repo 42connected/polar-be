@@ -29,6 +29,8 @@ export class ApplyService {
   ): Promise<MentoringLogs> {
     let findmentor: Mentors;
     let findcadet: Cadets;
+    let tmpRepo: MentoringLogs;
+    let updateRepo: MentoringLogs;
     try {
       findmentor = await this.mentorsRepository.findOne({
         where: { id: mentorId },
@@ -45,21 +47,33 @@ export class ApplyService {
       throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
     }
     if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
-    const tmpRepo = this.mentoringlogsRepository.create({
-      cadets: findcadet,
-      mentors: findmentor,
-      createdAt: new Date(),
-      meetingAt: null,
-      topic: createApplyDto.topic,
-      content: createApplyDto.content,
-      status: '대기중',
-      rejectMessage: null,
-      reportStatus: '대기중',
-      requestTime1: createApplyDto.requestTime1,
-      requestTime2: createApplyDto.requestTime2,
-      requestTime3: createApplyDto.requestTime3,
-    });
-    const updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
+    try {
+      tmpRepo = this.mentoringlogsRepository.create({
+        cadets: findcadet,
+        mentors: findmentor,
+        createdAt: new Date(),
+        meetingAt: null,
+        topic: createApplyDto.topic,
+        content: createApplyDto.content,
+        status: '대기중',
+        rejectMessage: null,
+        reportStatus: '대기중',
+        requestTime1: createApplyDto.requestTime1,
+        requestTime2: createApplyDto.requestTime2,
+        requestTime3: createApplyDto.requestTime3,
+      });
+    } catch {
+      throw new ConflictException(
+        '값을 repository에 생성하는 도중 오류가 발생했습니다.',
+      );
+    }
+    try {
+      updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
+    } catch {
+      throw new ConflictException(
+        '값을 repository에 저장하는 도중 오류가 발생했습니다.',
+      );
+    }
     return updateRepo;
   }
 }
