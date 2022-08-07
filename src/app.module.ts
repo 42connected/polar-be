@@ -13,6 +13,7 @@ import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
+import { SlackService } from './v1/slack/slack.service';
 
 @Module({
   imports: [
@@ -65,6 +66,6 @@ import { CommentsModule } from './v1/comments/comments.module';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SlackService],
 })
 export class AppModule {}

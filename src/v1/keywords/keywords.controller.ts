@@ -1,14 +1,23 @@
 import { Controller, Get } from '@nestjs/common';
 import { Keywords } from '../entities/keywords.entity';
+import { SlackService } from '../slack/slack.service';
 import { KeywordsService } from './service/keywords.service';
 
 @Controller()
 export class KeywordsController {
-  constructor(private keywordsService: KeywordsService) {}
+  constructor(
+    private keywordsService: KeywordsService,
+    private slackService: SlackService,
+  ) {}
 
   @Get()
   getKeywords(): Promise<Keywords[]> {
     return this.keywordsService.getKeywords();
+  }
+
+  @Get('/slack')
+  getId() {
+    return this.slackService.getIdByUsername('jeounpar');
   }
 
   // @Post()
