@@ -21,6 +21,9 @@ export class Reports {
   @ManyToOne(() => Cadets, Cadets => Cadets.reports)
   cadets: Cadets;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  place: string;
+
   @Column({ type: 'varchar', length: 150, nullable: true })
   topic: string;
 
