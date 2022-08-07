@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -23,16 +27,28 @@ export class ApplyService {
     mentorId: string,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-     try {
-      const findmentor: Mentors = await this.mentorsRepository.findOne({
+    let findmentor: Mentors;
+    let findcadet: Cadets;
+    let tmpRepo: MentoringLogs;
+    let updateRepo: MentoringLogs;
+    try {
+      findmentor = await this.mentorsRepository.findOne({
         where: { id: mentorId },
       });
-      if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
-      const findcadet: Cadets = await this.cadetsRepository.findOne({
+    } catch {
+      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+    }
+    if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
+    try {
+      findcadet = await this.cadetsRepository.findOne({
         where: { id: cadet.id },
       });
-      if (!findcadet) throw new NotFoundException(`${cadet.id} not found.`);
-      const tmpRepo = this.mentoringlogsRepository.create({
+    } catch {
+      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+    }
+    if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
+    try {
+      tmpRepo = this.mentoringlogsRepository.create({
         cadets: findcadet,
         mentors: findmentor,
         createdAt: new Date(),
@@ -46,10 +62,18 @@ export class ApplyService {
         requestTime2: createApplyDto.requestTime2,
         requestTime3: createApplyDto.requestTime3,
       });
-      const updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
-      return updateRepo;
     } catch {
-      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+      throw new ConflictException(
+        '값을 repository에 생성하는 도중 오류가 발생했습니다.',
+      );
     }
+    try {
+      updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
+    } catch {
+      throw new ConflictException(
+        '값을 repository에 저장하는 도중 오류가 발생했습니다.',
+      );
+    }
+    return updateRepo;
   }
 }
