@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   Patch,
-  Req,
   Post,
   UseGuards,
   Query,
