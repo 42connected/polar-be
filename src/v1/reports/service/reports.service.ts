@@ -213,7 +213,7 @@ export class ReportsService {
         },
       },
     });
-console.log(reportsSortDto.month);
+    console.log(reportsSortDto.month);
     reportsSortDto.month--;
     const room = [];
     reports.forEach(data => {
