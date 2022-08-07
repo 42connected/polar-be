@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   MethodNotAllowedException,
@@ -28,7 +29,7 @@ export class ReportsService {
    */
   getFilePaths(files) {
     const filePaths: string[] = [];
-    if (files.image) {
+    if (files?.image) {
       files.image.map(img => {
         filePaths.push(img.path);
       });
@@ -78,6 +79,13 @@ export class ReportsService {
     }
   }
 
+  isWrongFeedback(feedback: number): boolean {
+    if (feedback < 1 || feedback > 5) {
+      return true;
+    }
+    return false;
+  }
+
   /*
    * @Get
    */
@@ -100,11 +108,19 @@ export class ReportsService {
         '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
       );
     }
+    if (
+      this.isWrongFeedback(+body.feedback1) ||
+      this.isWrongFeedback(+body.feedback2) ||
+      this.isWrongFeedback(+body.feedback3)
+    ) {
+      throw new BadRequestException('잘못된 정보입니다');
+    }
     const newReport = this.reportsRepository.create({
       mentors: mentoringLog.mentors,
       cadets: mentoringLog.cadets,
       mentoringLogs: mentoringLog,
       imageUrl: filePaths,
+      place: body.place,
       topic: body.topic,
       content: body.content,
       feedbackMessage: body.feedbackMessage,
@@ -136,16 +152,25 @@ export class ReportsService {
       );
     }
     report.imageUrl = filePaths;
+    report.place = body.place;
     report.topic = body.topic;
     report.content = body.content;
     report.feedbackMessage = body.feedbackMessage;
-    report.feedback1 = +body.feedback1;
-    report.feedback2 = +body.feedback2;
-    report.feedback3 = +body.feedback3;
+    if (
+      this.isWrongFeedback(+body.feedback1) ||
+      this.isWrongFeedback(+body.feedback2) ||
+      this.isWrongFeedback(+body.feedback3)
+    ) {
+      throw new BadRequestException('잘못된 정보입니다');
+    }
+    report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
+    report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
+    report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
     try {
       await this.reportsRepository.save(report);
       return 'ok';
-    } catch {
+    } catch (e) {
+      console.log(e);
       throw new ConflictException('수정중 예기치 못한 에러가 발생하였습니다');
     }
   }
