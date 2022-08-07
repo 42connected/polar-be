@@ -51,20 +51,21 @@ export class CadetsService {
   }
 
   async findCadetByIntraId(intraId: string): Promise<Cadets> {
+    let foundUser: Cadets;
     try {
-      const foundUser: Cadets = await this.cadetsRepository.findOneBy({
+      foundUser = await this.cadetsRepository.findOneBy({
         intraId,
       });
-      if (!foundUser) {
-        throw new NotFoundException('사용자를 찾을 수 없습니다.');
-      }
-      return foundUser;
     } catch (err) {
       throw new ConflictException(
         err,
         '사용자 데이터 검색 중 에러가 발생했습니다.',
       );
     }
+    if (!foundUser) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+    return foundUser;
   }
 
   formatMentorings(
@@ -97,25 +98,26 @@ export class CadetsService {
   }
 
   async getMentoringLogs(id: string): Promise<CadetMentoringInfo> {
+    let cadet: Cadets;
     try {
-      const cadet: Cadets = await this.cadetsRepository.findOne({
+      cadet = await this.cadetsRepository.findOne({
         where: { id },
         relations: { mentoringLogs: { mentors: true } },
       });
-      if (cadet === null) {
-        throw new NotFoundException('사용자를 찾을 수 없습니다.');
-      }
-      const mentorings: CadetMentoringLogs[] = this.formatMentorings(
-        cadet.mentoringLogs,
-        cadet.isCommon,
-      );
-      return { username: cadet.name, mentorings };
     } catch (err) {
       throw new ConflictException(
         err,
         '멘토링 데이터 검색 중 에러가 발생했습니다.',
       );
     }
+    if (cadet === null) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+    const mentorings: CadetMentoringLogs[] = this.formatMentorings(
+      cadet.mentoringLogs,
+      cadet.isCommon,
+    );
+    return { username: cadet.name, mentorings };
   }
 
   async validateInfo(intraId: string): Promise<boolean> {
@@ -131,10 +133,10 @@ export class CadetsService {
   }
 
   async saveName(user: jwtUser, name: string): Promise<void> {
+    if (name === '') {
+      throw new BadRequestException('입력된 이름이 없습니다.');
+    }
     try {
-      if (name === '') {
-        throw new BadRequestException('입력된 이름이 없습니다.');
-      }
       const foundUser = await this.findCadetByIntraId(user.intraId);
       foundUser.name = name;
       await this.cadetsRepository.save(foundUser);

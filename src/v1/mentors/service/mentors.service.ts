@@ -50,24 +50,26 @@ export class MentorsService {
   }
 
   async findMentorByIntraId(intraId: string) {
+    let mentor: Mentors;
     try {
-      const mentor: Mentors = await this.mentorsRepository.findOneBy({
+      mentor = await this.mentorsRepository.findOneBy({
         intraId: intraId,
       });
-      if (!mentor) {
-        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-      }
-      return mentor;
     } catch {
       throw new ConflictException(
         '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!mentor) {
+      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    }
+    return mentor;
   }
 
   async findMentorDetailsByIntraId(intraId: string) {
+    let mentorDetail: Mentors;
     try {
-      const mentorDetail: Mentors = await this.mentorsRepository.findOne({
+      mentorDetail = await this.mentorsRepository.findOne({
         where: {
           intraId: intraId,
           comments: {
@@ -79,15 +81,15 @@ export class MentorsService {
           comments: { cadets: true },
         },
       });
-      if (!mentorDetail) {
-        throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
-      }
-      return mentorDetail;
     } catch {
       throw new ConflictException(
         '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
       );
     }
+    if (!mentorDetail) {
+      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    }
+    return mentorDetail;
   }
 
   /*
@@ -140,10 +142,10 @@ export class MentorsService {
     name: string,
     availableTime: availableTimeDto[][],
   ): Promise<void> {
+    if (name === '') {
+      throw new BadRequestException('입력된 이름이 없습니다.');
+    }
     try {
-      if (name === '') {
-        throw new BadRequestException('입력된 이름이 없습니다.');
-      }
       const foundUser = await this.findMentorByIntraId(user.intraId);
       foundUser.name = name;
       foundUser.availableTime = JSON.stringify(availableTime);
