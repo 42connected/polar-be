@@ -198,8 +198,7 @@ export class ReportsService {
       });
 
       return { reports: room };
-    }
-    catch {
+    } catch {
       throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
     }
   }
@@ -207,17 +206,16 @@ export class ReportsService {
   async sortReport(reportsSortDto: ReportsSortDto) {
     const reports = await this.getAllReport();
     try {
-      //FIXME: pipe 사용하여 monthData -1 을 해준다.
-      reportsSortDto.month
-        ? reports.reports.filter(data => data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month)
-        : null;
+      //TODO: Refactoy pipe 사용하여 monthData -1 을 해준다.
+      if (reportsSortDto.month) {
+        reports.reports.filter(data => data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month - 1);
+      }
 
-      reportsSortDto.mentorName
-        ? reports.reports.filter(data => data.mentor.name === reportsSortDto.mentorName)
-        : null;
+      if (reportsSortDto.mentorName) {
+        reports.reports.filter( data => data.mentor.name === reportsSortDto.mentorName);
+      }
       return reports;
-    }
-    catch {
+    } catch {
       throw new ConflictException('레포트를 정렬중 오류가 발생하였습니다');
     }
   }
