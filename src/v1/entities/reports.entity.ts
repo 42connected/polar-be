@@ -45,4 +45,5 @@ export class Reports {
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
   @JoinColumn()
   mentoringLogs: MentoringLogs;
+
 }

@@ -164,9 +164,8 @@ export class ReportsService {
         cadets: {
           name: true,
         },
-        //FIXME: content to place
         mentoringLogs: {
-          content: true,
+          // place: true,
           meetingAt: true,
         },
       },
@@ -179,10 +178,9 @@ export class ReportsService {
         cadet: { name: data.cadets.name },
         mentoringLogs: {
           id: data.mentoringLogs.id,
-          place: data.mentoringLogs,
+          // place: data.mentoringLogs.place,
           meetingAt: data.mentoringLogs.meetingAt,
         },
-        // FIXME: content to place
       });
     });
 
@@ -208,14 +206,14 @@ export class ReportsService {
         cadets: {
           name: true,
         },
-        //FIXME: content to place
         mentoringLogs: {
           content: true,
           meetingAt: true,
+          // place: true,
         },
       },
     });
-
+console.log(reportsSortDto.month);
     reportsSortDto.month--;
     const room = [];
     reports.forEach(data => {
@@ -227,8 +225,8 @@ export class ReportsService {
             id: data.mentoringLogs.id,
             place: data.mentoringLogs.content,
             meetingAt: data.mentoringLogs.meetingAt,
+            // place: data.mentoringLogs.place,
           },
-          //FIXME: content to place
         });
       }
     });

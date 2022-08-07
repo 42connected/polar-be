@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class ReportsSortDto {
   @IsString()
@@ -6,6 +6,9 @@ export class ReportsSortDto {
   mentorName: string;
 
   @IsNumber()
+  @IsOptional()
+  @Max(12)
+  @Min(1)
   month: number;
 
   @IsBoolean()
