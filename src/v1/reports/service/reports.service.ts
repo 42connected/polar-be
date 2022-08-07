@@ -84,8 +84,7 @@ export class ReportsService {
    * @Get
    */
   async getReport(reportId: string): Promise<Reports> {
-    const report = await this.findReportById(reportId);
-    return report;
+    return await this.findReportById(reportId);
   }
 
   /*

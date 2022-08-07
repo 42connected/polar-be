@@ -9,11 +9,18 @@ import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
+import { Comments } from 'src/v1/entities/comments.entity';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 @Injectable()
 export class MentorsService {
   constructor(
-    @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
+    @InjectRepository(Mentors)
+    private readonly mentorsRepository: Repository<Mentors>,
+    @InjectRepository(Comments)
+    private readonly commentsRepository: Repository<Comments>,
+    @InjectRepository(MentoringLogs)
+    private readonly mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
   async createUser(user: CreateMentorDto): Promise<jwtUser> {
@@ -64,40 +71,76 @@ export class MentorsService {
     return mentor;
   }
 
-  async findMentorDetailsByIntraId(intraId: string): Promise<Mentors> {
-    let mentor: Mentors;
+  async findMentoringLogsByMentorIntraId(
+    intraId: string,
+  ): Promise<MentoringLogs[]> {
+    let mentoringLogs: MentoringLogs[];
     try {
-      mentor = await this.mentorsRepository.findOne({
+      mentoringLogs = await this.mentoringLogsRepository.find({
         where: {
-          intraId: intraId,
-          comments: {
-            isDeleted: false,
+          mentors: {
+            intraId: intraId,
           },
         },
-        relations: {
-          mentoringLogs: true,
-          comments: { cadets: true },
+        select: {
+          meetingAt: true,
+          topic: true,
+          status: true,
         },
       });
     } catch {
       throw new ConflictException(
-        '해당 아이디의 멘토 찾는중 오류가 발생하였습니다',
+        '해당 아이디의 멘토링 로그를 찾는중 오류가 발생하였습니다',
       );
     }
-    if (!mentor) {
-      throw new NotFoundException(`해당 멘토를 찾을 수 없습니다`);
+    if (!mentoringLogs) {
+      throw new NotFoundException(`해당 멘토의 멘토링 로그를 찾을 수 없습니다`);
     }
-    return mentor;
+    return mentoringLogs;
+  }
+
+  async findCommentByMentorIntraId(intraId: string): Promise<Comments[]> {
+    let comments: Comments[];
+    try {
+      comments = await this.commentsRepository.find({
+        where: {
+          mentors: {
+            intraId: intraId,
+          },
+          isDeleted: false,
+        },
+        relations: {
+          cadets: true,
+        },
+        select: {
+          content: true,
+          createdAt: true,
+          cadets: {
+            intraId: true,
+          },
+        },
+      });
+    } catch {
+      throw new ConflictException(
+        '해당 아이디의 코멘트 찾는중 오류가 발생하였습니다',
+      );
+    }
+    if (!comments) {
+      throw new NotFoundException(`해당 멘토의 코멘트를 찾을 수 없습니다`);
+    }
+    return comments;
   }
 
   /*
    * @Get
    */
   async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentorDetail: Mentors = await this.findMentorDetailsByIntraId(
-      intraId,
+    const mentor: Mentors = await this.findMentorByIntraId(intraId);
+    mentor.comments = await this.findCommentByMentorIntraId(mentor.intraId);
+    mentor.mentoringLogs = await this.findMentoringLogsByMentorIntraId(
+      mentor.intraId,
     );
-    return mentorDetail;
+    return mentor;
   }
 
   /*

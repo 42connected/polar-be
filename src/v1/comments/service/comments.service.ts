@@ -59,13 +59,13 @@ export class CommentsService {
     return cadet;
   }
 
-  async findCommentNotDeletedById(commentId: string): Promise<Comments> {
+  async findCommentById(commentId: string): Promise<Comments> {
     let comment: Comments;
     try {
       comment = await this.commentsRepository.findOne({
-        where: { id: commentId, isDeleted: false },
-        relations: { mentors: true, cadets: true },
-        select: { mentors: { intraId: true }, cadets: { intraId: true } },
+        where: { id: commentId },
+        relations: { cadets: true },
+        select: { cadets: { intraId: true } },
       });
     } catch {
       throw new ConflictException(
@@ -79,21 +79,14 @@ export class CommentsService {
   }
 
   /*
-   * @Get
-   */
-  async getComment(commentId: string) {
-    return await this.findCommentNotDeletedById(commentId);
-  }
-
-  /*
    * @Post
    */
   async createComment(
-    cadetIntraId: string,
+    intraId: string,
     mentorIntaId: string,
     createCommentDto: CreateCommentDto,
   ) {
-    const cadet = await this.findCadetByIntraId(cadetIntraId);
+    const cadet = await this.findCadetByIntraId(intraId);
     const mentor = await this.findMentorByIntraId(mentorIntaId);
     const comment = this.commentsRepository.create({
       cadets: cadet,
@@ -112,13 +105,12 @@ export class CommentsService {
    * @Patch
    */
   async updateComment(
-    cadetIntraId: string,
+    intraId: string,
     commentId: string,
     updateCommentDto: UpdateCommentDto,
   ) {
-    const cadet = await this.findCadetByIntraId(cadetIntraId);
-    const comment = await this.findCommentNotDeletedById(commentId);
-    if (cadet.id !== comment.cadets.id) {
+    const comment = await this.findCommentById(commentId);
+    if (intraId !== comment.cadets?.intraId) {
       throw new UnauthorizedException(
         `해당 코멘트를 수정할 수 있는 권한이 없습니다`,
       );
@@ -135,10 +127,9 @@ export class CommentsService {
   /*
    * @Delete
    */
-  async deleteComment(cadetIntraId: string, commentId: string) {
-    const cadet = await this.findCadetByIntraId(cadetIntraId);
-    const comment = await this.findCommentNotDeletedById(commentId);
-    if (cadet.id !== comment.cadets?.id) {
+  async deleteComment(intraId: string, commentId: string) {
+    const comment = await this.findCommentById(commentId);
+    if (intraId !== comment.cadets?.intraId) {
       throw new UnauthorizedException(
         `해당 코멘트를 삭제할 수 있는 권한이 없습니다`,
       );

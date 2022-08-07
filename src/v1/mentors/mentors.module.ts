@@ -11,15 +11,27 @@ import { MentorsController } from './mentors.controller';
 import { MentoringsService } from './service/mentorings.service';
 import { MentorsService } from './service/mentors.service';
 import { SearchMentorsService } from './service/search-mentors.service';
+import { Comments } from '../entities/comments.entity';
 
 @Module({
-imports: [
-    TypeOrmModule.forFeature([Mentors, MentorKeywords, Keywords, MentoringLogs, Cadets]),
+  imports: [
+    TypeOrmModule.forFeature([
+      Mentors,
+      MentorKeywords,
+      Keywords,
+      MentoringLogs,
+      Cadets,
+      Comments,
+    ]),
     AuthModule,
   ],
   controllers: [MentorsController],
-  providers: [MentorsService, SearchMentorsService, MentoringsService, AuthService],
+  providers: [
+    MentorsService,
+    SearchMentorsService,
+    MentoringsService,
+    AuthService,
+  ],
   exports: [MentorsService, MentoringsService],
 })
-
 export class MentorsModule {}
