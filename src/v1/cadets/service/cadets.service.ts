@@ -137,7 +137,7 @@ export class CadetsService {
       throw new BadRequestException('입력된 이름이 없습니다.');
     }
     try {
-      const foundUser = await this.findCadetByIntraId(user.intraId);
+      const foundUser: Cadets = await this.findCadetByIntraId(user.intraId);
       foundUser.name = name;
       await this.cadetsRepository.save(foundUser);
     } catch (err) {

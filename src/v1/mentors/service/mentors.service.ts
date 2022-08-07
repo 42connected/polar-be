@@ -146,7 +146,7 @@ export class MentorsService {
       throw new BadRequestException('입력된 이름이 없습니다.');
     }
     try {
-      const foundUser = await this.findMentorByIntraId(user.intraId);
+      const foundUser: Mentors = await this.findMentorByIntraId(user.intraId);
       foundUser.name = name;
       foundUser.availableTime = JSON.stringify(availableTime);
       await this.mentorsRepository.save(foundUser);
