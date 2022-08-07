@@ -25,7 +25,7 @@ export class Mentors {
   @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
-  @Column({ type: 'time', array: true, nullable: true })
+  @Column({ type: 'time', nullable: true })
   availableTime: string;
 
   @Column({ type: 'varchar', length: 150, nullable: true })
