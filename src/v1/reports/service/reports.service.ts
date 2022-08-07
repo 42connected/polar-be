@@ -208,11 +208,17 @@ export class ReportsService {
     try {
       //TODO: Refactoy pipe 사용하여 monthData -1 을 해준다.
       if (reportsSortDto.month) {
-        reports.reports.filter(data => data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month - 1);
+        reports.reports.filter(
+          data =>
+            data.mentoringLogs.meetingAt.getMonth() ===
+            reportsSortDto.month - 1,
+        );
       }
 
       if (reportsSortDto.mentorName) {
-        reports.reports.filter( data => data.mentor.name === reportsSortDto.mentorName);
+        reports.reports.filter(
+          data => data.mentor.name === reportsSortDto.mentorName,
+        );
       }
       return reports;
     } catch {
