@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -122,6 +123,19 @@ export class MentorsService {
         return false;
       }
       return true;
+    } catch (err) {
+      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+    }
+  }
+
+  async saveName(user: jwtUser, name: string): Promise<void> {
+    try {
+      if (name === '') {
+        throw new BadRequestException('입력된 이름이 없습니다.');
+      }
+      const foundUser = await this.findMentorByIntraId(user.intraId);
+      foundUser.name = name;
+      await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }

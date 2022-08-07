@@ -23,6 +23,7 @@ import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
+import { Request } from 'express';
 
 @Controller()
 export class MentorsController {
@@ -56,6 +57,14 @@ export class MentorsController {
     @Body() body: UpdateMentorDatailDto,
   ) {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
+  @Post('join')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Req() req: Request, @User() user: jwtUser) {
+    const { name } = req.body;
+    this.mentorsService.saveName(user, name);
   }
 
   @Get(':intraId')
