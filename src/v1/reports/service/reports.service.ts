@@ -160,88 +160,65 @@ export class ReportsService {
   }
 
   async getAllReport() {
-    const reports = await this.reportsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-        mentoringLogs: true,
-      },
-      select: {
-        mentors: {
-          name: true,
+    try {
+      const reports = await this.reportsRepository.find({
+        relations: {
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
         },
-        cadets: {
-          name: true,
-        },
-        mentoringLogs: {
-          // place: true,
-          meetingAt: true,
-        },
-      },
-    });
-
-    const room = [];
-    reports?.forEach(data => {
-      room.push({
-        mentor: { name: data.mentors.name },
-        cadet: { name: data.cadets.name },
-        mentoringLogs: {
-          id: data.mentoringLogs.id,
-          // place: data.mentoringLogs.place,
-          meetingAt: data.mentoringLogs.meetingAt,
+        select: {
+          mentors: {
+            name: true,
+          },
+          cadets: {
+            name: true,
+          },
+          mentoringLogs: {
+            meetingAt: true,
+          },
+          place: true,
         },
       });
-    });
+      if (!reports) {
+        throw new NotFoundException(`레포트를 찾을 수 없습니다`);
+      }
 
-    return { reports: room };
-  }
-
-  async sortReport(reportsSortDto: ReportsSortDto) {
-    const reports = await this.reportsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-        mentoringLogs: true,
-      },
-      order: {
-        mentoringLogs: {
-          meetingAt: reportsSortDto.isUp ? 'ASC' : 'DESC',
-        },
-      },
-      select: {
-        mentors: {
-          name: true,
-        },
-        cadets: {
-          name: true,
-        },
-        mentoringLogs: {
-          content: true,
-          meetingAt: true,
-          // place: true,
-        },
-      },
-    });
-    console.log(reportsSortDto.month);
-    reportsSortDto.month--;
-    const room = [];
-    reports.forEach(data => {
-      if (data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month) {
+      const room = [];
+      reports.forEach(data => {
         room.push({
           mentor: { name: data.mentors.name },
           cadet: { name: data.cadets.name },
           mentoringLogs: {
             id: data.mentoringLogs.id,
-            place: data.mentoringLogs.content,
             meetingAt: data.mentoringLogs.meetingAt,
-            // place: data.mentoringLogs.place,
+            place: data.place,
           },
         });
-      }
-    });
-    reportsSortDto.mentorName
-      ? room.filter(data => data.mentor.name === reportsSortDto.mentorName)
-      : room;
-    return { reports: room };
+      });
+
+      return { reports: room };
+    }
+    catch {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+  }
+
+  async sortReport(reportsSortDto: ReportsSortDto) {
+    const reports = await this.getAllReport();
+    try {
+      //FIXME: pipe 사용하여 monthData -1 을 해준다.
+      reportsSortDto.month
+        ? reports.reports.filter(data => data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month)
+        : null;
+
+      reportsSortDto.mentorName
+        ? reports.reports.filter(data => data.mentor.name === reportsSortDto.mentorName)
+        : null;
+      return reports;
+    }
+    catch {
+      throw new ConflictException('레포트를 정렬중 오류가 발생하였습니다');
+    }
   }
 }
