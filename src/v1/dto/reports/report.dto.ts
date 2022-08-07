@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class CreateReportDto {
   @IsString()
@@ -19,14 +26,20 @@ export class CreateReportDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(1)
+  @Max(5)
   feedback1: number;
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(1)
+  @Max(5)
   feedback2: number;
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(1)
+  @Max(5)
   feedback3: number;
 }
 
@@ -49,13 +62,19 @@ export class UpdateReportDto {
 
   @IsNumber()
   @IsOptional()
+  @Min(1)
+  @Max(5)
   feedback1: number;
 
   @IsNumber()
   @IsOptional()
+  @Min(1)
+  @Max(5)
   feedback2: number;
 
   @IsNumber()
   @IsOptional()
+  @Min(1)
+  @Max(5)
   feedback3: number;
 }
