@@ -10,7 +10,7 @@ import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
-import { ValidateInfoMiddleware } from 'src/validate-info.middleware';
+import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middleware';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({

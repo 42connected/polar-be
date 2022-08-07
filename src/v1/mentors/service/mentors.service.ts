@@ -10,6 +10,7 @@ import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
+import { availableTimeDto } from 'src/v1/dto/available-time.dto';
 
 @Injectable()
 export class MentorsService {
@@ -104,7 +105,7 @@ export class MentorsService {
    */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
     const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    mentor.availableTime = body.availableTime;
+    mentor.availableTime = JSON.stringify(body.availableTime);
     mentor.introduction = body.introduction;
     mentor.isActive = body.isActive;
     mentor.markdownContent = body.markdownContent;
@@ -119,22 +120,33 @@ export class MentorsService {
   async validateInfo(intraId: string): Promise<boolean> {
     try {
       const mentor: Mentors = await this.findMentorByIntraId(intraId);
-      if (mentor.name === null || mentor.availableTime === null) {
+      if (mentor.name === null) {
         return false;
       }
-      return true;
+      const week: availableTimeDto[][] = JSON.parse(mentor.availableTime);
+      week.forEach(day => {
+        if (day.length > 0) {
+          return true;
+        }
+      });
+      return false;
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }
   }
 
-  async saveName(user: jwtUser, name: string): Promise<void> {
+  async saveInfos(
+    user: jwtUser,
+    name: string,
+    availableTime: availableTimeDto[][],
+  ): Promise<void> {
     try {
       if (name === '') {
         throw new BadRequestException('입력된 이름이 없습니다.');
       }
       const foundUser = await this.findMentorByIntraId(user.intraId);
       foundUser.name = name;
+      foundUser.availableTime = JSON.stringify(availableTime);
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');

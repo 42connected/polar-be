@@ -59,12 +59,11 @@ export class MentorsController {
   }
 
   @Post('join')
-  // @Roles('mentor')
+  @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
     const { name, availableTime } = body;
-    console.log(body);
-    this.mentorsService.saveInfos(user, name);
+    this.mentorsService.saveInfos(user, name, availableTime);
   }
 
   @Get(':intraId')
