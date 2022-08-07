@@ -9,6 +9,7 @@ import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
 import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
 
 @Controller()
 export class CadetsController {
@@ -30,6 +31,14 @@ export class CadetsController {
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
     return await this.cadetsService.getMentoringLogs(user.id);
+  }
+
+  @Post('join')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Body() body: JoinCadetDto, @User() user: jwtUser) {
+    const { name } = body;
+    this.cadetsService.saveName(user, name);
   }
 
   @Post('mentorings/apply/:mentorId')
