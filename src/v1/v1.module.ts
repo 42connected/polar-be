@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { V1Controller } from './v1.controller';
 import { V1Service } from './v1.service';
 import { KeywordsModule } from './keywords/keywords.module';
@@ -10,6 +10,8 @@ import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
+import { ValidateInfoMiddleware } from 'src/validate-info.middleware';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,8 +22,22 @@ import { CommentsModule } from './comments/comments.module';
     BocalsModule,
     AuthModule,
     CommentsModule,
+    JwtModule.registerAsync({
+      useFactory: () => {
+        return {
+          secret: process.env.JWT_SECRET,
+          signOptions: { expiresIn: process.env.JWT_EXPIRE },
+        };
+      },
+    }),
   ],
   controllers: [V1Controller],
   providers: [V1Service, FortyTwoStrategy, JwtStrategy],
 })
-export class V1Module {}
+export class V1Module {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(ValidateInfoMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

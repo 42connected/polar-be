@@ -114,4 +114,16 @@ export class MentorsService {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
   }
+
+  async validateInfo(intraId: string): Promise<boolean> {
+    try {
+      const mentor: Mentors = await this.findMentorByIntraId(intraId);
+      if (mentor.name === null || mentor.availableTime === null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+    }
+  }
 }

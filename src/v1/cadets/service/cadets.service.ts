@@ -49,6 +49,23 @@ export class CadetsService {
     }
   }
 
+  async findCadetByIntraId(intraId: string): Promise<Cadets> {
+    try {
+      const foundUser: Cadets = await this.cadetsRepository.findOneBy({
+        intraId,
+      });
+      if (!foundUser) {
+        throw new NotFoundException('사용자를 찾을 수 없습니다.');
+      }
+      return foundUser;
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '사용자 데이터 검색 중 에러가 발생했습니다.',
+      );
+    }
+  }
+
   formatMentorings(
     logs: MentoringLogs[],
     isCommon: boolean,
@@ -97,6 +114,18 @@ export class CadetsService {
         err,
         '멘토링 데이터 검색 중 에러가 발생했습니다.',
       );
+    }
+  }
+
+  async validateInfo(intraId: string): Promise<boolean> {
+    try {
+      const cadet: Cadets = await this.findCadetByIntraId(intraId);
+      if (cadet.name === null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }
   }
 }
