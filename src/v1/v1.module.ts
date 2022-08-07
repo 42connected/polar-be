@@ -38,6 +38,10 @@ export class V1Module {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ValidateInfoMiddleware)
+      .exclude(
+        { path: 'api/v1/cadets/join', method: RequestMethod.ALL },
+        { path: 'api/v1/mentors/join', method: RequestMethod.ALL },
+      )
       .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }
