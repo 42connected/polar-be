@@ -1,13 +1,13 @@
-import { DataSource } from "typeorm";
-import { Seeder, SeederFactoryManager } from "typeorm-extension";
-import { Cadets } from "../entities/cadets.entity";
-import { Mentors } from "../entities/mentors.entity";
-import { Reports } from "../entities/reports.entity";
+import { DataSource } from 'typeorm';
+import { Seeder, SeederFactoryManager } from 'typeorm-extension';
+import { Cadets } from '../entities/cadets.entity';
+import { Mentors } from '../entities/mentors.entity';
+import { Reports } from '../entities/reports.entity';
 
-export class ReportsSeeder implements Seeder{
+export class ReportsSeeder implements Seeder {
   async run(
     dataSource: DataSource,
-        factoryManager: SeederFactoryManager
+    factoryManager: SeederFactoryManager,
   ): Promise<void> {
     const reportRepository = dataSource.getRepository(Reports);
     const mentorRepository = dataSource.getRepository(Mentors);
@@ -20,9 +20,11 @@ export class ReportsSeeder implements Seeder{
       mentors,
       cadets,
       content: '안녕하세요',
-            place: "on-line",
-            imageUrl: ["https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png"],
-        }
+      place: 'on-line',
+      imageUrl: [
+        'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+      ],
+    };
 
     const newUser = reportRepository.create(reportData);
     await reportRepository.save(newUser);
