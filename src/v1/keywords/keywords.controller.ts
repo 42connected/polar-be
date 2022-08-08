@@ -15,9 +15,15 @@ export class KeywordsController {
     return this.keywordsService.getKeywords();
   }
 
+  // 이건 나중에 지워야함!! slack api 테스트용
   @Get('/slack')
   getId() {
-    return this.slackService.getIdByUsername('jeounpar');
+    return this.slackService.sendReservationMessage(
+      'jeounpar',
+      new Date('2022-08-08 13:30'),
+      1,
+      true,
+    );
   }
 
   // @Post()
