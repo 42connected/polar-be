@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
-import { jwtUser } from 'src/v1/dto/jwt-user.interface';
+import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 
 @Injectable()
 export class ApplyService {

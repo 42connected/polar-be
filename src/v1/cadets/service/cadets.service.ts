@@ -9,7 +9,7 @@ import { CadetMentoringInfo } from 'src/v1/dto/cadet-mentoring-info.interface';
 import { CadetMentoringLogs } from 'src/v1/dto/cadet-mentoring-logs.interface';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { UpdateCadetDto } from 'src/v1/dto/cadets/update-cadet.dto';
-import { jwtUser } from 'src/v1/dto/jwt-user.interface';
+import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';

@@ -5,7 +5,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/dto/jwt-user.interface';
+import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
