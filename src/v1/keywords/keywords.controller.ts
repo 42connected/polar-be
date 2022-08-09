@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { Keywords } from '../entities/keywords.entity';
+import { SlackService } from '../slack/service/slack.service';
 import { KeywordsService } from './service/keywords.service';
 
 @Controller()
@@ -11,10 +12,10 @@ export class KeywordsController {
     return this.keywordsService.getKeywords();
   }
 
-  // 이건 나중에 지워야함!! slack api 테스트용
+  // // 이건 나중에 지워야함!! slack api 테스트용
   // @Get('/slack')
   // sendReservationMessageToMentor() {
-  //   const reservationdMessageDto: ReservationdMessageDto = {
+  //   const reservationdMessageDto: ReservationMessageDto = {
   //     mentorSlackId: 'jeounpar',
   //     cadetSlackId: 'jeounpar',
   //     reservationTime: new Date('2022-08-08 13:30'),

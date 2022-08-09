@@ -10,7 +10,6 @@ import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
-import { SlackModule } from './slack/slack.module';
 
 @Module({
   imports: [
@@ -21,7 +20,6 @@ import { SlackModule } from './slack/slack.module';
     BocalsModule,
     AuthModule,
     CommentsModule,
-    SlackModule,
   ],
   controllers: [V1Controller],
   providers: [V1Service, FortyTwoStrategy, JwtStrategy],
