@@ -2,7 +2,9 @@ name: deploy-develop-heroku CI
 
 on:
   push:
-    branches: [ "deploy" ]
+    branches: [ "develop" ]
+  pull_request:
+    branches: [ "develop" ]
 
 jobs:
   build:
