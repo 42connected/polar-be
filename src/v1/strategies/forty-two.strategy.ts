@@ -5,7 +5,7 @@ import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { MentorsService } from '../mentors/service/mentors.service';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CreateBocalDto } from '../dto/bocals/create-bocal.dto';
 

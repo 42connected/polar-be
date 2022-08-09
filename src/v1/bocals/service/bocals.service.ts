@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocal.dto';
-import { jwtUser } from 'src/v1/dto/jwt-user.interface';
+import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Admins } from 'src/v1/entities/admins.entity';
 import { Repository } from 'typeorm';
 
