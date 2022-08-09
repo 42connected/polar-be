@@ -6,6 +6,6 @@ export interface CommentsInterface {
   cadets: CadetsInterface;
   content: string;
   isDeleted?: boolean;
-  deletedAt: Date;
-  createdAt: Date;
+  deletedAt?: Date;
+  createdAt?: Date;
 }

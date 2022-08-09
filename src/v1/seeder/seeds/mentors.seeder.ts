@@ -18,8 +18,12 @@ export class MentorsSeeder implements Seeder {
       isActive: true,
       //...
     };
-
-    const newMentor = mentorRepository.create(mentorData);
-    await mentorRepository.save(newMentor);
+    const isExists = await mentorRepository.findOneBy({
+      intraId: mentorData.intraId,
+    });
+    if (!isExists) {
+      const newUser = mentorRepository.create(mentorData);
+      await mentorRepository.save(newUser);
+    }
   }
 }

@@ -8,8 +8,8 @@ export interface MentorsInterface {
   profileImage: string;
   availableTime: string;
   introduction: string;
-  isAvailable: boolean;
-    markdownContent: string;
-    createdAt: Date;
-    updatedAt: Date;
+  isActive: boolean;
+  markdownContent?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
