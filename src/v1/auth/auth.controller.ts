@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
@@ -57,11 +57,10 @@ export class AuthController {
         result = await this.cadetsService.createUser(user);
       }
     }
-    const jwt = this.jwtService.sign({
+    return this.jwtService.sign({
       sub: result.id,
       username: result.intraId,
       role: result.role,
     });
-    return jwt;
   }
 }
