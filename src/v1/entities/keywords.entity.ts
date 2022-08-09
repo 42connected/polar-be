@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { KeywordGroups } from './keyword-groups.entity';
 import { MentorKeywords } from './mentor-keywords.entity';
 
 @Entity()
@@ -11,4 +18,7 @@ export class Keywords {
 
   @OneToMany(() => MentorKeywords, MentorKeywords => MentorKeywords.keywords)
   mentorKeyowrds: MentorKeywords[];
+
+  @ManyToOne(() => KeywordGroups, KeywordGroups => KeywordGroups.keywords)
+  keywordGroups: Keywords[];
 }
