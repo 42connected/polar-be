@@ -1,6 +1,6 @@
-import { MentorKeywordsInterface } from "../mentor-keywords/mentor-keywords.interface";
+import { MentorKeywordsInterface } from '../mentor-keywords/mentor-keywords.interface';
 
 export interface KeywordsInterface {
-    name: string;
-    mentorKeywords: MentorKeywordsInterface[];
+  name: string;
+  mentorKeywords: MentorKeywordsInterface[];
 }

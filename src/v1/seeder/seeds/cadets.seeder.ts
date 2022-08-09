@@ -1,3 +1,5 @@
+import { Comments } from 'src/v1/entities/comments.entity';
+import { CadetsInterface } from 'src/v1/interface/cadets/cadets.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { Cadets } from '../../entities/cadets.entity';
@@ -9,7 +11,8 @@ export class CadetsSeeder implements Seeder {
   ): Promise<void> {
     const cadetRepository = dataSource.getRepository(Cadets);
     console.log('Seeding cadets...');
-    const cadetData = {
+
+    const cadetData : CadetsInterface = {
       intraId: 'tpopopoototo',
       name: '주종현',
       profileImage:

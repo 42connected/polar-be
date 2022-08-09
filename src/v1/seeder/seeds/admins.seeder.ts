@@ -1,3 +1,4 @@
+import { AdminsInterface } from 'src/v1/interface/admins/admins.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { Admins } from '../../entities/admins.entity';
@@ -9,12 +10,9 @@ export class AdminSeeder implements Seeder {
   ): Promise<void> {
     const adminRepository = dataSource.getRepository(Admins);
     console.log('Seeding admins...');
-    const adminData = {
+    const adminData : AdminsInterface= {
       intraId: 'tototo',
       name: '주종현',
-      profileImage:
-        'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-      isCommon: true,
     };
 
     const isExists = await adminRepository.findOneBy({

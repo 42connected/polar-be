@@ -1,6 +1,7 @@
 import { DataSource } from 'typeorm';
 import { runSeeder, Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { CadetsSeeder } from './cadets.seeder';
+import { CommentsSeeder } from './comments.seeder';
 import { MentorsSeeder } from './mentors.seeder';
 
 export class MainSeeder implements Seeder {
@@ -10,5 +11,6 @@ export class MainSeeder implements Seeder {
   ): Promise<void> {
     await runSeeder(dataSource, CadetsSeeder);
     await runSeeder(dataSource, MentorsSeeder);
+    await runSeeder(dataSource, CommentsSeeder);
   }
 }
