@@ -10,6 +10,7 @@ import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
+import { BatchModule } from './batch/batch.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommentsModule } from './comments/comments.module';
     BocalsModule,
     AuthModule,
     CommentsModule,
+    BatchModule,
   ],
   controllers: [V1Controller],
   providers: [V1Service, FortyTwoStrategy, JwtStrategy],

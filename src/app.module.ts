@@ -13,9 +13,12 @@ import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { BatchModule } from './v1/batch/batch.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -59,6 +62,10 @@ import { CommentsModule } from './v1/comments/comments.module';
           {
             path: 'comments',
             module: CommentsModule,
+          },
+          {
+            path: 'batch',
+            module: BatchModule,
           },
         ],
       },
