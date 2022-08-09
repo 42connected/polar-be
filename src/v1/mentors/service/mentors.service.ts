@@ -216,12 +216,9 @@ export class MentorsService {
     if (time.start_hour >= time.end_hour) {
       return false;
     }
-    if (
-      time.end_hour -
-        time.start_hour * 60 +
-        (time.end_minute - time.start_minute) <
-      60
-    ) {
+    const endTotalMinute = time.end_hour * 60 + time.end_minute;
+    const startTotalMinute = time.start_hour * 60 + time.start_minute;
+    if (endTotalMinute - startTotalMinute < 60) {
       return false;
     }
     return true;
