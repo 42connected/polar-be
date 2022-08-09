@@ -30,7 +30,10 @@ export class BatchService {
       return false;
     }
 
-    const result = await this.addTimeout(mentoringsId, millisecondsTime);
+    const result: boolean = await this.addTimeout(
+      mentoringsId,
+      millisecondsTime,
+    );
     if (result === true) return true;
     return false;
   }
@@ -43,14 +46,14 @@ export class BatchService {
       });
     } catch {
       this.logger.log(
-        `autoCancell mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
+        `autoCancel mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
       );
       return false;
     }
 
     if (mentorDb === null) {
       this.logger.log(
-        `autoCancell mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
+        `autoCancel mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
       );
       return false;
     }
@@ -69,7 +72,7 @@ export class BatchService {
         try {
           this.slackService.sendCanceldMessageToCadet(canceldMessageDto);
         } catch {
-          this.logger.log(`autoCancell ${uuid} 슬랙 API 실패`);
+          this.logger.log(`autoCancel ${uuid} 슬랙 API 실패`);
           return;
         }
 
@@ -78,17 +81,17 @@ export class BatchService {
           this.mentoringsLogsRepository.save(mentorDb);
         } catch {
           this.logger.log(
-            `autoCancell mentoringsLogs ${uuid} status 업데이트 실패`,
+            `autoCancel mentoringsLogs ${uuid} status 업데이트 실패`,
           );
           return;
         }
 
         this.logger.log(
-          `autoCancell mentoringsLogs ${uuid} after (${milliseconds}) : 실행완료 `,
+          `autoCancel mentoringsLogs ${uuid} after (${milliseconds}) : 실행완료 `,
         );
       } else {
         this.logger.log(
-          `autoCancell mentoringsLogs ${uuid} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
+          `autoCancel mentoringsLogs ${uuid} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
         );
       }
 
@@ -103,17 +106,17 @@ export class BatchService {
       this.schedulerRegistry.addTimeout(uuid, timeout);
     }
     this.logger.log(
-      `autoCancell mentoringsLogs after ${milliseconds}, ${uuid} added!`,
+      `autoCancel mentoringsLogs after ${milliseconds}, ${uuid} added!`,
     );
   }
 
   getTimeoutlists() {
     const timeouts = this.schedulerRegistry.getTimeouts();
-    timeouts.forEach(name => this.logger.log(`autoCancell: ${name}`));
+    timeouts.forEach(name => this.logger.log(`autoCancel: ${name}`));
   }
 
   deleteTimeout(uuid: string) {
     this.schedulerRegistry.deleteTimeout(uuid);
-    this.logger.log(`autoCancell mentoringsLogs ${uuid} deleted!`);
+    this.logger.log(`autoCancel mentoringsLogs ${uuid} deleted!`);
   }
 }
