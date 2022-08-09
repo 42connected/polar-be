@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test
-        run : echo "needs build test"
+        run : echo "needs build test "
       
 
   deploy:
