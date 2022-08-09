@@ -1,8 +1,15 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { LoginProducer } from 'src/bull-queue/login-producer';
 import { TokenResponse } from '../interface/token-response.interface';
 
 @Injectable()
 export class AuthService {
+  constructor(private loginProducer: LoginProducer) {}
+
   matchRoles(roles: string[], userRole: string) {
     return roles.includes(userRole);
   }
@@ -21,13 +28,9 @@ export class AuthService {
   async getProfile(accessToken: string) {
     try {
       const profileUrl = 'https://api.intra.42.fr/v2/me';
-      const result = await fetch(profileUrl, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const profile = await result.json();
-      return profile;
-    } catch (err) {}
+      return await this.loginProducer.addJob(profileUrl, accessToken);
+    } catch (err) {
+      throw new ConflictException(err, '42 api 호출 중 에러가 발생했습니다.');
+    }
   }
 }

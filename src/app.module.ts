@@ -13,6 +13,7 @@ import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
+import { BullQueueModule } from './bull-queue/bull-queue.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CommentsModule } from './v1/comments/comments.module';
         };
       },
     }),
+    BullQueueModule,
     V1Module,
     RouterModule.register([
       {

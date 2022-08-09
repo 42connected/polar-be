@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
@@ -20,7 +20,7 @@ export class AuthController {
   ) {}
 
   @Get('/oauth/callback')
-  async getProfile(@Query('code') code: string): Promise<string> {
+  async getProfile(@Query('code') code: string) {
     const accessToken = await this.authService.getAccessToken(code);
     const profile = await this.authService.getProfile(accessToken);
     const {
@@ -57,11 +57,10 @@ export class AuthController {
         result = await this.cadetsService.createUser(user);
       }
     }
-    console.log(result);
     const jwt = this.jwtService.sign({
-      sub: profile.id,
-      username: profile.intraId,
-      role: profile.role,
+      sub: result.id,
+      username: result.intraId,
+      role: result.role,
     });
     return jwt;
   }
