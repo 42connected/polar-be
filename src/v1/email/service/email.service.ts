@@ -1,13 +1,15 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { ReservationMessageDto } from 'src/v1/dto/slack/send-message.dto';
 
 @Injectable()
 export class EmailService {
   constructor(private mailService: MailerService) {}
-  async sendEmail(reservationMessageDto: ReservationMessageDto) {
+  async sendReservationMessageToMentor(
+    reservationMessageDto: ReservationMessageDto,
+  ) {
     const {
-      mentorSlackId,
+      mentorEmail,
       cadetSlackId,
       reservationTime,
       mentoringTime,
@@ -34,18 +36,22 @@ export class EmailService {
     } else {
       commonType = '심화과정';
     }
-		try{
-    const response = await this.mailService.sendMail({
-      to: 'cdex6531@gmail.com',
-      from: '42polar-no-reply@gmail.com',
-      subject: 'Test',
-      template: 'ReservationMessage.hbs',
-      context: {
-        username: 'park',
-        code: '1234',
-      },
-    });
-	} catch {}
-    return response;
+    try {
+      const response = await this.mailService.sendMail({
+        to: mentorEmail,
+        from: '42polar-no-reply@gmail.com',
+        subject: 'New mentoring request',
+        template: 'ReservationMessage.hbs',
+        context: {
+          cadetSlackId: cadetSlackId,
+          intraProfileUrl: 'https://profile.intra.42.fr/users/' + cadetSlackId,
+          commonType: commonType,
+          reservationTimeToString: reservationTimeToString,
+        },
+      });
+      return response;
+    } catch (error) {
+      throw new ConflictException('슬랙 메세지 전송에 실패했습니다');
+    }
   }
 }

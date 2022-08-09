@@ -1,20 +1,33 @@
 <html>
-.verticalLine {
-  border-left: thick solid #ff0000;
-}
-  <div class='verticalLine'>
-    <h2 id='new-mentoring-request'>New mentoring request</h3>
-    <blockquote>
-      <p><strong>Request by:</strong>
-        {{username}}</p>
-      <p><strong>Intra Profile:</strong>
-        {{intraProfile}}</p>
-      <p><strong>Type:</strong>
-        {{type}}</p>
-      <p><strong>When:</strong>
-        {{when}}</p>
-      <p><strong>Web Page:</strong>
-        {{webpage}}</p>
-    </blockquote>
-  </div>
+  <table width='100%' border='0' cellspacing='0' cellpadding='0'>
+    <tbody><tr><td align='justify'>
+
+          <h1> New mentoring request</h1>
+
+          <h3>Request by:&nbsp;<span
+              style='font-size: 14pt; font-weight: normal;'
+            >{{cadetSlackId}}
+            </span>
+          </h3>
+
+          <h3>Intra Profile:&nbsp;<a
+              href={{intraProfileUrl}}
+              rel='noreferrer noopener'
+              style='font-size: 14pt; white-space: nowrap;'
+            >{{intraProfileUrl}}</a></h3>
+
+          <h3>Type:<span style='font-weight: normal;'>&nbsp;<span
+                style='font-size: 14pt;'
+              >{{commonType}}</span></span></h3>
+
+          <h3>When:&nbsp;<span style='font-size: 14pt; font-weight: normal;'>
+              {{reservationTimeToString}}
+            </span></h3>
+
+          <h3>Web Page:&nbsp;<a
+              href='https://intra.42.fr'
+              rel='noreferrer noopener'
+              style='font-size: 14pt;'
+            >42POLAR</a></h3>
+        </td></tr></tbody></table>
 </html>

@@ -1,9 +1,15 @@
-import { IsBoolean, IsDate, IsNumber, IsString, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsNumber,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class ReservationMessageDto {
-  @IsString()
-  @Length(0, 15)
-  mentorSlackId: string;
+  @IsEmail()
+  mentorEmail: string;
 
   @IsString()
   @Length(0, 15)

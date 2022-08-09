@@ -1,6 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
 import { Keywords } from '../entities/keywords.entity';
-import { SlackService } from '../slack/service/slack.service';
 import { KeywordsService } from './service/keywords.service';
 
 @Controller()
