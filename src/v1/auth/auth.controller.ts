@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
@@ -27,6 +27,7 @@ export class AuthController {
       login: intraId,
       image_url: profileImage,
       alumnized_at: isCommon,
+      cursus_users: cursus,
     } = profile;
     let result: jwtUser;
     if (intraId.startsWith('m-')) {
@@ -48,6 +49,9 @@ export class AuthController {
       }
     } else {
       result = await this.cadetsService.findByIntra(intraId);
+      if (cursus.length < 2) {
+        throw new UnauthorizedException('본과정 카뎃만 가입이 가능합니다.');
+      }
       if (result.id === undefined) {
         const user: CreateCadetDto = {
           intraId,
