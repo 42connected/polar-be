@@ -5,6 +5,7 @@ import { CadetsService } from '../cadets/service/cadets.service';
 import { CreateBocalDto } from '../dto/bocals/create-bocal.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthService } from './auth.service';
 
@@ -19,7 +20,7 @@ export class AuthController {
   ) {}
 
   @Get('/oauth/callback')
-  async getProfile(@Query('code') code: string) {
+  async getProfile(@Query('code') code: string): Promise<string> {
     const accessToken = await this.authService.getAccessToken(code);
     const profile = await this.authService.getProfile(accessToken);
     const {
@@ -27,8 +28,7 @@ export class AuthController {
       image_url: profileImage,
       alumnized_at: isCommon,
     } = profile;
-    console.log(intraId, profileImage, isCommon);
-    let result;
+    let result: jwtUser;
     if (intraId.startsWith('m-')) {
       result = await this.mentorsService.findByIntra(intraId);
       if (result.id === undefined) {
@@ -58,11 +58,11 @@ export class AuthController {
       }
     }
     console.log(result);
-    // const jwt = this.jwtService.sign({
-    //   sub: user.id,
-    //   username: user.name,
-    //   role: user.role,
-    // });
-    // return jwt;
+    const jwt = this.jwtService.sign({
+      sub: profile.id,
+      username: profile.intraId,
+      role: profile.role,
+    });
+    return jwt;
   }
 }
