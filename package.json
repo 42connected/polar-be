@@ -22,7 +22,7 @@
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
     "db:createMigration": "typeorm migration:create",
     "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
-    "develop": "git push heroku develop:master"
+    "deploy-heroku:develop": "git push heroku develop:master"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
