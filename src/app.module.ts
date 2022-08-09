@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmConfigService } from './v1/config/typeorm.config';
 import { V1Module } from './v1/v1.module';
-import { RouterModule } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
 import { KeywordsModule } from './v1/keywords/keywords.module';
@@ -14,6 +14,7 @@ import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { BatchModule } from './v1/batch/batch.module';
 
 @Module({
@@ -70,8 +71,18 @@ import { BatchModule } from './v1/batch/batch.module';
         ],
       },
     ]),
+    ThrottlerModule.forRoot({
+      ttl: 30,
+      limit: 5,
+    }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -4,7 +4,6 @@ import {
   Get,
   Param,
   Patch,
-  Req,
   Post,
   UseGuards,
   Query,
@@ -23,6 +22,7 @@ import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
+import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 
 @Controller()
 export class MentorsController {
@@ -56,6 +56,14 @@ export class MentorsController {
     @Body() body: UpdateMentorDatailDto,
   ) {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
+  @Post('join')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
+    const { name, availableTime } = body;
+    this.mentorsService.saveInfos(user, name, availableTime);
   }
 
   @Get(':intraId')

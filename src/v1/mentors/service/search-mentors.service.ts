@@ -35,50 +35,52 @@ export class SearchMentorsService {
       result.keyword = await this.keywordsRepository.findOneBy({
         id: keywordId,
       });
-      if (!result.keyword) {
-        throw new NotFoundException('키워드가 존재하지 않습니다.');
-      }
     } catch {
       throw new ConflictException(
         '키워드 값을 가져오는 도중 오류가 발생했습니다.',
       );
     }
+    if (!result.keyword) {
+      throw new NotFoundException('키워드가 존재하지 않습니다.');
+    }
 
     const matchMentors: MentorSimpleInfo[] = [];
+    let rawMentorInfos: MentorKeywords[];
     try {
-      const rawMentorInfos: MentorKeywords[] =
-        await this.mentorKeywordsRepository.find({
-          where: { keywordId },
-          relations: { mentors: true },
-        });
-      if (!rawMentorInfos) {
-        throw new NotFoundException(
-          '키워드와 일치하는 멘토가 존재하지 않습니다.',
-        );
-      }
-      rawMentorInfos.forEach(rawMentorInfo => {
-        if (searchText) {
-          if (
-            rawMentorInfo.mentors.name === searchText ||
-            rawMentorInfo.mentors.intraId === searchText
-          )
-            matchMentors.push({
-              id: rawMentorInfo.mentors.id,
-              name: rawMentorInfo.mentors.name,
-              intraId: rawMentorInfo.mentors.intraId,
-            });
-        } else
-          matchMentors.push({
-            id: rawMentorInfo.mentors.id,
-            name: rawMentorInfo.mentors.name,
-            intraId: rawMentorInfo.mentors.intraId,
-          });
+      rawMentorInfos = await this.mentorKeywordsRepository.find({
+        where: { keywordId },
+        relations: { mentors: true },
       });
     } catch {
       throw new ConflictException(
         '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
       );
     }
+    if (!rawMentorInfos) {
+      throw new NotFoundException(
+        '키워드와 일치하는 멘토가 존재하지 않습니다.',
+      );
+    }
+
+    rawMentorInfos.forEach(rawMentorInfo => {
+      if (searchText) {
+        if (
+          rawMentorInfo.mentors.name === searchText ||
+          rawMentorInfo.mentors.intraId === searchText
+        )
+          matchMentors.push({
+            id: rawMentorInfo.mentors.id,
+            name: rawMentorInfo.mentors.name,
+            intraId: rawMentorInfo.mentors.intraId,
+          });
+      } else
+        matchMentors.push({
+          id: rawMentorInfo.mentors.id,
+          name: rawMentorInfo.mentors.name,
+          intraId: rawMentorInfo.mentors.intraId,
+        });
+    });
+
     if (matchMentors.length === 0) {
       throw new NotFoundException(
         '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
@@ -99,17 +101,24 @@ export class SearchMentorsService {
       mentors: [],
     };
 
+    let matchMentors: MentorSimpleInfo[];
     try {
-      const matchMentors: MentorSimpleInfo[] =
-        await this.mentorsRepository.find({
-          select: { id: true, name: true, intraId: true },
-          where: [{ intraId: searchText }, { name: searchText }],
-        });
-      if (matchMentors.length === 0) {
-        throw new NotFoundException(
-          '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-        );
-      }
+      matchMentors = await this.mentorsRepository.find({
+        select: { id: true, name: true, intraId: true },
+        where: [{ intraId: searchText }, { name: searchText }],
+      });
+    } catch {
+      throw new ConflictException(
+        '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
+      );
+    }
+    if (matchMentors.length === 0) {
+      throw new NotFoundException(
+        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
+      );
+    }
+
+    try {
       const mentorList: MentorsListElement[] = await this.getMentorListElements(
         matchMentors,
       );
@@ -128,8 +137,6 @@ export class SearchMentorsService {
   ): Promise<MentorsListElement[]> {
     const mentorList: MentorsListElement[] = [];
     for (const mentorInfo of matchMentors) {
-      if (!mentorInfo) continue;
-
       const keywords: string[] = [];
       try {
         const rawKeywordInfo: MentorKeywords[] =

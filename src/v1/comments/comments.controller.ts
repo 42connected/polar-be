@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Patch,
   Post,
@@ -19,13 +18,6 @@ import { CommentsService } from './service/comments.service';
 @Controller()
 export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
-
-  @Get(':commentId')
-  @Roles('cadet', 'mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  async getComment(@Param('commentId') commentId: string) {
-    return this.commentService.getComment(commentId);
-  }
 
   @Post(':mentorIntraId')
   @Roles('cadet')

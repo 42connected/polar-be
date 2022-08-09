@@ -1,10 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateMentorDto {
+export class JoinCadetDto {
   @IsString()
   @IsNotEmpty()
-  intraId: string;
-
-  @IsString()
-  profileImage: string;
+  name: string;
 }

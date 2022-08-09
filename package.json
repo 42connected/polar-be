@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
-    "db:createMigration": "typeorm migration:create"
+    "db:createMigration": "typeorm migration:create",
+    "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
@@ -29,9 +30,9 @@
     "@nestjs/jwt": "^9.0.0",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "@nestjs/schedule": "^2.1.0",
+    "@nestjs/throttler": "^3.0.0",
     "@nestjs/typeorm": "^9.0.0",
-    "@types/cron": "^2.0.0",
+    "@slack/client": "^5.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
@@ -42,7 +43,10 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "typeorm": "^0.3.7",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-extension": "^2.1.6",
+    "typeorm-naming-strategies": "^4.1.0",
+    "@nestjs/schedule": "^2.1.0",
+    "@types/cron": "^2.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

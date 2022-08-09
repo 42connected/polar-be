@@ -39,8 +39,9 @@ export class ReportsService {
   }
 
   async findReportById(reportId: string): Promise<Reports> {
+    let report: Reports;
     try {
-      const report = await this.reportsRepository.findOne({
+      report = await this.reportsRepository.findOne({
         where: { id: reportId },
         relations: {
           cadets: true,
@@ -51,46 +52,39 @@ export class ReportsService {
           mentors: { name: true },
         },
       });
-      if (!report) {
-        throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
-      }
-      return report;
     } catch {
       throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
     }
+    if (!report) {
+      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+    }
+    return report;
   }
 
   async findMentoringLogById(mentoringLogId: string): Promise<MentoringLogs> {
+    let mentoringLog: MentoringLogs;
     try {
-      const mentoringLog = await this.mentoringLogsRepository.findOne({
+      mentoringLog = await this.mentoringLogsRepository.findOne({
         where: { id: mentoringLogId },
         relations: {
           cadets: true,
           mentors: true,
         },
       });
-      if (!mentoringLog) {
-        throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
-      }
-      return mentoringLog;
     } catch {
       throw new ConflictException('멘토링 로그를 찾는중 오류가 발생하였습니다');
     }
-  }
-
-  isWrongFeedback(feedback: number): boolean {
-    if (feedback < 1 || feedback > 5) {
-      return true;
+    if (!mentoringLog) {
+      throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
     }
-    return false;
+    return mentoringLog;
   }
 
   /*
    * @Get
    */
   async getReport(reportId: string): Promise<Reports> {
-    const report = await this.findReportById(reportId);
-    return report;
+    return await this.findReportById(reportId);
   }
 
   /*
