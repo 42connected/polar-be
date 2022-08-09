@@ -21,7 +21,10 @@ export class AuthService {
       const token: TokenResponse = await response.json();
       return token.access_token;
     } catch (err) {
-      throw new UnauthorizedException(err); // 에러 메세지?
+      throw new UnauthorizedException(
+        err,
+        'Access Token 요청 중 에러가 발생했습니다.',
+      );
     }
   }
 
