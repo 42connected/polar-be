@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { Admins } from '../entities/admins.entity';
+import { Admins } from '../../entities/admins.entity';
 
 export class AdminSeeder implements Seeder {
   async run(

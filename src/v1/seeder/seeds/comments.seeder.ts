@@ -1,8 +1,8 @@
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { Cadets } from '../entities/cadets.entity';
-import { Comments } from '../entities/comments.entity';
-import { Mentors } from '../entities/mentors.entity';
+import { Cadets } from '../../entities/cadets.entity';
+import { Comments } from '../../entities/comments.entity';
+import { Mentors } from '../../entities/mentors.entity';
 
 export class CommentsSeeder implements Seeder {
   async run(

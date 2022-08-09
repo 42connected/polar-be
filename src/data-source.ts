@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { MainSeeder } from './v1/seeds/main.seeder';
+import { MainSeeder } from './v1/seeder/seeds/main.seeder';
 
 export const appDataSource = new DataSource({
   type: 'postgres',

@@ -5,7 +5,7 @@ import { KeywordsModule } from './keywords/keywords.module';
 import { MentorsModule } from './mentors/mentors.module';
 import { ReportsModule } from './reports/reports.module';
 import { CadetsModule } from './cadets/cadets.module';
-import { BocalsModule } from './bocals/bocals.module';
+import { AdminsModule as AdminsModule } from './admins/admins.module';
 import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
@@ -19,7 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     MentorsModule,
     ReportsModule,
     CadetsModule,
-    BocalsModule,
+    AdminsModule,
     AuthModule,
     CommentsModule,
     JwtModule.registerAsync({

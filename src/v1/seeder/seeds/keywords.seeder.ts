@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { Keywords } from '../entities/keywords.entity';
+import { Keywords } from '../../entities/keywords.entity';
 
 export class KeywordsSeeder implements Seeder {
   async run(

@@ -11,7 +11,7 @@ import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
 import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
-import { BocalsModule } from './v1/bocals/bocals.module';
+import { AdminsModule } from './v1/admins/admins.module';
 import { CommentsModule } from './v1/comments/comments.module';
 
 @Module({
@@ -46,7 +46,7 @@ import { CommentsModule } from './v1/comments/comments.module';
           },
           {
             path: 'bocals',
-            module: BocalsModule,
+            module: AdminsModule,
           },
           {
             path: 'keywords',
