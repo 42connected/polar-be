@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { BatchService } from './batch.service';
-import { BatchController } from './batch.controller';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SlackModule } from '../slack/slack.module';

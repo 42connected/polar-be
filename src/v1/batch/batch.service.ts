@@ -22,12 +22,17 @@ export class BatchService {
     private slackService: SlackService,
   ) {}
 
-  cancelMeetingAuto(mentoringsId: string, millisecondsTime: number) {
+  async cancelMeetingAuto(
+    mentoringsId: string,
+    millisecondsTime: number,
+  ): Promise<boolean> {
     if (!mentoringsId) {
-      return 'false';
+      return false;
     }
 
-    this.addTimeout(mentoringsId, millisecondsTime);
+    const result = await this.addTimeout(mentoringsId, millisecondsTime);
+    if (result === true) return true;
+    return false;
   }
 
   async addTimeout(uuid: string, milliseconds: number): Promise<boolean> {
