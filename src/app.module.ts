@@ -13,6 +13,7 @@ import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
+import { BullQueueModule } from './bull-queue/bull-queue.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 
 @Module({
@@ -31,6 +32,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
         };
       },
     }),
+    BullQueueModule,
     V1Module,
     RouterModule.register([
       {
