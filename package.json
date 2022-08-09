@@ -21,7 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
     "db:createMigration": "typeorm migration:create",
-    "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed"
+    "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
+    "develop": "git push heroku develop:master"
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
