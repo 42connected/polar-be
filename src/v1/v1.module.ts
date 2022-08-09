@@ -12,6 +12,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
 import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { JwtModule } from '@nestjs/jwt';
     BocalsModule,
     AuthModule,
     CommentsModule,
+    EmailModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {
