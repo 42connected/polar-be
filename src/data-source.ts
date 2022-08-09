@@ -14,5 +14,6 @@ export const appDataSource = new DataSource({
   password: process.env.POSTGRES_PASSWORD,
   seeds: [MainSeeder],
   synchronize: false,
+  ssl: { rejectUnauthorized: false },
   namingStrategy: new SnakeNamingStrategy(),
 } as DataSourceOptions);
