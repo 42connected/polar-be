@@ -15,10 +15,12 @@ export class CommentsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const cadetRepository = dataSource.getRepository(Cadets);
 
-    const mentors : MentorsInterface = await mentorRepository.findOneBy({ intraId: 'm-koo' });
+    const mentors: MentorsInterface = await mentorRepository.findOneBy({
+      intraId: 'm-koo',
+    });
     const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
     console.log('Seeding comments...');
-    const commentData : CommentsInterface = {
+    const commentData: CommentsInterface = {
       mentors,
       cadets,
       content: '안녕하세요! 좋은아침입니다. 2트',

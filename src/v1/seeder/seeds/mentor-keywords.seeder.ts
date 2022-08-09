@@ -1,26 +1,35 @@
-// import { DataSource } from "typeorm"
-// import { Seeder, SeederFactoryManager } from "typeorm-extension"
-// import { MentorKeywords } from "../entities/mentor-keywords.entity";
-// import { Mentors } from "../entities/mentors.entity";
+import { Keywords } from "src/v1/entities/keywords.entity";
+import { MentorKeywords } from "src/v1/entities/mentor-keywords.entity";
+import { Mentors } from "src/v1/entities/mentors.entity";
+import { KeywordsInterface } from "src/v1/interface/keywords/keywords.interface";
+import { MentorKeywordsInterface } from "src/v1/interface/mentor-keywords/mentor-keywords.interface";
+import { MentorsInterface } from "src/v1/interface/mentors/mentors.interface";
+import { DataSource } from "typeorm"
+import { Seeder, SeederFactoryManager } from "typeorm-extension"
 
-// export class MentorKeywordsSeeder implements Seeder {
-//   async run(
-//     dataSource: DataSource,
-//     factoryManager: SeederFactoryManager
-//   ): Promise<void> {
-//       const keywordRepository = dataSource.getRepository(MentorKeywords);
-//       const menterRepositoty = dataSource.getRepository(Mentors);
-//       const mentor
-//       console.log('Seeding mentor-keywords...');
-//       const mentorId = await (await menterRepositoty.findOneBy({ intraId: 'm-engeng' })).id;
-//     const keywordData = {
-//         // mentorId ,
-//         // keywordId: 'keyword_id',
-//         // keywords: '좋은아침말'
-//         // mentors : 'mentor_id',
-//     }
+export class MentorKeywordsSeeder implements Seeder {
+  async run(
+    dataSource: DataSource,
+    factoryManager: SeederFactoryManager
+  ): Promise<void> {
+      console.log("Seeding mentor-keywords...");
+      try {
+          const keywordRepository = dataSource.getRepository(Keywords);
+          const mentorRepository = dataSource.getRepository(Mentors);
+          const mentorKeywordRepository = dataSource.getRepository(MentorKeywords);
+          console.log('Seeding mentor-keywords...');
+          const keywords: KeywordsInterface = await keywordRepository.findOneBy({ name: 'web' });
+          //   const mentors: MentorsInterface = await mentorRepository.findOneBy({ intraId: 'm-engeng' });
+          console.log(keywords);
+          //   const keywordData: MentorKeywordsInterface = {
+          //     mentors,
+          //     keywords,
+          // }
 
-//     const newKeyword = keywordRepository.create(keywordData);
-//     await keywordRepository.save(newKeyword);
-//   }
-// }
+          // const newKeyword = mentorKeywordRepository.create(keywordData);
+          // await mentorKeywordRepository.save(newKeyword);
+      } catch (error) {
+            console.log(error);
+        }
+  }
+}

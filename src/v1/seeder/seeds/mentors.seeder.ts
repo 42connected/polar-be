@@ -10,7 +10,7 @@ export class MentorsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     console.log('Seeding mentors...');
     const mentorData = {
-      intraId: 'm-koo',
+      intraId: 'm-engeng',
       name: '구창모',
       profileImage:
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',

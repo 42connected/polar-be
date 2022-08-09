@@ -10,7 +10,7 @@ export class AdminSeeder implements Seeder {
   ): Promise<void> {
     const adminRepository = dataSource.getRepository(Admins);
     console.log('Seeding admins...');
-    const adminData : AdminsInterface= {
+    const adminData: AdminsInterface = {
       intraId: 'tototo',
       name: '주종현',
     };

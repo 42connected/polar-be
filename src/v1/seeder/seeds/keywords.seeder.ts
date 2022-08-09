@@ -1,3 +1,4 @@
+import { KeywordsInterface } from 'src/v1/interface/keywords/keywords.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { Keywords } from '../../entities/keywords.entity';
@@ -9,12 +10,15 @@ export class KeywordsSeeder implements Seeder {
   ): Promise<void> {
     const keywordRepository = dataSource.getRepository(Keywords);
     console.log('Seeding keywords...');
-    const keywordData = {
-      name: '주종현',
-      //mentorKeyowrds: 'keywords',
+
+    const keywordData : KeywordsInterface= {
+      name: 'web',
     };
 
-    const newKeyword = keywordRepository.create(keywordData);
-    await keywordRepository.save(newKeyword);
+    const isExists = await keywordRepository.findOneBy({ name: keywordData.name });
+    if (!isExists) {
+      const newKeyword = keywordRepository.create(keywordData);
+      await keywordRepository.save(newKeyword);
+    }
   }
 }

@@ -12,7 +12,7 @@ export class CadetsSeeder implements Seeder {
     const cadetRepository = dataSource.getRepository(Cadets);
     console.log('Seeding cadets...');
 
-    const cadetData : CadetsInterface = {
+    const cadetData: CadetsInterface = {
       intraId: 'tpopopoototo',
       name: '주종현',
       profileImage:
