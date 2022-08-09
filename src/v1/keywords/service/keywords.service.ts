@@ -16,16 +16,11 @@ export class KeywordsService {
 
   async getKeywords(): Promise<Keywords[]> {
     try {
-      const found = await this.keywordsRepository
-        .createQueryBuilder()
-        .select('keywords.name')
-        .from(Keywords, 'keywords')
-        .orderBy('RANDOM()')
-        .getMany();
-      if (!found) {
-        throw new NotFoundException();
-      }
-      return found.slice(0, 8);
+      const found = await this.keywordsRepository.find({
+        select: { name: true },
+        take: 8,
+      });
+      return found;
     } catch {
       throw new ConflictException();
     }
