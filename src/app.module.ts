@@ -14,6 +14,7 @@ import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { BullQueueModule } from './bull-queue/bull-queue.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { BatchModule } from './v1/batch/batch.module';
 
@@ -34,6 +35,7 @@ import { BatchModule } from './v1/batch/batch.module';
         };
       },
     }),
+    BullQueueModule,
     V1Module,
     RouterModule.register([
       {

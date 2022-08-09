@@ -10,7 +10,7 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment/comment.dto';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';

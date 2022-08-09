@@ -6,7 +6,6 @@ import { MentorsModule } from './mentors/mentors.module';
 import { ReportsModule } from './reports/reports.module';
 import { CadetsModule } from './cadets/cadets.module';
 import { BocalsModule } from './bocals/bocals.module';
-import { FortyTwoStrategy } from './strategies/forty-two.strategy';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
@@ -34,7 +33,7 @@ import { BatchModule } from './batch/batch.module';
     }),
   ],
   controllers: [V1Controller],
-  providers: [V1Service, FortyTwoStrategy, JwtStrategy],
+  providers: [V1Service, JwtStrategy],
 })
 export class V1Module {
   configure(consumer: MiddlewareConsumer) {
