@@ -3,11 +3,12 @@ import { BatchService } from './batch.service';
 import { BatchController } from './batch.controller';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SlackModule } from '../slack/slack.module';
+import { SlackService } from '../slack/service/slack.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MentoringLogs])],
-  providers: [BatchService],
+  imports: [TypeOrmModule.forFeature([MentoringLogs]), SlackModule],
+  providers: [BatchService, SlackService],
   exports: [BatchService],
-  controllers: [BatchController],
 })
 export class BatchModule {}

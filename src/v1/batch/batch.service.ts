@@ -3,12 +3,13 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-  SerializeOptions,
 } from '@nestjs/common';
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CancelMessageDto } from '../dto/slack/send-message.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { SlackService } from '../slack/service/slack.service';
 
 @Injectable()
 export class BatchService {
@@ -18,6 +19,7 @@ export class BatchService {
     private schedulerRegistry: SchedulerRegistry,
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
+    private slackService: SlackService,
   ) {}
 
   cancelMeetingAuto(mentoringsId: string, millisecondsTime: number) {
@@ -28,58 +30,85 @@ export class BatchService {
     this.addTimeout(mentoringsId, millisecondsTime);
   }
 
-  async addTimeout(id: string, milliseconds: number) {
+  async addTimeout(uuid: string, milliseconds: number): Promise<boolean> {
+    let mentorDb = null;
+    try {
+      mentorDb = await this.mentoringsLogsRepository.findOne({
+        where: { id: uuid },
+      });
+    } catch {
+      this.logger.log(
+        `autoCancell mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
+      );
+      return false;
+    }
+
+    if (mentorDb === null) {
+      this.logger.log(
+        `autoCancell mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
+      );
+      return false;
+    }
+
     const callback = () => {
-      let mentorDb = null;
+      const waitingStatus = '대기중';
+      const cancelStatus = '취소';
 
-      try {
-        mentorDb = this.mentoringsLogsRepository.findOne({
-          where: { id: id },
-        });
-      } catch {
-        throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-      }
+      if (mentorDb.status === waitingStatus) {
+        //슬랙 api -> 메일 api로 변경예정
+        const canceldMessageDto: CancelMessageDto = {
+          mentorSlackId: 'jokang',
+          cadetSlackId: 'jokang',
+        };
 
-      if (mentorDb === null) {
-        throw new NotFoundException('데이터를 찾을 수 없습니다');
-      }
+        try {
+          this.slackService.sendCanceldMessageToCadet(canceldMessageDto);
+        } catch {
+          this.logger.log(`autoCancell ${uuid} 슬랙 API 실패`);
+          return;
+        }
 
-      if (mentorDb.state === '대기중') {
-        //예약 취소 슬랙 메세지
-        console.log('예약 취소입니다');
+        mentorDb.status = cancelStatus;
+        try {
+          this.mentoringsLogsRepository.save(mentorDb);
+        } catch {
+          this.logger.log(
+            `autoCancell mentoringsLogs ${uuid} status 업데이트 실패`,
+          );
+          return;
+        }
 
-        //DB에서 this.mentoringBB state === '취소'
-        mentorDb.state === '취소';
-
-        this.logger.warn(
-          `autoCancell ${id} executing after (${milliseconds})!`,
+        this.logger.log(
+          `autoCancell mentoringsLogs ${uuid} after (${milliseconds}) : 실행완료 `,
         );
       } else {
-        this.logger.warn(
-          `autoCancell ${id} not executing after (${milliseconds})!`,
+        this.logger.log(
+          `autoCancell mentoringsLogs ${uuid} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
         );
       }
 
-      this.deleteTimeout(id);
+      this.deleteTimeout(uuid);
     };
-    const timeout = setTimeout(callback, milliseconds);
 
+    const timeout = setTimeout(callback, milliseconds);
     try {
-      this.schedulerRegistry.addTimeout(id, timeout);
+      this.schedulerRegistry.addTimeout(uuid, timeout);
     } catch {
-      this.deleteTimeout(id);
-      this.schedulerRegistry.addTimeout(id, timeout);
+      this.deleteTimeout(uuid);
+      this.schedulerRegistry.addTimeout(uuid, timeout);
     }
-    this.logger.warn(`autoCancell after ${milliseconds}, ${id} added!`);
+    this.logger.log(
+      `autoCancell mentoringsLogs after ${milliseconds}, ${uuid} added!`,
+    );
   }
 
   getTimeoutlists() {
     const timeouts = this.schedulerRegistry.getTimeouts();
-    timeouts.forEach(key => this.logger.log(`Timeout: ${key}`));
+    timeouts.forEach(name => this.logger.log(`autoCancell: ${name}`));
   }
 
-  deleteTimeout(name: string) {
-    this.schedulerRegistry.deleteTimeout(name);
-    this.logger.warn(`Timeout ${name} deleted!`);
+  deleteTimeout(uuid: string) {
+    this.schedulerRegistry.deleteTimeout(uuid);
+    this.logger.log(`autoCancell mentoringsLogs ${uuid} deleted!`);
   }
 }
