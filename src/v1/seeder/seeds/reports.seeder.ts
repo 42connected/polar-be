@@ -10,13 +10,13 @@ export class ReportsSeeder implements Seeder {
   async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
-    ): Promise<void> {
-      const reportRepository = dataSource.getRepository(Reports);
-      const mentorRepository = dataSource.getRepository(Mentors);
-      const cadetRepository = dataSource.getRepository(Cadets);
-      const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
-      
-      console.log('Seeding reports...');
+  ): Promise<void> {
+    const reportRepository = dataSource.getRepository(Reports);
+    const mentorRepository = dataSource.getRepository(Mentors);
+    const cadetRepository = dataSource.getRepository(Cadets);
+    const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
+
+    console.log('Seeding reports...');
     const mentors = await mentorRepository.findOneBy({ intraId: 'm-engeng' });
     const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
     const mentoringLogs = await mentoringLogsRepository.find({
@@ -31,14 +31,14 @@ export class ReportsSeeder implements Seeder {
         },
         cadets: {
           id: cadets.id,
-      }
-      }
+        },
+      },
     });
     if (mentoringLogs.length === 0) {
       console.log('No mentoring logs found');
       return;
     }
-    const reportData : ReportsInterface= {
+    const reportData: ReportsInterface = {
       mentors,
       cadets,
       content: '안녕하세요',
@@ -46,7 +46,7 @@ export class ReportsSeeder implements Seeder {
       imageUrl: [
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       ],
-      mentoringLogs : mentoringLogs[0],
+      mentoringLogs: mentoringLogs[0],
     };
 
     const newUser = reportRepository.create(reportData);

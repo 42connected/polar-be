@@ -10,7 +10,7 @@ export class MentorsSeeder implements Seeder {
   ): Promise<void> {
     const mentorRepository = dataSource.getRepository(Mentors);
     console.log('Seeding mentors...');
-    const mentorData : MentorsInterface= {
+    const mentorData: MentorsInterface = {
       intraId: 'm-dada',
       name: '맥밀러',
       profileImage:

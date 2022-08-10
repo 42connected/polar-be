@@ -20,6 +20,5 @@ export class MainSeeder implements Seeder {
     await runSeeder(dataSource, MentorKeywordsSeeder);
     await runSeeder(dataSource, MentoringLogsSeeder);
     await runSeeder(dataSource, ReportsSeeder);
-
   }
 }
