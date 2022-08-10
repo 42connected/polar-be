@@ -32,7 +32,7 @@ export class CommentsSeeder implements Seeder {
     const commentsFactory = await factoryManager.get(Comments);
     const cadetsMeta = await cadetRepository.find();
     const mentorsMeta = await mentorRepository.find();
-    commentsFactory.setMeta({ cadetsMeta, mentorsMeta});
+    commentsFactory.setMeta({ cadetsMeta, mentorsMeta });
     await commentsFactory.saveMany(5);
   }
 }

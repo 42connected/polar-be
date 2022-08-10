@@ -9,10 +9,15 @@ interface CommentsFactoryMeta {
   mentorsMeta: Mentors[];
 }
 
-export default setSeederFactory(Comments, (faker, meta : CommentsFactoryMeta) => {
-  const comments = new Comments();
-  comments.cadets = meta.cadetsMeta[faker.datatype.number(meta.cadetsMeta.length - 1)];
-  comments.mentors = meta.mentorsMeta[faker.datatype.number(meta.mentorsMeta.length - 1)];
-  comments.content = faker.word.noun(200);
-  return comments;
-});
+export default setSeederFactory(
+  Comments,
+  (faker, meta: CommentsFactoryMeta) => {
+    const comments = new Comments();
+    comments.cadets =
+      meta.cadetsMeta[faker.datatype.number(meta.cadetsMeta.length - 1)];
+    comments.mentors =
+      meta.mentorsMeta[faker.datatype.number(meta.mentorsMeta.length - 1)];
+    comments.content = faker.word.noun(200);
+    return comments;
+  },
+);
