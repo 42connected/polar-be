@@ -45,7 +45,7 @@ export class SearchMentorsService {
       if (keywordsId) {
         let keywords: string[];
         try {
-          keywords = await this.getKeywordsByCategory(categoryId);
+          keywords = await this.getKeywordsIdByCategory(categoryId);
         } catch (error) {
           throw new ConflictException(error);
         }
@@ -109,7 +109,7 @@ export class SearchMentorsService {
     return category;
   }
 
-  async getKeywordsByCategory(categoryId: string): Promise<string[]> {
+  async getKeywordsIdByCategory(categoryId: string): Promise<string[]> {
     const keywordsId: string[] = [];
 
     let keywordCategories: KeywordCategories[];
@@ -136,7 +136,7 @@ export class SearchMentorsService {
     let rawMentorInfos: MentorRawSimpleInfo[];
     const matchMentors: MentorSimpleInfo[] = [];
     try {
-      keywordsId = await this.getKeywordsByCategory(categoryId);
+      keywordsId = await this.getKeywordsIdByCategory(categoryId);
     } catch (error) {
       throw new ConflictException(error);
     }
@@ -154,12 +154,11 @@ export class SearchMentorsService {
         intraId: rawInfo.intraid,
       });
     });
-
     return matchMentors;
   }
 
   async getRawMentorsInfoByKeywords(
-    keywordId: string[],
+    keywordsId: string[],
   ): Promise<MentorRawSimpleInfo[]> {
     let rawMentorInfos: MentorRawSimpleInfo[];
     try {
@@ -175,8 +174,8 @@ export class SearchMentorsService {
           'mentors.name AS name',
           'mentors.intraId AS intraId',
         ])
-        .where('mentorKeywords.keywordId IN (:...keywordIds)', {
-          keywordIds: keywordId,
+        .where('mentorKeywords.keywordId IN (:...keywordsId)', {
+          keywordsId: keywordsId,
         })
         .groupBy('mentors.id')
         .addSelect('COUNT(*) AS count')
@@ -218,7 +217,6 @@ export class SearchMentorsService {
         '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
       );
     }
-
     return matchMentors;
   }
 
@@ -249,7 +247,6 @@ export class SearchMentorsService {
         '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
       );
     }
-
     return matchMentors;
   }
 
@@ -274,7 +271,6 @@ export class SearchMentorsService {
           '멘토 키워드 정보를 가져오는 도중 오류가 발생했습니다.',
         );
       }
-
       mentorList.push({ mentor: mentorInfo, keywords: keywords });
     }
     return mentorList;
