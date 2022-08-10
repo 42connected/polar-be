@@ -33,6 +33,8 @@ export class ReportsController {
   }
 
   @Post('sort')
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
   async sortReport(@Body() reportsSortDto: ReportsSortDto) {
     return await this.reportsService.sortReport(reportsSortDto);
   }
@@ -92,9 +94,8 @@ export class ReportsController {
   }
 
   @Get()
-  // @Roles('')
-  // FIXME: add to "bocal"
-  // @UseGuards(JwtGuard, RolesGuard)
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
   async getAllReport() {
     return await this.reportsService.getAllReport();
   }
