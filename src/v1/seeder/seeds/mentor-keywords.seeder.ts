@@ -14,18 +14,22 @@ export class MentorKeywordsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const mentorKeywordRepository = dataSource.getRepository(MentorKeywords);
     const keywordRepository = dataSource.getRepository(Keywords);
-    const keywordId = await( await keywordRepository.findOneBy({
-      name: 'web',
-    })).id;
-    const mentorId = await (await mentorRepository.findOneBy({ intraId: 'm-engeng' })).id;
+    const keywordId = await (
+      await keywordRepository.findOneBy({
+        name: 'web',
+      })
+    ).id;
+    const mentorId = await (
+      await mentorRepository.findOneBy({ intraId: 'm-engeng' })
+    ).id;
     if (!keywordId || !mentorId) {
-      console.log('Not found fk')
+      console.log('Not found fk');
       return;
     }
     const keywordData: MentorKeywordsInterface = {
-        mentorId,
-        keywordId,
-    }
+      mentorId,
+      keywordId,
+    };
 
     const isExists = await mentorKeywordRepository.findOneBy({
       mentorId,

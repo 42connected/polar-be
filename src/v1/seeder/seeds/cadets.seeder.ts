@@ -18,7 +18,7 @@ export class CadetsSeeder implements Seeder {
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       isCommon: true,
     };
-    
+
     const isExists = await cadetRepository.findOneBy({
       intraId: cadetData.intraId,
     });

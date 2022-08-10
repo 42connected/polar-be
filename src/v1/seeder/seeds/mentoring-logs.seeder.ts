@@ -14,26 +14,34 @@ export class MentoringLogsSeeder implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
-      console.log('Seeding mentoring-logs...');
-      const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
-      const mentorRepository = dataSource.getRepository(Mentors);
-      const cadetRepository = dataSource.getRepository(Cadets);
-      const reportsRepository = dataSource.getRepository(Reports);
-   
-      const mentors = await (await mentorRepository.findOneBy({ intraId: 'm-koo' })).id;
-      const cadets = await (await cadetRepository.findOneBy({ intraId: 'jojoo' })).id;
-      const reports  = await (await reportsRepository.findOneBy({ content: 'good' })).id;
-      const mentoringLogsData: MentoringLogsInterface = {
-          mentors,
-          // cadets,
-          topic: 'What is making you feel good?',
-          content: 'Very good morning',
-          status: 'sleeping',
-        requestTime1: [],
-      }
-      mentoringLogsData.requestTime1.push(new Date());
-    
-      const newUser = mentoringLogsRepository.create(mentoringLogsData);
-      await mentoringLogsRepository.save(newUser);
+    console.log('Seeding mentoring-logs...');
+    const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
+    const mentorRepository = dataSource.getRepository(Mentors);
+    const cadetRepository = dataSource.getRepository(Cadets);
+    const reportsRepository = dataSource.getRepository(Reports);
+
+    const mentors = await (
+      await mentorRepository.findOneBy({ intraId: 'm-engeng' })
+    );
+    const cadets = await (
+      await cadetRepository.findOneBy({ intraId: 'jojoo' })
+    );
+    const reports = await (
+      await reportsRepository.findOneBy({ content: 'good' })
+    );
+    const mentoringLogsData: MentoringLogsInterface = {
+      mentors,
+      cadets,
+      topic: 'What is making you feel good?',
+      content: 'Very good morning',
+      status: 'sleeping',
+      reportStatus: 'go hard',
+      requestTime1: [],
+      reports
+    };
+    mentoringLogsData.requestTime1.push(new Date());
+
+    const newUser = mentoringLogsRepository.create(mentoringLogsData);
+    await mentoringLogsRepository.save(newUser);
   }
 }

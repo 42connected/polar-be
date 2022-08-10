@@ -5,6 +5,7 @@ import { MentoringLogsInterface } from '../mentoring-log/mentoring-log.interface
 import { MentorsInterface } from '../mentors/mentors.interface';
 
 export interface ReportsInterface {
+  id?: string;
   mentors: MentorsInterface;
   cadets: CadetsInterface;
   place: string;
