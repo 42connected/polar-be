@@ -16,7 +16,6 @@ import { CommentsModule } from './v1/comments/comments.module';
 import { BullQueueModule } from './bull-queue/bull-queue.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { EmailModule } from './v1/email/email.module';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
@@ -84,10 +83,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           {
             path: 'comments',
             module: CommentsModule,
-          },
-          {
-            path: 'emails',
-            module: EmailModule,
           },
         ],
       },

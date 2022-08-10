@@ -1,20 +1,19 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { ReservationMessageDto } from 'src/v1/dto/slack/send-message.dto';
+import {
+  ApproveMessageDto,
+  CancelMessageDto,
+  ReservationMessageDto,
+} from 'src/v1/dto/email/send-message.dto';
 
 @Injectable()
 export class EmailService {
   constructor(private mailService: MailerService) {}
-  async sendReservationMessageToMentor(
-    reservationMessageDto: ReservationMessageDto,
-  ) {
-    const {
-      mentorEmail,
-      cadetSlackId,
-      reservationTime,
-      mentoringTime,
-      isCommon,
-    } = reservationMessageDto;
+
+  ReservationTimeToString(
+    reservationTime: Date,
+    mentoringTime: number,
+  ): string {
     const reservationTimeTmp: string = reservationTime.toDateString();
     const tmp = reservationTimeTmp.split(' ');
     const reservationTimeToString =
@@ -30,16 +29,32 @@ export class EmailService {
       ' for ' +
       mentoringTime +
       ' hours';
+    return reservationTimeToString;
+  }
+
+  async sendReservationMessageToMentor(
+    reservationMessageDto: ReservationMessageDto,
+  ): Promise<boolean> {
+    const {
+      mentorEmail,
+      cadetSlackId,
+      reservationTime,
+      mentoringTime,
+      isCommon,
+    } = reservationMessageDto;
     let commonType: string;
     if (isCommon) {
       commonType = '공통과정';
     } else {
       commonType = '심화과정';
     }
+    const reservationTimeToString = this.ReservationTimeToString(
+      reservationTime,
+      mentoringTime,
+    );
     try {
-      const response = await this.mailService.sendMail({
+      await this.mailService.sendMail({
         to: mentorEmail,
-        from: '42polar-no-reply@gmail.com',
         subject: 'New mentoring request',
         template: 'ReservationMessage.hbs',
         context: {
@@ -49,9 +64,53 @@ export class EmailService {
           reservationTimeToString: reservationTimeToString,
         },
       });
-      return response;
+      return true;
     } catch (error) {
-      throw new ConflictException('슬랙 메세지 전송에 실패했습니다');
+      throw new ConflictException('이메일 전송에 실패했습니다');
+    }
+  }
+
+  async sendApproveMessageToCadet(
+    approveMessageDto: ApproveMessageDto,
+  ): Promise<boolean> {
+    const { mentorSlackId, cadetEmail, reservationTime, mentoringTime } =
+      approveMessageDto;
+    const reservationTimeToString = this.ReservationTimeToString(
+      reservationTime,
+      mentoringTime,
+    );
+    try {
+      await this.mailService.sendMail({
+        to: cadetEmail,
+        subject: 'New mentoring request',
+        template: 'ApproveMessage.hbs',
+        context: {
+          mentorSlackId: mentorSlackId,
+          reservationTimeToString: reservationTimeToString,
+        },
+      });
+      return true;
+    } catch (error) {
+      throw new ConflictException('이메일 전송에 실패했습니다');
+    }
+  }
+
+  async sendCancelMessageToCadet(
+    cancelMessageDto: CancelMessageDto,
+  ): Promise<boolean> {
+    const { mentorSlackId, cadetEmail } = cancelMessageDto;
+    try {
+      await this.mailService.sendMail({
+        to: cadetEmail,
+        subject: 'New mentoring request',
+        template: 'CancelMessage.hbs',
+        context: {
+          mentorSlackId: mentorSlackId,
+        },
+      });
+      return true;
+    } catch (error) {
+      throw new ConflictException('이메일 전송에 실패했습니다');
     }
   }
 }

@@ -30,9 +30,8 @@ export class ApproveMessageDto {
   @Length(0, 15)
   mentorSlackId: string;
 
-  @IsString()
-  @Length(0, 15)
-  cadetSlackId: string;
+  @IsEmail()
+  cadetEmail: string;
 
   @IsDate()
   reservationTime: Date;
@@ -46,7 +45,6 @@ export class CancelMessageDto {
   @Length(0, 15)
   mentorSlackId: string;
 
-  @IsString()
-  @Length(0, 15)
-  cadetSlackId: string;
+  @IsEmail()
+  cadetEmail: string;
 }
