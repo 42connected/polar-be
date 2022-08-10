@@ -57,7 +57,6 @@ export class SearchMentorsService {
     }
 
     let mentorsInfo: MentorSimpleInfo[];
-
     if (keywordsId) {
       try {
         mentorsInfo = await this.getMentorsInfoByKeywords(keywordsId);
