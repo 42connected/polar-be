@@ -1,7 +1,7 @@
 export interface MentorsInterface {
   id?: string;
   intraId: string;
-  name: string;
+  name?: string;
   profileImage?: string;
   availableTime?: string;
   introduction?: string;

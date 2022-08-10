@@ -1,3 +1,5 @@
+import { MentoringLogs } from '../../entities/mentoring-logs.entity';
+import { ReportsInterface } from 'src/v1/interface/reports/reports.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { Cadets } from '../../entities/cadets.entity';
@@ -8,15 +10,35 @@ export class ReportsSeeder implements Seeder {
   async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
-  ): Promise<void> {
-    const reportRepository = dataSource.getRepository(Reports);
-    const mentorRepository = dataSource.getRepository(Mentors);
-    const cadetRepository = dataSource.getRepository(Cadets);
-
+    ): Promise<void> {
+      const reportRepository = dataSource.getRepository(Reports);
+      const mentorRepository = dataSource.getRepository(Mentors);
+      const cadetRepository = dataSource.getRepository(Cadets);
+      const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
+      
+      console.log('Seeding reports...');
     const mentors = await mentorRepository.findOneBy({ intraId: 'm-engeng' });
     const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
-    console.log('Seeding reports...');
-    const reportData = {
+    const mentoringLogs = await mentoringLogsRepository.find({
+      relations: {
+        mentors: true,
+        cadets: true,
+      },
+      where: {
+        // topic: 'What is making you feel good?',
+        mentors: {
+          id: mentors.id,
+        },
+        cadets: {
+          id: cadets.id,
+      }
+      }
+    });
+    if (mentoringLogs.length === 0) {
+      console.log('No mentoring logs found');
+      return;
+    }
+    const reportData : ReportsInterface= {
       mentors,
       cadets,
       content: '안녕하세요',
@@ -24,6 +46,7 @@ export class ReportsSeeder implements Seeder {
       imageUrl: [
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       ],
+      mentoringLogs : mentoringLogs[0],
     };
 
     const newUser = reportRepository.create(reportData);

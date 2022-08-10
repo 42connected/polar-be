@@ -8,13 +8,13 @@ export interface ReportsInterface {
   id?: string;
   mentors: MentorsInterface;
   cadets: CadetsInterface;
-  place: string;
-  topic: string;
-  content: string;
-  imageUrl: string[];
-  feedbackMessage: string;
-  feedback1: number;
-  feedback2: number;
-  feedback3: number;
+  place?: string;
+  topic?: string;
+  content?: string;
+  imageUrl?: string[];
+  feedbackMessage?: string;
+  feedback1?: number;
+  feedback2?: number;
+  feedback3?: number;
   mentoringLogs: MentoringLogsInterface;
 }

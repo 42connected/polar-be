@@ -20,15 +20,13 @@ export class MentoringLogsSeeder implements Seeder {
     const cadetRepository = dataSource.getRepository(Cadets);
     const reportsRepository = dataSource.getRepository(Reports);
 
-    const mentors = await (
-      await mentorRepository.findOneBy({ intraId: 'm-engeng' })
-    );
-    const cadets = await (
-      await cadetRepository.findOneBy({ intraId: 'jojoo' })
-    );
-    const reports = await (
-      await reportsRepository.findOneBy({ content: 'good' })
-    );
+    const mentors = await await mentorRepository.findOneBy({
+      intraId: 'm-engeng',
+    });
+    const cadets = await await cadetRepository.findOneBy({ intraId: 'jojoo' });
+    const reports = await await reportsRepository.findOneBy({
+      content: 'good',
+    });
     const mentoringLogsData: MentoringLogsInterface = {
       mentors,
       cadets,
@@ -37,7 +35,7 @@ export class MentoringLogsSeeder implements Seeder {
       status: 'sleeping',
       reportStatus: 'go hard',
       requestTime1: [],
-      reports
+      reports,
     };
     mentoringLogsData.requestTime1.push(new Date());
 
