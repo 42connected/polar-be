@@ -13,11 +13,11 @@ import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
 import { JwtStrategy } from 'src/v1/strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
-import { CadetsService } from 'src/v1/cadets/service/cadets.service';
+import { MentorsService } from 'src/v1/mentors/service/mentors.service';
 
 describe('CadetsController (e2e)', () => {
   let app: INestApplication;
-  let cadetsService: CadetsService;
+  let mentorsService: MentorsService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -59,14 +59,10 @@ describe('CadetsController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    cadetsService = moduleFixture.get(CadetsService);
+    mentorsService = moduleFixture.get(MentorsService);
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
   });
-
-  // it('/test (GET)', () => {
-  //   return request(app.getHttpServer()).get('/test').expect(200).expect('hi');
-  // });
 
   it('/ (POST)', () => {
     return request(app.getHttpServer())
@@ -76,26 +72,33 @@ describe('CadetsController (e2e)', () => {
   });
 
   it('/mentorings (GET)', () => {
-    // const result = request(app.getHttpServer()).get('/mentorings').expect(200);
-    // console.log(result);
     return request(app.getHttpServer()).get('/mentorings').expect(200);
   });
 
   it('/join (POST)', async () => {
-    // request(app.getHttpServer())
-    //   .post('/join')
-    //   .send({ name: 'asdf' })
-    //   .expect(201);
-    // const user = await cadetsService.findCadetByIntraId('nakkim');
-    // console.log(user);
     return request(app.getHttpServer())
       .post('/join')
       .send({ name: 'test' })
       .expect(201);
   });
 
+  it('/mentorings/apply/:mentorId (POST)', async () => {
+    const apply = {
+      topic: 'test',
+      content: '테스트중',
+      requestTime1: [new Date(), new Date()],
+      requestTime2: [new Date(), new Date()],
+      requestTime3: [new Date(), new Date()],
+    };
+    const mentor = await mentorsService.findByIntra('m-engeng');
+
+    return request(app.getHttpServer())
+      .post(`/mentorings/apply/${mentor.id}`)
+      .send(apply)
+      .expect(201);
+  });
+
   afterAll(async () => {
-    // await app.close();
-    await Promise.all([app.close()]);
+    await app.close();
   });
 });

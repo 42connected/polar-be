@@ -44,13 +44,9 @@ export class CadetsController {
   @Post('join')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  async join(@Body() body: JoinCadetDto, @User() user: jwtUser) {
+  join(@Body() body: JoinCadetDto, @User() user: jwtUser) {
     const { name } = body;
-    await this.cadetsService.saveName(user, name);
-    console.log(
-      'result',
-      await this.cadetsService.findCadetByIntraId('nakkim'),
-    );
+    this.cadetsService.saveName(user, name);
   }
 
   @Post('mentorings/apply/:mentorId')
