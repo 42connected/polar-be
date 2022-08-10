@@ -26,5 +26,8 @@ export class CadetsSeeder implements Seeder {
       const newUser = cadetRepository.create(cadetData);
       await cadetRepository.save(newUser);
     }
+
+    const cadetsFactory = await factoryManager.get(Cadets);
+    await cadetsFactory.saveMany(3);
   }
 }

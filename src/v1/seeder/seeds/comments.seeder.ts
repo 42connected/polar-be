@@ -28,5 +28,8 @@ export class CommentsSeeder implements Seeder {
 
     const newUser = commentRepository.create(commentData);
     await commentRepository.save(newUser);
+
+    const commentsFactory = await factoryManager.get(Comments);
+    await commentsFactory.saveMany(10);
   }
 }
