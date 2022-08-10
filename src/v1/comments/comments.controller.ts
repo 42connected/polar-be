@@ -14,14 +14,24 @@ import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('comments API')
 export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
 
   @Post(':mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'comments API',
+    description: '멘토링 후기 생성 페이지',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링 후기 생성 성공',
+    type: User,
+  })
   async postComment(
     @User() user: jwtUser,
     @Param('mentorIntraId') mentorIntraId: string,

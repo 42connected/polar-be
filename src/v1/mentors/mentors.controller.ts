@@ -23,8 +23,10 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('mentors API')
 export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,

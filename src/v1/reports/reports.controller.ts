@@ -19,8 +19,10 @@ import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('reports API')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
