@@ -1,9 +1,15 @@
-import { IsBoolean, IsDate, IsNumber, IsString, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsEmail,
+  IsNumber,
+  IsString,
+  Length,
+} from 'class-validator';
 
 export class ReservationMessageDto {
-  @IsString()
-  @Length(0, 15)
-  mentorSlackId: string;
+  @IsEmail()
+  mentorEmail: string;
 
   @IsString()
   @Length(0, 15)
@@ -24,9 +30,8 @@ export class ApproveMessageDto {
   @Length(0, 15)
   mentorSlackId: string;
 
-  @IsString()
-  @Length(0, 15)
-  cadetSlackId: string;
+  @IsEmail()
+  cadetEmail: string;
 
   @IsDate()
   reservationTime: Date;
@@ -40,7 +45,6 @@ export class CancelMessageDto {
   @Length(0, 15)
   mentorSlackId: string;
 
-  @IsString()
-  @Length(0, 15)
-  cadetSlackId: string;
+  @IsEmail()
+  cadetEmail: string;
 }

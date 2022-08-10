@@ -7,9 +7,7 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CancelMessageDto } from '../dto/slack/send-message.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
-import { SlackService } from '../slack/service/slack.service';
 
 @Injectable()
 export class BatchService {
@@ -19,7 +17,6 @@ export class BatchService {
     private schedulerRegistry: SchedulerRegistry,
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
-    private slackService: SlackService,
   ) {}
 
   async cancelMeetingAuto(
@@ -64,17 +61,17 @@ export class BatchService {
 
       if (mentorDb.status === waitingStatus) {
         //슬랙 api -> 메일 api로 변경예정
-        const canceldMessageDto: CancelMessageDto = {
-          mentorSlackId: 'jokang',
-          cadetSlackId: 'jokang',
-        };
+        // const canceldMessageDto: CancelMessageDto = {
+        //   mentorSlackId: 'jokang',
+        //   cadetSlackId: 'jokang',
+        // };
 
-        try {
-          this.slackService.sendCanceldMessageToCadet(canceldMessageDto);
-        } catch {
-          this.logger.log(`autoCancel ${uuid} 슬랙 API 실패`);
-          return;
-        }
+        // try {
+        //   this.slackService.sendCanceldMessageToCadet(canceldMessageDto);
+        // } catch {
+        //   this.logger.log(`autoCancel ${uuid} 슬랙 API 실패`);
+        //   return;
+        // }
 
         mentorDb.status = cancelStatus;
         try {
