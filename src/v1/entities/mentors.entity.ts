@@ -22,14 +22,23 @@ export class Mentors {
   @Column({ type: 'varchar', length: 10, nullable: true })
   name: string;
 
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  company: string;
+
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  duty: string;
+
   @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
-  @Column({ type: 'time', array: true, default: [[]] })
-  availableTime: Date[][2];
+  @Column({ type: 'varchar', nullable: true })
+  availableTime: string;
 
   @Column({ type: 'varchar', length: 150, nullable: true })
   introduction: string;
+
+  @Column({ type: 'varchar', length: 150, nullable: true })
+  tags: string;
 
   @Column({ type: 'boolean' })
   isActive: boolean;

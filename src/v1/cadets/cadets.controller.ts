@@ -3,12 +3,14 @@ import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
 import { CreateApplyDto } from '../dto/cadets/create-apply.dto';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
 import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
+import { UpdateCadetDto } from '../dto/cadets/update-cadet.dto';
 
 @Controller()
 export class CadetsController {
@@ -25,11 +27,26 @@ export class CadetsController {
     return 'hi';
   }
 
+  @Post()
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  UpdateCadet(@User() user: jwtUser, @Body() updateCadetDto: UpdateCadetDto) {
+    return this.cadetsService.updateCadet(user.intraId, updateCadetDto);
+  }
+
   @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
     return await this.cadetsService.getMentoringLogs(user.id);
+  }
+
+  @Post('join')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Body() body: JoinCadetDto, @User() user: jwtUser) {
+    const { name } = body;
+    this.cadetsService.saveName(user, name);
   }
 
   @Post('mentorings/apply/:mentorId')

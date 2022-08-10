@@ -4,14 +4,13 @@ import {
   Get,
   Param,
   Patch,
-  Req,
   Post,
   UseGuards,
   Query,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
 import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -23,6 +22,7 @@ import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
+import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 
 @Controller()
 export class MentorsController {
@@ -58,6 +58,14 @@ export class MentorsController {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
+  @Post('join')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
+    const { name, availableTime } = body;
+    this.mentorsService.saveInfos(user, name, availableTime);
+  }
+
   @Get(':intraId')
   @Roles('mentor', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
@@ -67,15 +75,15 @@ export class MentorsController {
 
   @Get()
   getMentors(
-    @Query('keywordId') keywordId?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('keywordId') keywordId?: string[],
     @Query('searchText') searchText?: string,
   ): Promise<MentorsList> {
-    if (keywordId)
-      return this.searchMentorsService.getMentorListByKeyword(
-        keywordId,
-        searchText,
-      );
-    if (searchText)
-      return this.searchMentorsService.getMentorListBySearch(searchText);
+    if (typeof keywordId === 'string') keywordId = [keywordId];
+    return this.searchMentorsService.getMentorList(
+      categoryId,
+      keywordId,
+      searchText,
+    );
   }
 }

@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   Patch,
   Post,
@@ -11,7 +10,7 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment/comment.dto';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
@@ -19,13 +18,6 @@ import { CommentsService } from './service/comments.service';
 @Controller()
 export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
-
-  @Get(':commentId')
-  @Roles('cadet', 'mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  async getComment(@Param('commentId') commentId: string) {
-    return this.commentService.getComment(commentId);
-  }
 
   @Post(':mentorIntraId')
   @Roles('cadet')

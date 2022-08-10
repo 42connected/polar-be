@@ -11,6 +11,9 @@ import { MentorsController } from './mentors.controller';
 import { MentoringsService } from './service/mentorings.service';
 import { MentorsService } from './service/mentors.service';
 import { SearchMentorsService } from './service/search-mentors.service';
+import { Comments } from '../entities/comments.entity';
+import { KeywordCategories } from '../entities/keyword-categories.entity';
+import { Categories } from '../entities/categories.entity';
 
 @Module({
   imports: [
@@ -24,12 +27,7 @@ import { SearchMentorsService } from './service/search-mentors.service';
     AuthModule,
   ],
   controllers: [MentorsController],
-  providers: [
-    MentorsService,
-    SearchMentorsService,
-    MentoringsService,
-    AuthService,
-  ],
+  providers: [MentorsService, SearchMentorsService, MentoringsService],
   exports: [MentorsService, MentoringsService],
 })
 export class MentorsModule {}

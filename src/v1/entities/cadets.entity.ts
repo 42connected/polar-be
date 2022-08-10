@@ -24,6 +24,9 @@ export class Cadets {
   @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  resumeUrl: string;
+
   @Column({ type: 'boolean' })
   isCommon: boolean;
 
