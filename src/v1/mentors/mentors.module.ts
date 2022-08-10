@@ -26,12 +26,7 @@ import { Comments } from '../entities/comments.entity';
     AuthModule,
   ],
   controllers: [MentorsController],
-  providers: [
-    MentorsService,
-    SearchMentorsService,
-    MentoringsService,
-    AuthService,
-  ],
+  providers: [MentorsService, SearchMentorsService, MentoringsService],
   exports: [MentorsService, MentoringsService],
 })
 export class MentorsModule {}

@@ -3,6 +3,7 @@ import { Global, Module } from '@nestjs/common';
 import { LoginConsumer } from './login-consumer';
 import { LoginProducer } from './login-producer';
 import 'dotenv/config';
+import { HttpModule } from '@nestjs/axios';
 
 @Global()
 @Module({
@@ -23,6 +24,7 @@ import 'dotenv/config';
       },
     }),
     BullModule.registerQueue({ name: 'login' }),
+    HttpModule,
   ],
   providers: [LoginConsumer, LoginProducer],
   exports: [LoginProducer],
