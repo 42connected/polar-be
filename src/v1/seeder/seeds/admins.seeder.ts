@@ -10,18 +10,21 @@ export class AdminSeeder implements Seeder {
   ): Promise<void> {
     const adminRepository = dataSource.getRepository(Admins);
     console.log('Seeding admins...');
+
     const adminData: AdminsInterface = {
-      intraId: 'tototo',
-      name: '주종현',
+      intraId: 'super',
+      name: '종현',
     };
 
     const isExists = await adminRepository.findOneBy({
       intraId: adminData.intraId,
     });
-    console.log(isExists);
     if (!isExists) {
       const newUser = adminRepository.create(adminData);
       await adminRepository.save(newUser);
     }
+
+    const adminsFactory = await factoryManager.get(Admins);
+    await adminsFactory.saveMany(3);
   }
 }
