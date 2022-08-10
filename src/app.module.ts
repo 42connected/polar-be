@@ -13,13 +13,16 @@ import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
+import { ScheduleModule } from '@nestjs/schedule';
 import { BullQueueModule } from './bull-queue/bull-queue.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { BatchModule } from './v1/batch/batch.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     MailerModule.forRootAsync({
       useFactory: () => ({
         transport: {
@@ -83,6 +86,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           {
             path: 'comments',
             module: CommentsModule,
+          },
+          {
+            path: 'batch',
+            module: BatchModule,
           },
         ],
       },
