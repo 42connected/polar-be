@@ -11,6 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
 import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { BatchModule } from './batch/batch.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtModule } from '@nestjs/jwt';
     BocalsModule,
     AuthModule,
     CommentsModule,
+    BatchModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {
