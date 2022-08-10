@@ -19,5 +19,5 @@ export class ReportsSortDto {
   month: number;
 
   @IsBoolean()
-  isUp: boolean;
+  isAscending: boolean;
 }

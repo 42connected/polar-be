@@ -206,25 +206,55 @@ export class ReportsService {
   }
 
   async sortReport(reportsSortDto: ReportsSortDto) {
-    const reports = await this.getAllReport();
+    let reports;
     try {
-      //TODO: Refactoy pipe 사용하여 monthData -1 을 해준다.
-      if (reportsSortDto.month) {
-        reports.reports.filter(
-          data =>
-            data.mentoringLogs.meetingAt.getMonth() ===
-            reportsSortDto.month - 1,
-        );
-      }
-
-      if (reportsSortDto.mentorName) {
-        reports.reports.filter(
-          data => data.mentor.name === reportsSortDto.mentorName,
-        );
-      }
-      return reports;
+      reports = await this.reportsRepository.find({
+        relations: {
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
+        },
+        select: {
+          mentors: {
+            name: true,
+            intraId: true,
+          },
+          cadets: {
+            name: true,
+            intraId: true,
+          },
+          mentoringLogs: {
+            meetingAt: true,
+            money: true,
+          },
+          place: true,
+        },
+        order: {
+          mentoringLogs: {
+            meetingAt: reportsSortDto.isAscending ? 'ASC' : 'DESC',
+          },
+        },
+      });
     } catch {
       throw new ConflictException('레포트를 정렬중 오류가 발생하였습니다');
     }
+    if (!reports) {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+    //TODO: Refactoy pipe 사용하여 monthData -1 을 해준다.
+    if (reportsSortDto.month) {
+      reports.reports.filter(
+        data =>
+          data.mentoringLogs.meetingAt.getMonth() === reportsSortDto.month - 1,
+      );
+    }
+
+    if (reportsSortDto.mentorName) {
+      reports.reports.filter(
+        data => data.mentor.name === reportsSortDto.mentorName,
+      );
+    }
+
+    return reports;
   }
 }
