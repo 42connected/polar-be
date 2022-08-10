@@ -9,7 +9,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       type: 'postgres',
       host: process.env.POSTGRES_HOST,
       port: parseInt(process.env.POSTGRES_PORT, 10),
-      //ssl: { rejectUnauthorized: false },
       username: process.env.POSTGRES_USERNAME,
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
