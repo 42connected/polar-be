@@ -1,3 +1,4 @@
 export interface KeywordsInterface {
-    name: string;
+  id?: string;
+  name: string;
 }

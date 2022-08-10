@@ -1,4 +1,3 @@
-import { Comments } from 'src/v1/entities/comments.entity';
 import { CadetsInterface } from 'src/v1/interface/cadets/cadets.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
@@ -19,7 +18,7 @@ export class CadetsSeeder implements Seeder {
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       isCommon: true,
     };
-
+    
     const isExists = await cadetRepository.findOneBy({
       intraId: cadetData.intraId,
     });

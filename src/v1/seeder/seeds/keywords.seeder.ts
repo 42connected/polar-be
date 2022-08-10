@@ -11,11 +11,13 @@ export class KeywordsSeeder implements Seeder {
     const keywordRepository = dataSource.getRepository(Keywords);
     console.log('Seeding keywords...');
 
-    const keywordData : KeywordsInterface= {
+    const keywordData: KeywordsInterface = {
       name: 'web',
     };
 
-    const isExists = await keywordRepository.findOneBy({ name: keywordData.name });
+    const isExists = await keywordRepository.findOneBy({
+      name: keywordData.name,
+    });
     if (!isExists) {
       const newKeyword = keywordRepository.create(keywordData);
       await keywordRepository.save(newKeyword);

@@ -3,6 +3,7 @@ import { MentorKeywordsInterface } from '../mentor-keywords/mentor-keywords.inte
 import { ReportsInterface } from '../reports/reports.interface';
 
 export interface CadetsInterface {
+  id?: string;
   intraId: string;
   name: string;
   profileImage?: string;

@@ -4,6 +4,7 @@ import { CadetsSeeder } from './cadets.seeder';
 import { CommentsSeeder } from './comments.seeder';
 import { KeywordsSeeder } from './keywords.seeder';
 import { MentorKeywordsSeeder } from './mentor-keywords.seeder';
+import { MentoringLogsSeeder } from './mentoring-logs.seeder';
 import { MentorsSeeder } from './mentors.seeder';
 
 export class MainSeeder implements Seeder {
@@ -11,10 +12,11 @@ export class MainSeeder implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    await runSeeder(dataSource, CadetsSeeder);
-    await runSeeder(dataSource, MentorsSeeder);
-    await runSeeder(dataSource, CommentsSeeder);
-    await runSeeder(dataSource, KeywordsSeeder);
+    // await runSeeder(dataSource, CadetsSeeder);
+    // await runSeeder(dataSource, MentorsSeeder);
+    // await runSeeder(dataSource, CommentsSeeder);
+    // await runSeeder(dataSource, KeywordsSeeder);
     // await runSeeder(dataSource, MentorKeywordsSeeder);
+    await runSeeder(dataSource, MentoringLogsSeeder);
   }
 }
