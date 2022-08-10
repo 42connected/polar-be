@@ -7,6 +7,8 @@ import {
 import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CancelMessageDto } from '../dto/email/send-message.dto';
+import { EmailService } from '../email/service/email.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 
 @Injectable()
@@ -14,10 +16,30 @@ export class BatchService {
   private readonly logger = new Logger(BatchService.name);
 
   constructor(
-    private schedulerRegistry: SchedulerRegistry,
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
+    private schedulerRegistry: SchedulerRegistry,
+    private emailService: EmailService,
   ) {}
+
+  private async getMentoringLogsDB(
+    mentoringsId: string,
+  ): Promise<MentoringLogs> {
+    let mentorDb: MentoringLogs = null;
+    try {
+      mentorDb = await this.mentoringsLogsRepository.findOne({
+        where: { id: mentoringsId },
+      });
+    } catch {
+      throw new ConflictException();
+    }
+
+    if (mentorDb === null) {
+      throw new NotFoundException();
+    }
+
+    return mentorDb;
+  }
 
   async cancelMeetingAuto(
     mentoringsId: string,
@@ -27,83 +49,90 @@ export class BatchService {
       return false;
     }
 
-    const result: boolean = await this.addTimeout(
-      mentoringsId,
-      millisecondsTime,
-    );
-    if (result === true) return true;
-    return false;
-  }
-
-  async addTimeout(uuid: string, milliseconds: number): Promise<boolean> {
-    let mentorDb = null;
+    let mentoringLogsData: MentoringLogs = null;
     try {
-      mentorDb = await this.mentoringsLogsRepository.findOne({
-        where: { id: uuid },
-      });
+      mentoringLogsData = await this.getMentoringLogsDB(mentoringsId);
     } catch {
-      this.logger.log(
-        `autoCancel mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
-      );
+      this.logger.log('DB에서 정보를 읽어오는데 실패했습니다');
       return false;
     }
 
-    if (mentorDb === null) {
-      this.logger.log(
-        `autoCancel mentoringsLogs ${uuid} 데이터를 찾을 수 없습니다`,
-      );
-      return false;
-    }
-
-    const callback = () => {
-      const waitingStatus = '대기중';
-      const cancelStatus = '취소';
-
-      if (mentorDb.status === waitingStatus) {
-        //슬랙 api -> 메일 api로 변경예정
-        // const canceldMessageDto: CancelMessageDto = {
-        //   mentorSlackId: 'jokang',
-        //   cadetSlackId: 'jokang',
-        // };
-
-        // try {
-        //   this.slackService.sendCanceldMessageToCadet(canceldMessageDto);
-        // } catch {
-        //   this.logger.log(`autoCancel ${uuid} 슬랙 API 실패`);
-        //   return;
-        // }
-
-        mentorDb.status = cancelStatus;
-        try {
-          this.mentoringsLogsRepository.save(mentorDb);
-        } catch {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${uuid} status 업데이트 실패`,
-          );
-          return;
-        }
-
-        this.logger.log(
-          `autoCancel mentoringsLogs ${uuid} after (${milliseconds}) : 실행완료 `,
-        );
-      } else {
-        this.logger.log(
-          `autoCancel mentoringsLogs ${uuid} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
-        );
-      }
-
-      this.deleteTimeout(uuid);
+    //엔터티 수정이 안되어 있어 일단 하드코딩으로
+    //mentorSlackId와 cadet이메일을 작성함
+    //추후에 DB 탐색을 통해서 데이터 가져오게 수정할 예정
+    const cancelMessageInfo: CancelMessageDto = {
+      mentorSlackId: 'jokang',
+      cadetEmail: 'autoba9687@gmail.com',
     };
 
+    await this.addTimeout(
+      millisecondsTime,
+      mentoringLogsData,
+      cancelMessageInfo,
+    );
+
+    return true;
+  }
+
+  private async addTimeout(
+    milliseconds: number,
+    mentoringLogsData: MentoringLogs,
+    cancelMessageInfo,
+  ): Promise<void> {
+    const callback = () => {
+      const meetingStatus = mentoringLogsData.status;
+      const waitingStatus = '대기중';
+      const mentoringId = mentoringLogsData.id;
+
+      if (meetingStatus !== waitingStatus) {
+        this.logger.log(
+          `autoCancel mentoringsLogs ${mentoringId} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
+        );
+        return;
+      }
+
+      const cancelMailPromise = this.emailService
+        .sendCancelMessageToCadet(cancelMessageInfo)
+        .then(() => {
+          this.logger.log(
+            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
+          );
+        });
+
+      cancelMailPromise.catch(error =>
+        this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
+      );
+
+      const cancelStatus = '취소';
+      mentoringLogsData.status = cancelStatus;
+
+      const mentoringLogsUpdatePromise = this.mentoringsLogsRepository
+        .save(mentoringLogsData)
+        .then(() =>
+          this.logger.log(
+            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 취소 상태변경 완료`,
+          ),
+        );
+
+      mentoringLogsUpdatePromise.catch(() =>
+        this.logger.log(
+          `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 취소 상태변경 실패`,
+        ),
+      );
+
+      this.deleteTimeout(mentoringId);
+    };
+
+    const mentoringId = mentoringLogsData.id;
     const timeout = setTimeout(callback, milliseconds);
     try {
-      this.schedulerRegistry.addTimeout(uuid, timeout);
+      this.schedulerRegistry.addTimeout(mentoringId, timeout);
     } catch {
-      this.deleteTimeout(uuid);
-      this.schedulerRegistry.addTimeout(uuid, timeout);
+      this.deleteTimeout(mentoringId);
+      this.schedulerRegistry.addTimeout(mentoringId, timeout);
     }
     this.logger.log(
-      `autoCancel mentoringsLogs after ${milliseconds}, ${uuid} added!`,
+      `autoCancel mentoringsLogs after ${milliseconds}ms, ${mentoringId} added!`,
     );
   }
 
@@ -112,7 +141,7 @@ export class BatchService {
     timeouts.forEach(name => this.logger.log(`autoCancel: ${name}`));
   }
 
-  deleteTimeout(uuid: string) {
+  private deleteTimeout(uuid: string) {
     this.schedulerRegistry.deleteTimeout(uuid);
     this.logger.log(`autoCancel mentoringsLogs ${uuid} deleted!`);
   }
