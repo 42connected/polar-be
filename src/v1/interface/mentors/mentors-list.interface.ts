@@ -1,8 +1,8 @@
-import { Keywords } from 'src/v1/entities/keywords.entity';
+import { Categories } from 'src/v1/entities/categories.entity';
 import { MentorsListElement } from './mentors-list-element.interface';
 
 export interface MentorsList {
-  keyword?: Keywords;
+  category?: Categories;
   mentorCount: number;
   mentors: MentorsListElement[];
 }

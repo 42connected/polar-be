@@ -75,15 +75,15 @@ export class MentorsController {
 
   @Get()
   getMentors(
-    @Query('keywordId') keywordId?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('keywordId') keywordId?: string[],
     @Query('searchText') searchText?: string,
   ): Promise<MentorsList> {
-    if (keywordId)
-      return this.searchMentorsService.getMentorListByKeyword(
-        keywordId,
-        searchText,
-      );
-    if (searchText)
-      return this.searchMentorsService.getMentorListBySearch(searchText);
+    if (typeof keywordId === 'string') keywordId = [keywordId];
+    return this.searchMentorsService.getMentorList(
+      categoryId,
+      keywordId,
+      searchText,
+    );
   }
 }
