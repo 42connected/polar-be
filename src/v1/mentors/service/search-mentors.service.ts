@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
-import { Raw, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { MentorSimpleInfo } from 'src/v1/interface/mentors/mentor-simple-info.interface';
 import { MentorsListElement } from 'src/v1/interface/mentors/mentors-list-element.interface';
 import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
