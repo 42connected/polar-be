@@ -9,14 +9,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { MentoringLogsRepository } from 'src/v1/mentors/repository/mentoring-logs.repository';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { ReportsRepository } from '../repository/reports.repository';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ReportsService {
   constructor(
-    @InjectRepository(MentoringLogsRepository)
-    private readonly mentoringLogsRepository: MentoringLogsRepository,
+    @InjectRepository(MentoringLogs)
+    private readonly mentoringLogsRepository: Repository<MentoringLogs>,
     @InjectRepository(ReportsRepository)
     private readonly reportsRepository: ReportsRepository,
   ) {}
@@ -64,6 +65,24 @@ export class ReportsService {
     const money = hour * 100000;
     return money;
   }
+  async findMentoringLogById(mentoringLogId: string): Promise<MentoringLogs> {
+    let mentoringLog: MentoringLogs;
+    try {
+      mentoringLog = await this.mentoringLogsRepository.findOne({
+        where: { id: mentoringLogId },
+        relations: {
+          cadets: true,
+          mentors: true,
+        },
+      });
+    } catch {
+      throw new ConflictException('멘토링 로그를 찾는중 오류가 발생하였습니다');
+    }
+    if (!mentoringLog) {
+      throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
+    }
+    return mentoringLog;
+  }
 
   /*
    * @Get
@@ -76,9 +95,12 @@ export class ReportsService {
    * @Post
    */
   async createReport(mentoringLogId: string) {
-    const mentoringLog = await this.mentoringLogsRepository.findById(
-      mentoringLogId,
-    );
+    const mentoringLog = await this.findMentoringLogById(mentoringLogId);
+    if (mentoringLog.reports) {
+      throw new MethodNotAllowedException(
+        '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
+      );
+    }
     if (mentoringLog.reportStatus !== '작성가능') {
       throw new MethodNotAllowedException(
         '해당 멘토링 로그는 레포트를 생성할 수 없습니다',
