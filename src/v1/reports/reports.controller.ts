@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -19,16 +20,25 @@ import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
+import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller()
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get(':reportId')
-  @Roles('mentor')
+  @Roles('mentor', 'bocal', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
   async getReport(@Param('reportId') reportId: string): Promise<Reports> {
     return await this.reportsService.getReport(reportId);
+  }
+
+  @Get()
+  // FIXME: 카뎃 삭제
+  @Roles('mentor', 'bocal', 'cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  async getReportPagination(@Query() paginationDto: PaginationDto) {
+    return await this.reportsService.getReportPagination(paginationDto);
   }
 
   @Post(':mentoringLogId')

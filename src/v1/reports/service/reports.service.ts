@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -145,6 +146,49 @@ export class ReportsService {
    */
   async getReport(reportId: string): Promise<Reports> {
     return await this.findReportById(reportId);
+  }
+
+  /*
+   * @Get 페이지
+   */
+  async getReportPagination(paginationDto: PaginationDto) {
+    try {
+      const reports = await this.reportsRepository.findAndCount({
+        relations: {
+          mentoringLogs: true,
+          cadets: true,
+          mentors: true,
+        },
+        select: {
+          id: true,
+          place: true,
+          mentoringLogs: {
+            id: true,
+            createdAt: true,
+            meetingAt: true,
+            money: true,
+            reportStatus: true,
+          },
+          mentors: {
+            intraId: true,
+          },
+          cadets: {
+            intraId: true,
+          },
+        },
+        take: paginationDto.take,
+        skip: paginationDto.take * (paginationDto.page - 1),
+        order: {
+          mentoringLogs: {
+            meetingAt: 'DESC',
+          },
+        },
+      });
+      return reports;
+    } catch (e) {
+      console.log(e);
+      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+    }
   }
 
   /*
