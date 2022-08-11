@@ -5,7 +5,7 @@ const JWT_SECRET = 'polarpolarpolar1';
 const generateCadetToken = async role => {
   console.log('-----------------------------------------\n');
   const paylaod = {
-    id: undefined,
+    id: process.argv[3],
     intraId: process.argv[2],
     role: role,
   };
@@ -22,6 +22,6 @@ if (process.argv[2]) {
   generateCadetToken('mentor');
   generateCadetToken('bocal');
 } else {
-  console.log('Usage: node genToken.js "intraId"');
+  console.log('Usage: node genToken.js "intraId" "uuid(option)"');
   console.log('!!! 인트라 아이디를 적어주세요 !!!');
 }
