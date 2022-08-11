@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { LoginProducer } from 'src/bull-queue/login-producer';
 import { TokenResponse } from '../interface/token-response.interface';
+import fetch from 'node-fetch';
 
 @Injectable()
 export class AuthService {
