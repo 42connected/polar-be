@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
-
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -51,7 +50,7 @@ export class BocalsService {
     }
   }
 
-  async createMentoringExcelFile(mentoringLogsId: MentoringInfo[], res) {
+  async createMentoringExcelFile(mentoringLogsId: string[], res) {
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('Mentoring');
 
@@ -69,7 +68,16 @@ export class BocalsService {
       { header: '멘티 이름', key: 'cadetName', width: 20 },
     ];
 
-    worksheet.addRows(mentoringLogsId);
+    for (const id of mentoringLogsId) {
+      let row: MentoringInfo;
+      try {
+        row = await this.getOneMentoringInfo(id);
+      } catch (error) {
+        throw new ConflictException(error);
+      }
+      await worksheet.addRow(row);
+    }
+
     res.writeHead(200, {
       'Content-Disposition': 'attachment; filename="file.xlsx"',
       'Content-Type':
@@ -77,7 +85,6 @@ export class BocalsService {
     });
     await workbook.xlsx.write(res).then(function () {
       res.end();
-      console.log('file created');
     });
   }
 
@@ -87,6 +94,8 @@ export class BocalsService {
       mentoringLog = await this.mentoringLogsRepository.findOne({
         where: { id: mentoringLogId },
         relations: {
+          mentors: true,
+          cadets: true,
           reports: true,
         },
       });
@@ -95,11 +104,16 @@ export class BocalsService {
     }
     if (!mentoringLog)
       throw new NotFoundException('잘못된 멘토링 아이디입니다.');
+
+    const mentoringHour: number = this.calculateTotalHour(
+      mentoringLog.meetingAt[0],
+      mentoringLog.meetingAt[1],
+    );
+
     const result: MentoringInfo = {
       mentorName: mentoringLog.mentors.name,
       mentorCompany: mentoringLog.mentors.company,
       mentorDuty: mentoringLog.mentors.duty,
-      //meetingAt 배열이어야 함
       date: mentoringLog.meetingAt[0].toISOString().split('T')[0],
       place: mentoringLog.reports.place,
       isCommon: mentoringLog.cadets.isCommon,
@@ -111,11 +125,15 @@ export class BocalsService {
         .toISOString()
         .split('T')[1]
         .substr(0, 5),
-      totalHour: 0, //계산 필요
-      money: 0, //계산 필요
-      catetName: mentoringLog.cadets.name,
+      totalHour: mentoringHour,
+      money: mentoringHour * 100000,
+      cadetName: mentoringLog.cadets.name,
     };
     return result;
+  }
+
+  calculateTotalHour(start: Date, end: Date): number {
+    return Math.floor((end.getTime() - start.getTime()) / (1000 * 60 * 60));
   }
 }
 
@@ -130,5 +148,5 @@ export interface MentoringInfo {
   endTime: string;
   totalHour: number;
   money: number;
-  catetName: string;
+  cadetName: string;
 }
