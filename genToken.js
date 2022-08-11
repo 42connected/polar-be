@@ -20,6 +20,8 @@ if (process.argv[2]) {
   generateCadetToken(process.argv[2], 'mentor');
   generateCadetToken(process.argv[2], 'bocal');
 } else {
-  console.log('Usage: node genToken.js "secretKey" "intraId" "uuid(option)"');
-  console.log('!!! 인트라 아이디를 적어주세요 !!!');
+  console.log('------------------------------------');
+  console.log('! Secret Key 필드가 비워져 있습니다');
+  console.log('------------------------------------');
+  console.log('Usage: node genToken.js SecretKey(필수) IntraId UUID');
 }
