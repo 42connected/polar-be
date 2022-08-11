@@ -14,7 +14,7 @@ import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { jwtUser } from '../interface/jwt-user.interface';
-import { CreateReportDto, UpdateReportDto } from '../dto/reports/report.dto';
+import { UpdateReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
@@ -34,27 +34,8 @@ export class ReportsController {
   @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
-      storage: diskStorage({
-        destination: './uploads',
-      }),
-    }),
-  )
-  async createReport(
-    @Param('mentoringLogId') mentoringLogId: string,
-    @Body() body: CreateReportDto,
-    @UploadedFiles()
-    files: {
-      image?: Express.Multer.File[];
-    },
-  ) {
-    const filePaths: string[] = this.reportsService.getFilePaths(files);
-    return await this.reportsService.createReport(
-      mentoringLogId,
-      filePaths,
-      body,
-    );
+  async createReport(@Param('mentoringLogId') mentoringLogId: string) {
+    return await this.reportsService.createReport(mentoringLogId);
   }
 
   @Patch(':reportId')
@@ -73,6 +54,7 @@ export class ReportsController {
     @Body() body: UpdateReportDto,
     @UploadedFiles()
     files: {
+      signature?: Express.Multer.File;
       image?: Express.Multer.File[];
     },
   ) {
@@ -81,6 +63,7 @@ export class ReportsController {
       reportId,
       user.intraId,
       filePaths,
+      files.signature.path,
       body,
     );
   }
