@@ -34,8 +34,7 @@ export class ReportsController {
   }
 
   @Get()
-  // FIXME: 카뎃 삭제
-  @Roles('mentor', 'bocal', 'cadet')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   async getReportPagination(@Query() paginationDto: PaginationDto) {
     return await this.reportsService.getReportPagination(paginationDto);
