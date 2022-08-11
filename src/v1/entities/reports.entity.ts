@@ -30,7 +30,13 @@ export class Reports {
   @Column({ type: 'varchar', length: 5000, nullable: true })
   content: string;
 
-  @Column({ type: 'varchar', default: [], length: 1000, nullable: true })
+  @Column({
+    type: 'varchar',
+    default: [],
+    length: 1000,
+    nullable: true,
+    array: true,
+  })
   imageUrl: string[];
 
   @Column({ type: 'varchar', length: 1000, nullable: true })
