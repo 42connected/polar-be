@@ -19,7 +19,7 @@ describe('CadetsController (e2e)', () => {
   let app: INestApplication;
   let mentorsService: MentorsService;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         BullQueueModule,
@@ -64,18 +64,18 @@ describe('CadetsController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (POST)', async () => {
+  it('/ (POST)', () => {
     return request(app.getHttpServer())
       .post('/')
       .send({ resumeUrl: 'test.com' })
       .expect(201);
   });
 
-  it('/mentorings (GET)', async () => {
+  it('/mentorings (GET)', () => {
     return request(app.getHttpServer()).get('/mentorings').expect(200);
   });
 
-  it('/join (POST)', async () => {
+  it('/join (POST)', () => {
     return request(app.getHttpServer())
       .post('/join')
       .send({ name: 'test' })
