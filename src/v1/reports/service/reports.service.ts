@@ -46,21 +46,6 @@ export class ReportsService {
     return report;
   }
 
-  /*
-   * File path in Object to array
-   */
-  getFilePaths(files) {
-    const filePaths: string[] = [];
-    if (files?.image) {
-      files.image.map(img => {
-        filePaths.push(img.path);
-      });
-      return filePaths;
-    } else {
-      return undefined;
-    }
-  }
-
   async findReportById(reportId: string): Promise<Reports> {
     let report: Reports;
     try {
@@ -126,7 +111,7 @@ export class ReportsService {
     }
   }
 
-  async isAllInputedReport(report: Reports): Promise<boolean> {
+  async isEnteredReport(report: Reports): Promise<boolean> {
     if (
       !report.cadets ||
       !report.mentors ||
@@ -247,7 +232,7 @@ export class ReportsService {
 
   async reportDone(reportId: string) {
     const report = await this.findReportWithMentoringLogsById(reportId);
-    if (!(await this.isAllInputedReport(report))) {
+    if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
     }
     const money = this.calcMoney(report);
