@@ -2,6 +2,7 @@ export interface MentorsInterface {
   id?: string;
   intraId: string;
   name?: string;
+  email?: string;
   company?: string;
   duty?: string;
   profileImage?: string;
