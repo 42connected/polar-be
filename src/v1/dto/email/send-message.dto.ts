@@ -27,19 +27,18 @@ export class ReservationMessageDto {
   reservationTime1: Date[];
 
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(2)
   @ArrayMaxSize(2)
   @Type(() => Date)
-  reservationTime2: Date[];
+  reservationTime2?: Date[];
 
   @IsArray()
+  @IsOptional()
   @ArrayMinSize(2)
   @ArrayMaxSize(2)
   @Type(() => Date)
-  reservationTime3: Date[];
-
-  @IsNumber()
-  mentoringTime: number;
+  reservationTime3?: Date[];
 
   @IsBoolean()
   isCommon: boolean;
@@ -52,9 +51,6 @@ export class ApproveMessageDto {
 
   @IsEmail()
   cadetEmail: string;
-
-  @IsDate()
-  reservationTime: Date;
 
   @IsArray()
   @ArrayMinSize(2)

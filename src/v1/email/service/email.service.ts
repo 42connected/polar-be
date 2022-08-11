@@ -16,7 +16,11 @@ export class EmailService {
     mentoringTime: number,
   ): string {
     const reservationTimeTmp: string = reservationTime.toDateString();
-    const tmp = reservationTimeTmp.split(' ');
+    const tmp: string[] = reservationTimeTmp.split(' ');
+    let mentoringMinute: string;
+    if (reservationTime.getMinutes() < 10)
+      mentoringMinute = reservationTime.getMinutes() + '0';
+    else mentoringMinute = reservationTime.getMinutes().toString();
     const reservationTimeToString =
       tmp[1] +
       ' ' +
@@ -26,7 +30,7 @@ export class EmailService {
       ' ' +
       reservationTime.getHours() +
       ':' +
-      reservationTime.getMinutes() +
+      mentoringMinute +
       ' for ' +
       mentoringTime +
       ' hours';
@@ -42,7 +46,6 @@ export class EmailService {
       reservationTime1,
       reservationTime2,
       reservationTime3,
-      mentoringTime,
       isCommon,
     } = reservationMessageDto;
     let commonType: string;
@@ -51,10 +54,28 @@ export class EmailService {
     } else {
       commonType = '심화과정';
     }
-    const reservationTimeToString = this.ReservationTimeToString(
-      reservationTime,
-      mentoringTime,
+    const requestTime1: string = this.ReservationTimeToString(
+      reservationTime1[0],
+      (reservationTime1[1].getTime() - reservationTime1[0].getTime()) / 3600000,
     );
+
+    let requestTime2: string;
+    if (reservationTime2) {
+      requestTime2 = this.ReservationTimeToString(
+        reservationTime2[0],
+        (reservationTime2[1].getTime() - reservationTime2[0].getTime()) /
+          3600000,
+      );
+    } else requestTime2 = 'Empty';
+
+    let requestTime3: string;
+    if (reservationTime3) {
+      requestTime3 = this.ReservationTimeToString(
+        reservationTime3[0],
+        (reservationTime3[1].getTime() - reservationTime3[0].getTime()) /
+          3600000,
+      );
+    } else requestTime3 = 'Empty';
     try {
       await this.mailService.sendMail({
         to: mentorEmail,
@@ -64,7 +85,9 @@ export class EmailService {
           cadetSlackId: cadetSlackId,
           intraProfileUrl: 'https://profile.intra.42.fr/users/' + cadetSlackId,
           commonType: commonType,
-          reservationTimeToString: reservationTimeToString,
+          requestTime1: requestTime1,
+          requestTime2: requestTime2,
+          requestTime3: requestTime3,
         },
       });
       return true;

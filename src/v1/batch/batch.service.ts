@@ -63,6 +63,7 @@ export class BatchService {
     const cancelMessageInfo: CancelMessageDto = {
       mentorSlackId: 'jokang',
       cadetEmail: 'autoba9687@gmail.com',
+      rejectMessage: 'test',
     };
 
     await this.addTimeout(
@@ -91,17 +92,17 @@ export class BatchService {
         return;
       }
 
-      const cancelMailPromise = this.emailService
-        .sendCancelMessageToCadet(cancelMessageInfo)
-        .then(() => {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
-          );
-        });
+      // const cancelMailPromise = this.emailService
+      //   .sendCancelMessageToCadet(cancelMessageInfo)
+      //   .then(() => {
+      //     this.logger.log(
+      //       `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
+      //     );
+      //   });
 
-      cancelMailPromise.catch(error =>
-        this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
-      );
+      // cancelMailPromise.catch(error =>
+      //   this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
+      // );
 
       const cancelStatus = '취소';
       mentoringLogsData.status = cancelStatus;
