@@ -11,7 +11,7 @@ import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
 import { KeywordsModule } from './v1/keywords/keywords.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
-import { AdminsModule } from './v1/admins/admins.module';
+import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BullQueueModule } from './bull-queue/bull-queue.module';
@@ -73,7 +73,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           },
           {
             path: 'bocals',
-            module: AdminsModule,
+            module: BocalsModule,
           },
           {
             path: 'keywords',

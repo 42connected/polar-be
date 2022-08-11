@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateAdminsDto {
+export class CreateBocalsDto {
   @IsString()
   @IsNotEmpty()
   intraId: string;

@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class Admins {
+export class Bocals {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocal.dto';
+import { CreateBocalsDto } from 'src/v1/dto/bocals/create-bocals.dto';
+import { Bocals } from 'src/v1/entities/bocals.entity';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
-import { Admins } from 'src/v1/entities/admins.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -11,9 +11,9 @@ export class BocalsService {
     @InjectRepository(Bocals) private bocalsRepository: Repository<Bocals>,
   ) {}
 
-  async createUser(user: CreateBocalDto): Promise<jwtUser> {
+  async createUser(user: CreateBocalsDto): Promise<jwtUser> {
     try {
-      const createdUser: Bocals = await this.adminsRepository.create(user);
+      const createdUser: Bocals = await this.bocalsRepository.create(user);
       await this.bocalsRepository.save(createdUser);
       return {
         id: createdUser.id,
@@ -30,7 +30,7 @@ export class BocalsService {
 
   async findByIntra(intraId: string): Promise<jwtUser> {
     try {
-      const foundUser: Admins = await this.adminsRepository.findOneBy({
+      const foundUser: Bocals = await this.bocalsRepository.findOneBy({
         intraId,
       });
       return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
@@ -42,3 +42,7 @@ export class BocalsService {
     }
   }
 }
+function Bocals(Bocals: any) {
+  throw new Error('Function not implemented.');
+}
+
