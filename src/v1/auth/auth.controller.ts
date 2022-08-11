@@ -2,7 +2,7 @@ import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
-import { CreateBocalDto } from '../dto/bocals/create-bocal.dto';
+import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
 import { jwtUser } from '../interface/jwt-user.interface';
