@@ -51,5 +51,12 @@ export class ReportsSeeder implements Seeder {
 
     const newUser = reportRepository.create(reportData);
     await reportRepository.save(newUser);
+
+    const reportsFactory = await factoryManager.get(Reports);
+    const mentoringLogsMeta = await mentoringLogsRepository.find();
+    const cadetsMeta = await cadetRepository.find();
+    const mentorsMeta = await mentorRepository.find();
+    reportsFactory.setMeta({ cadetsMeta, mentorsMeta, mentoringLogsMeta });
+    reportsFactory.saveMany(2);
   }
 }

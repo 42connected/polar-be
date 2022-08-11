@@ -15,5 +15,4 @@ export interface MentoringLogsInterface {
   requestTime1: Date[];
   requestTime2?: Date[];
   requestTime3?: Date[];
-  reports?: ReportsInterface;
 }

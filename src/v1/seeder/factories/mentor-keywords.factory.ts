@@ -2,8 +2,8 @@ import { MentorKeywords } from '../../entities/mentor-keywords.entity';
 import { setSeederFactory } from 'typeorm-extension';
 
 interface MentorKeywordsInterface {
-  mentorIdMeta: string;
-  keywordIdMeta: string;
+  mentorIdMeta: string[];
+  keywordIdMeta: string[];
 }
 
 export default setSeederFactory(
