@@ -1,24 +1,25 @@
+import { Bocals } from '../../entities/bocals.entity';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocal.dto';
+import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
+
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
-import { Admins } from 'src/v1/entities/admins.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class BocalsService {
   constructor(
-    @InjectRepository(Admins) private adminsRepository: Repository<Admins>,
+    @InjectRepository(Bocals) private bocalsRepository: Repository<Bocals>,
   ) {}
 
   async createUser(user: CreateBocalDto): Promise<jwtUser> {
     try {
-      const createdUser: Admins = await this.adminsRepository.create(user);
-      await this.adminsRepository.save(createdUser);
+      const createdUser: Bocals = await this.bocalsRepository.create(user);
+      await this.bocalsRepository.save(createdUser);
       return {
         id: createdUser.id,
         intraId: createdUser.intraId,
-        role: 'admin',
+        role: 'bocal',
       };
     } catch (err) {
       throw new ConflictException(
@@ -30,7 +31,7 @@ export class BocalsService {
 
   async findByIntra(intraId: string): Promise<jwtUser> {
     try {
-      const foundUser: Admins = await this.adminsRepository.findOneBy({
+      const foundUser: Bocals = await this.bocalsRepository.findOneBy({
         intraId,
       });
       return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };

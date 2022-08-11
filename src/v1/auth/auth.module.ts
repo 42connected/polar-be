@@ -3,7 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
-import { Admins } from '../entities/admins.entity';
+import { Bocals } from '../entities/bocals.entity';
 import { Cadets } from '../entities/cadets.entity';
 import { Comments } from '../entities/comments.entity';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
@@ -19,7 +19,7 @@ import { AuthService } from './auth.service';
       Comments,
       MentoringLogs,
       Cadets,
-      Admins,
+      Bocals,
     ]),
     JwtModule.registerAsync({
       useFactory: () => {
