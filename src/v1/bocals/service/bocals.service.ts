@@ -19,7 +19,7 @@ export class BocalsService {
       return {
         id: createdUser.id,
         intraId: createdUser.intraId,
-        role: 'admin',
+        role: 'bocal',
       };
     } catch (err) {
       throw new ConflictException(
