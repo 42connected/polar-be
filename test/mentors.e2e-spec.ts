@@ -14,7 +14,7 @@ import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import 'dotenv/config';
 import { AuthModule } from 'src/v1/auth/auth.module';
 import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
-import { availableTimeDto } from 'src/v1/dto/available-time.dto';
+import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
 
@@ -85,7 +85,7 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('POST /', () => {
-    const availableTime: availableTimeDto = {
+    const availableTime: AvailableTimeDto = {
       start_hour: 8,
       start_minute: 30,
       end_hour: 10,
@@ -99,7 +99,7 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('POST /join', () => {
-    const availableTime: availableTimeDto = {
+    const availableTime: AvailableTimeDto = {
       start_hour: 8,
       start_minute: 30,
       end_hour: 10,
