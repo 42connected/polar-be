@@ -41,10 +41,12 @@ export class MentorKeywordsSeeder implements Seeder {
     // }
 
     const mentorKeywordsFactory = await factoryManager.get(MentorKeywords);
-    const keywordIdMeta = await keywordRepository.find({select: {id: true}});
+    const keywordIdMeta = await keywordRepository.find({
+      select: { id: true },
+    });
     const mentorIdMeta = await mentorRepository.find({ select: { id: true } });
 
-    mentorKeywordsFactory.setMeta({mentorIdMeta, keywordIdMeta});
+    mentorKeywordsFactory.setMeta({ mentorIdMeta, keywordIdMeta });
     await mentorKeywordsFactory.saveMany(3);
   }
 }
