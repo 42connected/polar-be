@@ -5,6 +5,7 @@ import {
   CancelMessageDto,
   ReservationMessageDto,
 } from 'src/v1/dto/email/send-message.dto';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 @Injectable()
 export class EmailService {
@@ -38,7 +39,9 @@ export class EmailService {
     const {
       mentorEmail,
       cadetSlackId,
-      reservationTime,
+      reservationTime1,
+      reservationTime2,
+      reservationTime3,
       mentoringTime,
       isCommon,
     } = reservationMessageDto;
@@ -112,5 +115,9 @@ export class EmailService {
     } catch (error) {
       throw new ConflictException('이메일 전송에 실패했습니다');
     }
+  }
+
+  async getCancelMessageDto(mentoringLogDb: MentoringLogs) {
+    //
   }
 }

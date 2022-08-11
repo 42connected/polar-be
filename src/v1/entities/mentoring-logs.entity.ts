@@ -25,7 +25,7 @@ export class MentoringLogs {
   createdAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
-  meetingAt: Date;
+  meetingAt: Date[];
 
   @Column({ type: 'varchar', length: 100 })
   topic: string;

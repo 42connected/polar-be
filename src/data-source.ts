@@ -8,7 +8,7 @@ export const appDataSource = new DataSource({
   database: process.env.POSTGRES_DATABASE,
   entities: ['**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
-  ssl: { rejectUnauthorized: false },
+  //ssl: { rejectUnauthorized: false },
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT, 10),
   username: process.env.POSTGRES_USERNAME,
