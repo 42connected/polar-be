@@ -40,7 +40,6 @@ export class ApplyService {
     if (startDate > endDate) {
       return false;
     }
-    console.log(typeof startDate);
     const startHour: number = startDate.getHours();
     const startMinute: number = startDate.getMinutes();
     const endHour: number = endDate.getHours();
