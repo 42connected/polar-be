@@ -19,7 +19,7 @@ export class Comments {
   @ManyToOne(() => Cadets, Cadets => Cadets.comments)
   cadets: Cadets;
 
-  @Column({ type: 'text' })
+  @Column({ type: 'varchar', length: 300 })
   content: string;
 
   @Column({ type: 'boolean', default: false })

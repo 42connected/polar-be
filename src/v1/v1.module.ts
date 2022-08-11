@@ -5,13 +5,13 @@ import { KeywordsModule } from './keywords/keywords.module';
 import { MentorsModule } from './mentors/mentors.module';
 import { ReportsModule } from './reports/reports.module';
 import { CadetsModule } from './cadets/cadets.module';
-import { AdminsModule as AdminsModule } from './admins/admins.module';
-import { FortyTwoStrategy } from './strategies/forty-two.strategy';
+import { BocalsModule } from './bocals/bocals.module';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { CommentsModule } from './comments/comments.module';
 import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middleware';
 import { JwtModule } from '@nestjs/jwt';
+import { BatchModule } from './batch/batch.module';
 
 @Module({
   imports: [
@@ -19,9 +19,10 @@ import { JwtModule } from '@nestjs/jwt';
     MentorsModule,
     ReportsModule,
     CadetsModule,
-    AdminsModule,
+    BocalsModule,
     AuthModule,
     CommentsModule,
+    BatchModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {
@@ -32,7 +33,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [V1Controller],
-  providers: [V1Service, FortyTwoStrategy, JwtStrategy],
+  providers: [V1Service, JwtStrategy],
 })
 export class V1Module {
   configure(consumer: MiddlewareConsumer) {

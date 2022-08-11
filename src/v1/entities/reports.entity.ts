@@ -33,6 +33,9 @@ export class Reports {
   @Column({ type: 'varchar', default: [], length: 1000, nullable: true })
   imageUrl: string[];
 
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  signatureUrl: string;
+
   @Column({ type: 'varchar', length: 3000, nullable: true })
   feedbackMessage: string;
 

@@ -1,20 +1,20 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateAdminsDto } from 'src/v1/dto/admins/create-admins.dto';
-import { jwtUser } from 'src/v1/dto/jwt-user.interface';
+import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocal.dto';
+import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Admins } from 'src/v1/entities/admins.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class AdminsService {
+export class BocalsService {
   constructor(
-    @InjectRepository(Admins) private adminsRepository: Repository<Admins>,
+    @InjectRepository(Bocals) private bocalsRepository: Repository<Bocals>,
   ) {}
 
-  async createUser(user: CreateAdminsDto): Promise<jwtUser> {
+  async createUser(user: CreateBocalDto): Promise<jwtUser> {
     try {
-      const createdUser: Admins = await this.adminsRepository.create(user);
-      await this.adminsRepository.save(createdUser);
+      const createdUser: Bocals = await this.adminsRepository.create(user);
+      await this.bocalsRepository.save(createdUser);
       return {
         id: createdUser.id,
         intraId: createdUser.intraId,

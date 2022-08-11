@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import { jwtUser } from '../dto/jwt-user.interface';
+import { jwtUser } from '../interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
 import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -75,15 +75,15 @@ export class MentorsController {
 
   @Get()
   getMentors(
-    @Query('keywordId') keywordId?: string,
+    @Query('categoryId') categoryId?: string,
+    @Query('keywordId') keywordId?: string[],
     @Query('searchText') searchText?: string,
   ): Promise<MentorsList> {
-    if (keywordId)
-      return this.searchMentorsService.getMentorListByKeyword(
-        keywordId,
-        searchText,
-      );
-    if (searchText)
-      return this.searchMentorsService.getMentorListBySearch(searchText);
+    if (typeof keywordId === 'string') keywordId = [keywordId];
+    return this.searchMentorsService.getMentorList(
+      categoryId,
+      keywordId,
+      searchText,
+    );
   }
 }
