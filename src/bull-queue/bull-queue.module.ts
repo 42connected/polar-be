@@ -22,7 +22,7 @@ import 'dotenv/config';
         duration: 1000,
       },
     }),
-    BullModule.registerQueue({ name: 'login' }),
+    BullModule.registerQueue({ name: 'login-queue' }),
   ],
   providers: [LoginConsumer, LoginProducer],
   exports: [LoginProducer],
