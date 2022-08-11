@@ -13,7 +13,7 @@ export const appDataSource = new DataSource({
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   seeds: [MainSeeder],
-  synchronize: false,
+  synchronize: true,
   ssl: { rejectUnauthorized: false },
   namingStrategy: new SnakeNamingStrategy(),
 } as DataSourceOptions);

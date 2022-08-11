@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [process.env.TYPEORM_ENTITIES || ' '],
       ssl: { rejectUnauthorized: false },
       logging: false,
-      synchronize: false,
+      synchronize: true,
       namingStrategy: new SnakeNamingStrategy(),
     };
   }
