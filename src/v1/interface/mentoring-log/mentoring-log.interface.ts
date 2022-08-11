@@ -6,7 +6,7 @@ export interface MentoringLogsInterface {
   mentors?: MentorsInterface;
   cadets?: CadetsInterface;
   createdAt?: Date;
-  meetingAt?: Date;
+  meetingAt?: Date[];
   topic: string;
   content: string;
   status: string;

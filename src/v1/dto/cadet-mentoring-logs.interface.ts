@@ -11,7 +11,7 @@ export interface CadetMentoringLogs {
     isCommon: boolean;
     topic: string;
     requestTime: Date[][];
-    meetingAt: Date;
+    meetingAt: Date[];
     rejectMessage: string;
   };
 }

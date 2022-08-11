@@ -7,7 +7,7 @@ export interface MentorsInterface {
   profileImage?: string;
   availableTime?: string;
   introduction?: string;
-  tags?: string;
+  tags?: string[];
   isActive: boolean;
   markdownContent?: string;
   createdAt?: Date;
