@@ -64,14 +64,14 @@ describe('CadetsController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (POST)', () => {
+  it('/ (POST)', async () => {
     return request(app.getHttpServer())
       .post('/')
       .send({ resumeUrl: 'test.com' })
       .expect(201);
   });
 
-  it('/mentorings (GET)', () => {
+  it('/mentorings (GET)', async () => {
     return request(app.getHttpServer()).get('/mentorings').expect(200);
   });
 
