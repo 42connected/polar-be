@@ -14,30 +14,37 @@ export class MentorKeywordsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const mentorKeywordRepository = dataSource.getRepository(MentorKeywords);
     const keywordRepository = dataSource.getRepository(Keywords);
-    const keywordId = await (
-      await keywordRepository.findOneBy({
-        name: 'web',
-      })
-    ).id;
-    const mentorId = await (
-      await mentorRepository.findOneBy({ intraId: 'm-engeng' })
-    ).id;
-    if (!keywordId || !mentorId) {
-      console.log('Not found fk');
-      return;
-    }
-    const keywordData: MentorKeywordsInterface = {
-      mentorId,
-      keywordId,
-    };
+    // const keywordId = await (
+    //   await keywordRepository.findOneBy({
+    //     name: 'web',
+    //   })
+    // ).id;
+    // const mentorId = await (
+    //   await mentorRepository.findOneBy({ intraId: 'm-engeng' })
+    // ).id;
+    // if (!keywordId || !mentorId) {
+    //   console.log('Not found fk');
+    //   return;
+    // }
+    // const keywordData: MentorKeywordsInterface = {
+    //   mentorId,
+    //   keywordId,
+    // };
 
-    const isExists = await mentorKeywordRepository.findOneBy({
-      mentorId,
-      keywordId,
-    });
-    if (!isExists) {
-      const newKeyword = mentorKeywordRepository.create(keywordData);
-      await mentorKeywordRepository.save(newKeyword);
-    }
+    // const isExists = await mentorKeywordRepository.findOneBy({
+    //   mentorId,
+    //   keywordId,
+    // });
+    // if (!isExists) {
+    //   const newKeyword = mentorKeywordRepository.create(keywordData);
+    //   await mentorKeywordRepository.save(newKeyword);
+    // }
+
+    const mentorKeywordsFactory = await factoryManager.get(MentorKeywords);
+    const keywordIdMeta = await keywordRepository.find({select: {id: true}});
+    const mentorIdMeta = await mentorRepository.find({ select: { id: true } });
+
+    mentorKeywordsFactory.setMeta({mentorIdMeta, keywordIdMeta});
+    await mentorKeywordsFactory.saveMany(3);
   }
 }

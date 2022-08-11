@@ -25,5 +25,4 @@ export class KeywordsSeeder implements Seeder {
     const keywordsFactory = await factoryManager.get(Keywords);
     await keywordsFactory.saveMany(3);
   }
-  }
-
+}
