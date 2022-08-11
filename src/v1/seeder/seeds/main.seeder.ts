@@ -23,8 +23,8 @@ export class MainSeeder implements Seeder {
     // await runSeeder(dataSource, KeywordsSeeder);
     // await runSeeder(dataSource, MentorKeywordsSeeder);
     // await runSeeder(dataSource, MentoringLogsSeeder);
-    // await runSeeder(dataSource, ReportsSeeder);
+    await runSeeder(dataSource, ReportsSeeder);
     // await runSeeder(dataSource, CategoriesSeeder);
-    await runSeeder(dataSource, KeywordCategoriesSeeder);
+    // await runSeeder(dataSource, KeywordCategoriesSeeder);
   }
 }

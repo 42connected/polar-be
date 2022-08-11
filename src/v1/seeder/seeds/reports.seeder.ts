@@ -1,6 +1,6 @@
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 import { ReportsInterface } from 'src/v1/interface/reports/reports.interface';
-import { DataSource } from 'typeorm';
+import { DataSource, In, Not } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
@@ -53,37 +53,37 @@ export class ReportsSeeder implements Seeder {
     // await reportRepository.save(newUser);
 
     const reportsFactory = await factoryManager.get(Reports);
-    const mentoringLogsMeta = await mentoringLogsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-      },
-      select: {
-        id: true,
-      },
-    });
-    const reportsMeta = await reportRepository.find({
+    const reportsMentoingLogs = await reportRepository.find({
       relations: {
         mentoringLogs: true,
       },
       select: {
         mentoringLogs: {
-          id: true,
-        },
-      },
+          id: true
+        }
+      }
     });
+    
+    const reportsMentoingLogsRoom = reportsMentoingLogs.map(report => {
+      if (report.mentoringLogs?.id) {
+        return report.mentoringLogs.id;
+      }
+    });
+    const mentoringLogsMeta = await mentoringLogsRepository.find({
+      relations: {
+        cadets: true,
+        mentors: true,
+      },
+      where: {
+        id: Not(In(reportsMentoingLogsRoom)),
+      },
 
-    // reportsMeta.forEach((reports) => {
-    mentoringLogsMeta.filter(
-      mentoringLogs =>
-        mentoringLogs.id !== '937800a0-78e5-42db-9089-337f33a55806',
-    );
-
-    console.log(mentoringLogsMeta[0].id);
-
-    // console.log(reportsMeta);
-    // console.log(mentoringLogsMeta);
-    // await reportsFactory.setMeta({ mentoringLogsMeta });
-    // await reportsFactory.saveMany(4);
+    });
+    if (mentoringLogsMeta.length === 0) {
+      console.log('No mentoring logs found');
+      return;
+    }
+    await reportsFactory.setMeta({ mentoringLogsMeta });
+    await reportsFactory.saveMany(4);
   }
 }
