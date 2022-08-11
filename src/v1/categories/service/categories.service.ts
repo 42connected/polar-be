@@ -1,18 +1,18 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Keywords } from 'src/v1/entities/keywords.entity';
+import { Categories } from 'src/v1/entities/categories.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class KeywordsService {
+export class CategoriesService {
   constructor(
-    @InjectRepository(Keywords)
-    private keywordsRepository: Repository<Keywords>,
+    @InjectRepository(Categories)
+    private categoriesRepository: Repository<Categories>,
   ) {}
 
-  async getKeywords(): Promise<Keywords[]> {
+  async getCategories(): Promise<Categories[]> {
     try {
-      const found = await this.keywordsRepository.find({
+      const found = await this.categoriesRepository.find({
         select: { name: true },
         take: 8,
       });

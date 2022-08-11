@@ -1,9 +1,9 @@
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { availableTimeDto } from '../available-time.dto';
+import { AvailableTimeDto } from '../available-time.dto';
 
 export class UpdateMentorDatailDto {
   @IsNotEmpty()
-  availableTime: availableTimeDto[][];
+  availableTime: AvailableTimeDto[][];
 
   @IsString()
   @IsOptional()

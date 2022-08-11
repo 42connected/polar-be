@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,11 +23,48 @@ export class ApplyService {
     private readonly cadetsRepository: Repository<Cadets>,
   ) {}
 
+  async checkDate(startDate: Date, endDate: Date): Promise<boolean> {
+    if (startDate.getFullYear() !== endDate.getFullYear()) {
+      return false;
+    }
+    if (startDate.getMonth() !== endDate.getMonth()) {
+      return false;
+    }
+    if (startDate.getDate() !== endDate.getDate()) {
+      return false;
+    }
+    return true;
+  }
+
+  async checkTime(startDate: Date, endDate: Date): Promise<boolean> {
+    if (startDate > endDate) {
+      return false;
+    }
+    const startHour: number = startDate.getHours();
+    const startMinute: number = startDate.getMinutes();
+    const endHour: number = endDate.getHours();
+    const endMinute: number = endDate.getMinutes();
+    if (!(await this.checkDate(startDate, endDate))) {
+      if (endHour === 0 && endMinute === 0) {
+        if (startHour === 23 && startMinute === 30) {
+          return false;
+        }
+      }
+    } else {
+      const endTotalMinute = endHour * 60 + endMinute;
+      const startTotalMinute = startHour * 60 + startMinute;
+      if (endTotalMinute - startTotalMinute < 60) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   async create(
     cadet: jwtUser,
     mentorId: string,
     createApplyDto: CreateApplyDto,
-  ): Promise<MentoringLogs> {
+  ): Promise<boolean> {
     let findmentor: Mentors;
     let findcadet: Cadets;
     let tmpRepo: MentoringLogs;
@@ -47,6 +85,29 @@ export class ApplyService {
       throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
     }
     if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
+    if (
+      !(await this.checkTime(
+        createApplyDto.requestTime1[0],
+        createApplyDto.requestTime1[1],
+      ))
+    )
+      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
+    if (
+      createApplyDto.requestTime2 &&
+      !(await this.checkTime(
+        createApplyDto.requestTime2[0],
+        createApplyDto.requestTime2[1],
+      ))
+    )
+      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
+    if (
+      createApplyDto.requestTime3 &&
+      !(await this.checkTime(
+        createApplyDto.requestTime3[0],
+        createApplyDto.requestTime3[1],
+      ))
+    )
+      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
     try {
       tmpRepo = this.mentoringlogsRepository.create({
         cadets: findcadet,
@@ -74,6 +135,6 @@ export class ApplyService {
         '값을 repository에 저장하는 도중 오류가 발생했습니다.',
       );
     }
-    return updateRepo;
+    return true;
   }
 }

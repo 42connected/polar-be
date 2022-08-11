@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class availableTimeDto {
+export class AvailableTimeDto {
   @IsNumber()
   @IsNotEmpty()
   start_hour: number;
