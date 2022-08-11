@@ -14,6 +14,7 @@ import { JwtStrategy } from 'src/v1/strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { MentorsService } from 'src/v1/mentors/service/mentors.service';
+import { CreateApplyDto } from 'src/v1/dto/cadets/create-apply.dto';
 
 describe('CadetsController (e2e)', () => {
   let app: INestApplication;
@@ -60,7 +61,16 @@ describe('CadetsController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     mentorsService = moduleFixture.get(MentorsService);
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    );
     await app.init();
   });
 
@@ -83,12 +93,13 @@ describe('CadetsController (e2e)', () => {
   });
 
   it('/mentorings/apply/:mentorId (POST)', async () => {
-    const apply = {
+    const apply: Partial<CreateApplyDto> = {
       topic: 'test',
       content: '테스트중',
-      requestTime1: [new Date(), new Date()],
-      requestTime2: [new Date(), new Date()],
-      requestTime3: [new Date(), new Date()],
+      requestTime1: [
+        new Date('2022-08-12T08:00:00Z'),
+        new Date('2022-08-12T10:00:00Z'),
+      ],
     };
     const mentor = await mentorsService.findByIntra('m-engeng');
 
