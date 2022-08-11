@@ -1,6 +1,6 @@
 import { DataSource } from 'typeorm';
 import { runSeeder, Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { AdminSeeder } from './admins.seeder';
+import { BocalsSeeder } from './bocals.seeder';
 import { CadetsSeeder } from './cadets.seeder';
 import { CommentsSeeder } from './comments.seeder';
 import { KeywordsSeeder } from './keywords.seeder';

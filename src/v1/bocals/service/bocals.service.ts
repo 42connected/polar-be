@@ -1,7 +1,8 @@
+import { Bocals } from '../../entities/bocals.entity';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBocalsDto } from 'src/v1/dto/bocals/create-bocals.dto';
-import { Bocals } from 'src/v1/entities/bocals.entity';
+import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
+
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 
@@ -11,7 +12,7 @@ export class BocalsService {
     @InjectRepository(Bocals) private bocalsRepository: Repository<Bocals>,
   ) {}
 
-  async createUser(user: CreateBocalsDto): Promise<jwtUser> {
+  async createUser(user: CreateBocalDto): Promise<jwtUser> {
     try {
       const createdUser: Bocals = await this.bocalsRepository.create(user);
       await this.bocalsRepository.save(createdUser);
@@ -42,7 +43,3 @@ export class BocalsService {
     }
   }
 }
-function Bocals(Bocals: any) {
-  throw new Error('Function not implemented.');
-}
-
