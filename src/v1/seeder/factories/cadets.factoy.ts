@@ -9,5 +9,7 @@ export default setSeederFactory(Cadets, faker => {
   cadets.intraId = faker.name.lastName('male');
   cadets.profileImage = faker.image.avatar();
   cadets.isCommon = faker.datatype.boolean();
+  cadets.resumeUrl = faker.internet.url();
+  cadets.updatedAt = faker.date.soon();
   return cadets;
 });

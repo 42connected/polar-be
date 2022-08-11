@@ -9,7 +9,7 @@ export class BocalsSeeder implements Seeder {
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
     const bocalsRepository = dataSource.getRepository(Bocals);
-    console.log('Seeding admins...');
+    console.log('Seeding bocals...');
 
     const bocalData: BocalsInterface = {
       intraId: 'super',

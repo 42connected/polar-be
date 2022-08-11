@@ -7,5 +7,8 @@ export interface CadetsInterface {
   intraId: string;
   name: string;
   profileImage?: string;
-  isCommon?: boolean;
+  isCommon: boolean;
+  resumeUrl?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

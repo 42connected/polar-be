@@ -1,4 +1,4 @@
-export interface AdminsInterface {
+export interface BocalsInterface {
   id?: string;
   name: string;
   intraId: string;
