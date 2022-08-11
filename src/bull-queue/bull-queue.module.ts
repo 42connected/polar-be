@@ -3,7 +3,6 @@ import { Global, Module } from '@nestjs/common';
 import { LoginConsumer } from './login-consumer';
 import { LoginProducer } from './login-producer';
 import 'dotenv/config';
-import { HttpModule } from '@nestjs/axios';
 
 @Global()
 @Module({
@@ -16,15 +15,17 @@ import { HttpModule } from '@nestjs/axios';
       },
       defaultJobOptions: {
         removeOnComplete: true,
-        removeOnFail: 100,
+        removeOnFail: 10,
       },
       limiter: {
         max: 2,
         duration: 1000,
       },
+      settings: {
+        maxStalledCount: 1,
+      },
     }),
-    BullModule.registerQueue({ name: 'login' }),
-    HttpModule,
+    BullModule.registerQueue({ name: 'login-queue' }),
   ],
   providers: [LoginConsumer, LoginProducer],
   exports: [LoginProducer],

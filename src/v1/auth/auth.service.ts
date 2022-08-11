@@ -1,30 +1,38 @@
-import { HttpService } from '@nestjs/axios';
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import fetch from 'node-fetch';
 import { LoginProducer } from 'src/bull-queue/login-producer';
 import { TokenResponse } from '../interface/token-response.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private loginProducer: LoginProducer,
-    private httpService: HttpService,
-  ) {}
+  constructor(private loginProducer: LoginProducer) {}
 
   matchRoles(roles: string[], userRole: string) {
     return roles.includes(userRole);
   }
 
   async getAccessToken(code: string): Promise<string> {
+    const tokenUrl = `https://api.intra.42.fr/oauth/token?grant_type=authorization_code&client_id=${process.env.UID_42}&client_secret=${process.env.SECRET_42}&code=${code}&redirect_uri=${process.env.REDIRECT_42}`;
+    let res;
     try {
-      const tokenUrl = `https://api.intra.42.fr/oauth/token?grant_type=authorization_code&client_id=${process.env.UID_42}&client_secret=${process.env.SECRET_42}&code=${code}&redirect_uri=${process.env.REDIRECT_42}`;
-      const res: TokenResponse = (
-        await this.httpService.axiosRef.post(tokenUrl)
-      ).data;
-      return res.access_token;
+      res = await fetch(tokenUrl, { method: 'post' });
+    } catch (err) {
+      throw new ConflictException(err, 'fetch 작업 중 에러가 발생했습니다.');
+    }
+    if (res.status !== 200) {
+      throw new UnauthorizedException('Access Token을 받아올 수 없습니다.');
+    }
+    try {
+      const data: TokenResponse = await res.json();
+      return data.access_token;
     } catch (err) {
       throw new ConflictException(
         err,
-        'Access Token 요청 중 에러가 발생했습니다.',
+        '응답에서 데이터를 얻어 오는 중 에러가 발생했습니다.',
       );
     }
   }
@@ -32,7 +40,10 @@ export class AuthService {
   async getProfile(accessToken: string) {
     try {
       const profileUrl = 'https://api.intra.42.fr/v2/me';
-      return await this.loginProducer.addJob(profileUrl, accessToken);
+      console.log(profileUrl, accessToken);
+      // return await this.loginProducer.addJob(profileUrl, accessToken);
+      const result = await this.loginProducer.addJob(profileUrl, accessToken);
+      return result;
     } catch (err) {
       throw new ConflictException(err, '42 api 호출 중 에러가 발생했습니다.');
     }
