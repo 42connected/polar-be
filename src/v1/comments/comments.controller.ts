@@ -11,16 +11,13 @@ import {
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import {
-  CreateCommentDto,
-  GetCommentDto,
-  UpdateCommentDto,
-} from '../dto/comment/comment.dto';
+import { CreateCommentDto, UpdateCommentDto } from '../dto/comment/comment.dto';
 import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller()
 @ApiTags('comments API')
@@ -31,11 +28,11 @@ export class CommentsController {
   @UseGuards(JwtGuard, RolesGuard)
   async get(
     @Param('mentorIntraId') mentorIntraId: string,
-    @Query() getCommentDto: GetCommentDto,
+    @Query() paginationDto: PaginationDto,
   ) {
     return await this.commentService.getCommentPagination(
       mentorIntraId,
-      getCommentDto,
+      paginationDto,
     );
   }
 

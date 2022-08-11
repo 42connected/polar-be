@@ -7,9 +7,9 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateCommentDto,
-  GetCommentDto,
   UpdateCommentDto,
 } from 'src/v1/dto/comment/comment.dto';
+import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { Comments } from 'src/v1/entities/comments.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
@@ -105,15 +105,15 @@ export class CommentsService {
   /*
    * @Get
    */
-  async getCommentPagination(intraId: string, getCommentDto: GetCommentDto) {
+  async getCommentPagination(intraId: string, paginationDto: PaginationDto) {
     try {
       const comment = await this.commentsRepository.findAndCount({
         where: {
           isDeleted: false,
           mentors: { intraId: intraId },
         },
-        take: getCommentDto.take,
-        skip: getCommentDto.take * (getCommentDto.page - 1),
+        take: paginationDto.take,
+        skip: paginationDto.take * (paginationDto.page - 1),
         order: { createdAt: 'DESC' },
       });
       return comment;

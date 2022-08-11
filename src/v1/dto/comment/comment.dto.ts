@@ -1,16 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
-
-export class GetCommentDto {
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  take: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  page: number;
-}
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
