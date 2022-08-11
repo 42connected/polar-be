@@ -7,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateCommentDto,
+  GetCommentDto,
   UpdateCommentDto,
 } from 'src/v1/dto/comment/comment.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
@@ -99,6 +100,24 @@ export class CommentsService {
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
+  }
+
+  /*
+   * @Get
+   */
+  async getCommentPagination(intraId: string, getCommentDto: GetCommentDto) {
+    try {
+      const comment = await this.commentsRepository.findAndCount({
+        where: {
+          isDeleted: false,
+          mentors: { intraId: intraId },
+        },
+        take: getCommentDto.take,
+        skip: getCommentDto.take * (getCommentDto.page - 1),
+        order: { createdAt: 'DESC' },
+      });
+      return comment;
+    } catch {}
   }
 
   /*
