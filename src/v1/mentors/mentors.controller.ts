@@ -7,6 +7,7 @@ import {
   Post,
   UseGuards,
   Query,
+  ConflictException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -80,6 +81,8 @@ export class MentorsController {
     @Query('searchText') searchText?: string,
   ): Promise<MentorsList> {
     if (typeof keywordId === 'string') keywordId = [keywordId];
+    if (typeof categoryId === 'object' || typeof searchText === 'object')
+      throw new ConflictException('잘못된 입력이 들어왔습니다.');
     return this.searchMentorsService.getMentorList(
       categoryId,
       keywordId,
