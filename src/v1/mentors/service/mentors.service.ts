@@ -10,7 +10,7 @@ import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
-import { availableTimeDto } from 'src/v1/dto/available-time.dto';
+import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { Comments } from 'src/v1/entities/comments.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
@@ -171,7 +171,7 @@ export class MentorsService {
       if (mentor.name === null) {
         return false;
       }
-      const week: availableTimeDto[][] = JSON.parse(mentor.availableTime);
+      const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
       week.forEach(day => {
         if (day.length > 0) {
           return true;
@@ -186,7 +186,7 @@ export class MentorsService {
   async saveInfos(
     user: jwtUser,
     name: string,
-    availableTime: availableTimeDto[][],
+    availableTime: AvailableTimeDto[][],
   ): Promise<void> {
     if (name === '') {
       throw new BadRequestException('입력된 이름이 없습니다.');
@@ -204,7 +204,7 @@ export class MentorsService {
     }
   }
 
-  isValidTime(time: availableTimeDto): boolean {
+  isValidTime(time: AvailableTimeDto): boolean {
     if (
       !(time.start_hour >= 0 && time.start_hour < 24) ||
       !(time.start_minute === 0 || time.start_minute === 30) ||
@@ -224,7 +224,7 @@ export class MentorsService {
     return true;
   }
 
-  validateAvailableTime(time: availableTimeDto[][]): availableTimeDto[][] {
+  validateAvailableTime(time: AvailableTimeDto[][]): AvailableTimeDto[][] {
     time.forEach(t =>
       t.forEach(tt => {
         if (!this.isValidTime(tt)) {
