@@ -56,28 +56,28 @@ export class ReportsSeeder implements Seeder {
     const mentoringLogsMeta = await mentoringLogsRepository.find({
       relations: {
         cadets: true,
-        mentors: true
+        mentors: true,
       },
       select: {
-        id: true
-      }
+        id: true,
+      },
     });
     const reportsMeta = await reportRepository.find({
       relations: {
-        mentoringLogs: true
+        mentoringLogs: true,
       },
       select: {
         mentoringLogs: {
-          id: true
-        }
-      }
-    })
-  
+          id: true,
+        },
+      },
+    });
+
     // reportsMeta.forEach((reports) => {
-    mentoringLogsMeta.filter((mentoringLogs) => (
-        mentoringLogs.id !== '937800a0-78e5-42db-9089-337f33a55806'
-    )
-   );
+    mentoringLogsMeta.filter(
+      mentoringLogs =>
+        mentoringLogs.id !== '937800a0-78e5-42db-9089-337f33a55806',
+    );
 
     console.log(mentoringLogsMeta[0].id);
 

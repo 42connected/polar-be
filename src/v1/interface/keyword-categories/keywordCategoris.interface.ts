@@ -1,4 +1,4 @@
 export interface KeywordCategoriesInterface {
-    categoryId: string;
-    keywordId: string;
+  categoryId: string;
+  keywordId: string;
 }
