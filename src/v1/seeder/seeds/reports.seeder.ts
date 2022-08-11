@@ -59,11 +59,11 @@ export class ReportsSeeder implements Seeder {
       },
       select: {
         mentoringLogs: {
-          id: true
-        }
-      }
+          id: true,
+        },
+      },
     });
-    
+
     const reportsMentoingLogsRoom = reportsMentoingLogs.map(report => {
       if (report.mentoringLogs?.id) {
         return report.mentoringLogs.id;
@@ -77,7 +77,6 @@ export class ReportsSeeder implements Seeder {
       where: {
         id: Not(In(reportsMentoingLogsRoom)),
       },
-
     });
     if (mentoringLogsMeta.length === 0) {
       console.log('No mentoring logs found');
