@@ -11,4 +11,8 @@ export class CreateCadetDto {
   @IsBoolean()
   @IsNotEmpty()
   isCommon: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  cadetEmail: string;
 }
