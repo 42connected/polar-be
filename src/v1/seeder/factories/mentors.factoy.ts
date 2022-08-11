@@ -19,21 +19,21 @@ export default setSeederFactory(Mentors, faker => {
   for (let i = 0; i < 7; i++) {
     faker.datatype.boolean() ? timeRoom.push(timeSet) : timeRoom.push([]);
   }
-    const tagRoom = [];
-    for (let i = 0; i < 4; i++) {
-        tagRoom.push(faker.lorem.word());
-    }
+  const tagRoom = [];
+  for (let i = 0; i < 4; i++) {
+    tagRoom.push(faker.lorem.word());
+  }
 
   mentors.intraId = faker.name.lastName('male');
-    mentors.name = faker.name.firstName('male');
-    mentors.email = faker.internet.email();
+  mentors.name = faker.name.firstName('male');
+  mentors.email = faker.internet.email();
   mentors.company = faker.company.companyName();
   mentors.duty = faker.company.bsNoun();
   mentors.profileImage = faker.image.avatar();
   mentors.availableTime = JSON.stringify(timeRoom);
-    mentors.introduction = faker.lorem.sentence();
-    mentors.tags = tagRoom;
-    mentors.isActive = faker.datatype.boolean();
-    mentors.updatedAt = faker.date.soon();
+  mentors.introduction = faker.lorem.sentence();
+  mentors.tags = tagRoom;
+  mentors.isActive = faker.datatype.boolean();
+  mentors.updatedAt = faker.date.soon();
   return mentors;
 });
