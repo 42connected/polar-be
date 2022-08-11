@@ -11,7 +11,6 @@ import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
-import { availableTimeDto } from 'src/v1/dto/available-time.dto';
 
 @Injectable()
 export class ApplyService {
@@ -41,6 +40,7 @@ export class ApplyService {
     if (startDate > endDate) {
       return false;
     }
+    console.log(typeof startDate);
     const startHour: number = startDate.getHours();
     const startMinute: number = startDate.getMinutes();
     const endHour: number = endDate.getHours();
