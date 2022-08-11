@@ -15,6 +15,7 @@ const generateCadetToken = async (secret, role) => {
 
 if (process.argv[2]) {
   console.log(`로그인 인증용 토큰 생성`);
+  console.log(`SecretKey: "${process.argv[2]}"`);
   console.log(`토큰 만료 기간은 생성 후 1일\n${new Date()}`);
   generateCadetToken(process.argv[2], 'cadet');
   generateCadetToken(process.argv[2], 'mentor');
