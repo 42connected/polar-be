@@ -37,8 +37,8 @@ export class Mentors {
   @Column({ type: 'varchar', length: 150, nullable: true })
   introduction: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
-  tags: string;
+  @Column({ type: 'varchar', length: 150, nullable: true, array: true })
+  tags: string[];
 
   @Column({ type: 'boolean' })
   isActive: boolean;
