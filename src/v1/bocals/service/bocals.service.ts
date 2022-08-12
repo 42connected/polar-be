@@ -150,16 +150,16 @@ export class BocalsService {
     }
 
     const fileName: string = new Date().toISOString().split('T')[0];
-    res.writeHead(200, {
-      'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
-      'Content-Type':
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
     try {
+      await res.writeHead(200, {
+        'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
+        'Content-Type':
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
       await workbook.xlsx.write(res);
       await res.end();
     } catch {
-      throw new ConflictException('엑셀 파일을 만드는 중 오류가 발생했습니다.');
+      throw new ConflictException('response 생성 중 오류가 발생했습니다.');
     }
   }
 
