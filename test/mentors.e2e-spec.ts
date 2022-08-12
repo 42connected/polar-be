@@ -54,7 +54,7 @@ describe('MentorsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'm-engeng', role: 'mentor' };
+          req.user = { intraId: 'm-dada', role: 'mentor' };
           return true;
         },
       })
@@ -75,9 +75,7 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('GET /', () => {
-    return request(app.getHttpServer())
-      .get('/?searchText=m-engeng')
-      .expect(200);
+    return request(app.getHttpServer()).get('/?searchText=m-dada').expect(200);
   });
 
   it('GET /mentorings', () => {
@@ -113,7 +111,7 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('GET /:intraId', () => {
-    return request(app.getHttpServer()).get('/m-engeng').expect(200);
+    return request(app.getHttpServer()).get('/m-dada').expect(200);
   });
 
   afterAll(async () => {
