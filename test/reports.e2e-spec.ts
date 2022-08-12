@@ -14,9 +14,15 @@ import { JwtStrategy } from 'src/v1/strategies/jwt.strategy';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
 import { AuthModule } from 'src/v1/auth/auth.module';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { Repository } from 'typeorm';
+import { CreateReportDto } from 'src/v1/dto/reports/report.dto';
+import { Reports } from 'src/v1/entities/reports.entity';
 
 describe('MentorsController (e2e)', () => {
   let app: INestApplication;
+  let logRepo: Repository<MentoringLogs>;
+  let reportRepo: Repository<Reports>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -68,12 +74,38 @@ describe('MentorsController (e2e)', () => {
         },
       }),
     );
+    logRepo = moduleFixture.get<Repository<MentoringLogs>>(
+      'MentoringLogsRepository',
+    );
+    reportRepo = moduleFixture.get<Repository<Reports>>('ReposrtsRepository');
     await app.init();
   });
 
   // it('GET /:reportId', () => {
 
   // });
+
+  it('POST /:mentoringLogId', async () => {
+    // TODO: image test
+    const log = await logRepo.findOne({ where: { topic: 'test' } });
+    // TODO: 레포트 찾아서 삭제
+    await reportRepo.delete({
+      mentoringLogs: { id: log.id },
+    });
+    const body: CreateReportDto = {
+      place: '강남역',
+      topic: '개발중',
+      content: 'test test test test test test test test test',
+      feedbackMessage: '잘하자',
+      feedback1: 1,
+      feedback2: 2,
+      feedback3: 3,
+    };
+    return request(app.getHttpServer())
+      .post(`/${log.id}`)
+      .send(body)
+      .expect(201);
+  });
 
   afterAll(async () => {
     await app.close();
