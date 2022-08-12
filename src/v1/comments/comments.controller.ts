@@ -16,7 +16,12 @@ import { jwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 import { Comments } from '../entities/comments.entity';
 
@@ -27,6 +32,7 @@ export class CommentsController {
 
   @Get(':mentorIntraId')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   async get(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
@@ -40,6 +46,7 @@ export class CommentsController {
   @Post(':mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'comments API',
     description: '멘토링 후기 생성하기',
@@ -63,6 +70,7 @@ export class CommentsController {
   @Patch(':commentId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'comments update API',
     description: '멘토링 후기 수정하기',
@@ -86,6 +94,7 @@ export class CommentsController {
   @Delete(':commentId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'comments delete API',
     description: '멘토링 후기 삭제하기',
