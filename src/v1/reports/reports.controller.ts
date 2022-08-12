@@ -20,7 +20,12 @@ import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller()
@@ -31,6 +36,7 @@ export class ReportsController {
   @Get(':reportId')
   @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'getReport API',
     description: 'Report 받아오는 api',
@@ -46,6 +52,7 @@ export class ReportsController {
   @Get()
   @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   async getReportPagination(
     @Query() paginationDto: PaginationDto,
   ): Promise<[Reports[], number]> {
@@ -55,6 +62,7 @@ export class ReportsController {
   @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @UseInterceptors(
     FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
       storage: diskStorage({
@@ -77,6 +85,7 @@ export class ReportsController {
   @Patch(':reportId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @UseInterceptors(
     FileFieldsInterceptor(
       [

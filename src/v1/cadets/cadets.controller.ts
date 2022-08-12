@@ -21,7 +21,12 @@ import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
 import { UpdateCadetDto } from '../dto/cadets/update-cadet.dto';
 import { BatchService } from '../batch/batch.service';
 import { EmailService, MailType } from '../email/service/email.service';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller()
 @ApiTags('cadets API')
@@ -38,6 +43,7 @@ export class CadetsController {
   @Get('test')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet login test API',
     description: '카뎃 로그인 정보 가져오기 test페이지',
@@ -54,6 +60,7 @@ export class CadetsController {
   @Post()
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'updateCadet API',
     description: '카뎃 로그인 정보 생성하기',
@@ -69,6 +76,7 @@ export class CadetsController {
   @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'getMentoringLogs for cardet API',
     description: '카뎃이 신청한 멘토링로그 정보 가져오기.',
@@ -84,6 +92,7 @@ export class CadetsController {
   @Post('join')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet join post API',
     description: '카뎃 join api',
@@ -100,6 +109,7 @@ export class CadetsController {
   @Post('mentorings/apply/:mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet mentoring apply API',
     description: '멘토링 신청 api',
