@@ -15,7 +15,11 @@ export class CreateApplyDto {
 
   @Type(() => Date)
   @IsNotEmpty()
-  @ApiProperty({ description: 'requestTime1', required: true, type: Date })
+  @ApiProperty({
+    description: 'requestTime1',
+    required: true,
+    type: [Date],
+  })
   requestTime1: Date[];
 
   @IsOptional()
@@ -23,7 +27,7 @@ export class CreateApplyDto {
   @ApiPropertyOptional({
     description: 'requestTime2',
     required: false,
-    type: Date,
+    type: [Date],
   })
   requestTime2: Date[];
 
@@ -32,7 +36,7 @@ export class CreateApplyDto {
   @ApiPropertyOptional({
     description: 'requestTime3',
     required: false,
-    type: Date,
+    type: [Date],
   })
   requestTime3: Date[];
 }

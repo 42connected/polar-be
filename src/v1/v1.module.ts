@@ -12,6 +12,7 @@ import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middlew
 import { JwtModule } from '@nestjs/jwt';
 import { BatchModule } from './batch/batch.module';
 import { CategoriesModule } from './categories/categories.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { CategoriesModule } from './categories/categories.module';
     AuthModule,
     CommentsModule,
     BatchModule,
+    CalendarModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {
