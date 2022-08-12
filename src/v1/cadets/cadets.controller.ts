@@ -75,7 +75,7 @@ export class CadetsController {
     this.cadetsService.saveName(user, name);
   }
 
-  @Post('mentorings/apply/:mentorId')
+  @Post('mentorings/apply/:mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiOperation({
@@ -87,10 +87,10 @@ export class CadetsController {
     type: MentoringLogs,
   })
   create(
-    @Param('mentorId') mentorId: string,
+    @Param('mentorIntraId') mentorIntraId: string,
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
-    return this.applyService.create(user, mentorId, createApplyDto);
+    return this.applyService.create(user, mentorIntraId, createApplyDto);
   }
 }

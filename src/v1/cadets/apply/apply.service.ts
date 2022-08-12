@@ -11,6 +11,7 @@ import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { CalendarService } from 'src/v1/calendar/service/calendar.service';
 
 @Injectable()
 export class ApplyService {
@@ -21,6 +22,7 @@ export class ApplyService {
     private readonly mentorsRepository: Repository<Mentors>,
     @InjectRepository(Cadets)
     private readonly cadetsRepository: Repository<Cadets>,
+    private calendarService: CalendarService,
   ) {}
 
   async checkDate(startDate: Date, endDate: Date): Promise<boolean> {
@@ -134,12 +136,53 @@ export class ApplyService {
         '값을 repository에 생성하는 도중 오류가 발생했습니다.',
       );
     }
+    const originRequestTimes = await this.calendarService.getRequestTimes(
+      mentorId,
+    );
+    const result = await this.checkDuplicatedTime(
+      originRequestTimes,
+      createApplyDto.requestTime1,
+      createApplyDto.requestTime2,
+      createApplyDto.requestTime3,
+    );
+    if (!result) {
+      throw new ConflictException('이미 예약된 시간을 선택했습니다.');
+    }
     try {
       await this.mentoringlogsRepository.save(tmpRepo);
     } catch {
       throw new ConflictException(
         '값을 repository에 저장하는 도중 오류가 발생했습니다.',
       );
+    }
+    return true;
+  }
+
+  async checkDuplicatedTime(
+    originRequestTimes: Date[],
+    requestTime1: Date[],
+    requestTime2: Date[],
+    requestTime3: Date[],
+  ): Promise<boolean> {
+    const len: number = originRequestTimes.length;
+    for (let i = 0; i < len; i++) {
+      if (
+        requestTime1[0].getTime() >= originRequestTimes[i][0].getTime() &&
+        requestTime1[0].getTime() <= originRequestTimes[i][1].getTime()
+      )
+        return false;
+      if (
+        requestTime2 &&
+        requestTime2[0].getTime() >= originRequestTimes[i][0].getTime() &&
+        requestTime2[0].getTime() <= originRequestTimes[i][1].getTime()
+      )
+        return false;
+      if (
+        requestTime3 &&
+        requestTime3[0].getTime() >= originRequestTimes[i][0].getTime() &&
+        requestTime3[0].getTime() <= originRequestTimes[i][1].getTime()
+      )
+        return false;
     }
     return true;
   }

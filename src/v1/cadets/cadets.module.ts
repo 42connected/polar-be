@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { CalendarService } from '../calendar/service/calendar.service';
 import { Cadets } from '../entities/cadets.entity';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { Mentors } from '../entities/mentors.entity';
@@ -14,7 +15,7 @@ import { CadetsService } from './service/cadets.service';
     AuthModule,
   ],
   controllers: [CadetsController],
-  providers: [CadetsService, ApplyService],
+  providers: [CadetsService, ApplyService, CalendarService],
   exports: [CadetsService],
 })
 export class CadetsModule {}
