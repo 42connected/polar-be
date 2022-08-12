@@ -8,6 +8,7 @@ export interface CadetsInterface {
   name: string;
   profileImage?: string;
   isCommon: boolean;
+  email: string;
   resumeUrl?: string;
   createdAt?: Date;
   updatedAt?: Date;

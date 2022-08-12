@@ -22,6 +22,9 @@ export class Mentors {
   @Column({ type: 'varchar', length: 10, nullable: true })
   name: string;
 
+  @Column({ type: 'varchar', length: 100 })
+  email: string;
+
   @Column({ type: 'varchar', length: 30, nullable: true })
   company: string;
 

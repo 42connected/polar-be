@@ -1,5 +1,4 @@
 import { Cadets } from '../../entities/cadets.entity';
-import { CadetsInterface } from 'src/v1/interface/cadets/cadets.interface';
 import { setSeederFactory } from 'typeorm-extension';
 
 export default setSeederFactory(Cadets, faker => {
@@ -11,5 +10,6 @@ export default setSeederFactory(Cadets, faker => {
   cadets.isCommon = faker.datatype.boolean();
   cadets.resumeUrl = faker.internet.url();
   cadets.updatedAt = faker.date.soon();
+  cadets.email = faker.internet.email();
   return cadets;
 });
