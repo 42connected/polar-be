@@ -249,8 +249,8 @@ export class EmailService {
 
     const cadetEmailForm = '@student.42seoul.kr';
 
-    const cadetEmail = mentoringsLogsInfoDb.cadets.cadetEmail
-      ? mentoringsLogsInfoDb.cadets.cadetEmail
+    const cadetEmail = mentoringsLogsInfoDb.cadets.email
+      ? mentoringsLogsInfoDb.cadets.email
       : mentoringsLogsInfoDb.cadets.intraId + cadetEmailForm;
 
     switch (mailtype) {

@@ -25,6 +25,12 @@ export class Mentors {
   @Column({ type: 'varchar', length: 100 })
   email: string;
 
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  company: string;
+
+  @Column({ type: 'varchar', length: 30, nullable: true })
+  duty: string;
+
   @Column({ type: 'varchar', length: 1000, nullable: true })
   profileImage: string;
 
@@ -34,8 +40,8 @@ export class Mentors {
   @Column({ type: 'varchar', length: 150, nullable: true })
   introduction: string;
 
-  @Column({ type: 'varchar', length: 150, nullable: true })
-  tags: string;
+  @Column({ type: 'varchar', length: 150, nullable: true, array: true })
+  tags: string[];
 
   @Column({ type: 'boolean' })
   isActive: boolean;

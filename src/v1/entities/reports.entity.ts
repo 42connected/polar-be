@@ -5,6 +5,8 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Cadets } from './cadets.entity';
 import { MentoringLogs } from './mentoring-logs.entity';
@@ -30,8 +32,17 @@ export class Reports {
   @Column({ type: 'varchar', length: 5000, nullable: true })
   content: string;
 
-  @Column({ type: 'varchar', default: [], length: 1000, nullable: true })
+  @Column({
+    type: 'varchar',
+    default: [],
+    length: 1000,
+    nullable: true,
+    array: true,
+  })
   imageUrl: string[];
+
+  @Column({ type: 'varchar', length: 1000, nullable: true })
+  signatureUrl: string;
 
   @Column({ type: 'varchar', length: 3000, nullable: true })
   feedbackMessage: string;
@@ -48,4 +59,10 @@ export class Reports {
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
   @JoinColumn()
   mentoringLogs: MentoringLogs;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }

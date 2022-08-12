@@ -1,8 +1,9 @@
 import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
-import { CreateBocalDto } from '../dto/bocals/create-bocal.dto';
+import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
 import { jwtUser } from '../interface/jwt-user.interface';
@@ -10,6 +11,7 @@ import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
+@ApiTags('auth API')
 export class AuthController {
   constructor(
     private jwtService: JwtService,
@@ -20,6 +22,14 @@ export class AuthController {
   ) {}
 
   @Get('/oauth/callback')
+  @ApiOperation({
+    summary: 'getProfile API',
+    description: 'oauth 프로파일 정보 가져오기',
+  })
+  @ApiCreatedResponse({
+    description: 'oauth 프로파일 정보 수정 성공',
+    type: String,
+  })
   async getProfile(@Query('code') code: string) {
     const accessToken = await this.authService.getAccessToken(code);
     const profile = await this.authService.getProfile(accessToken);

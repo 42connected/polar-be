@@ -33,6 +33,9 @@ export class MentoringLogs {
   @Column({ type: 'varchar', length: 1000 })
   content: string;
 
+  @Column({ type: 'int', nullable: true })
+  money: number;
+
   @Column({ type: 'varchar', length: 10 })
   status: string;
 

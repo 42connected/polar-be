@@ -31,7 +31,7 @@ export class Cadets {
   isCommon: boolean;
 
   @Column({ type: 'varchar', length: 100 })
-  cadetEmail: string;
+  email: string;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

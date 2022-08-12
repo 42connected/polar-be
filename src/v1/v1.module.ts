@@ -1,7 +1,6 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { V1Controller } from './v1.controller';
 import { V1Service } from './v1.service';
-import { KeywordsModule } from './keywords/keywords.module';
 import { MentorsModule } from './mentors/mentors.module';
 import { ReportsModule } from './reports/reports.module';
 import { CadetsModule } from './cadets/cadets.module';
@@ -13,10 +12,12 @@ import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middlew
 import { JwtModule } from '@nestjs/jwt';
 import { BatchModule } from './batch/batch.module';
 import { EmailModule } from './email/email.module';
+import { CategoriesModule } from './categories/categories.module';
+import { CalendarModule } from './calendar/calendar.module';
 
 @Module({
   imports: [
-    KeywordsModule,
+    CategoriesModule,
     MentorsModule,
     ReportsModule,
     CadetsModule,
@@ -24,6 +25,7 @@ import { EmailModule } from './email/email.module';
     AuthModule,
     CommentsModule,
     BatchModule,
+    CalendarModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {

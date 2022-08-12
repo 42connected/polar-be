@@ -9,7 +9,7 @@ import { V1Module } from './v1/v1.module';
 import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
-import { KeywordsModule } from './v1/keywords/keywords.module';
+import { CategoriesModule } from './v1/categories/categories.module';
 import { CadetsModule } from './v1/cadets/cadets.module';
 import { BocalsModule } from './v1/bocals/bocals.module';
 import { CommentsModule } from './v1/comments/comments.module';
@@ -19,6 +19,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { BatchModule } from './v1/batch/batch.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { CalendarModule } from './v1/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -76,8 +77,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
             module: BocalsModule,
           },
           {
-            path: 'keywords',
-            module: KeywordsModule,
+            path: 'categories',
+            module: CategoriesModule,
           },
           {
             path: 'reports',
@@ -90,6 +91,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           {
             path: 'batch',
             module: BatchModule,
+          },
+          {
+            path: 'calendar',
+            module: CalendarModule,
           },
         ],
       },

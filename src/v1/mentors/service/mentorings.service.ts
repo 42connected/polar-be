@@ -2,7 +2,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  Req,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
@@ -12,6 +11,7 @@ import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { MentorMentoringLogs } from 'src/v1/interface/mentors/mentor-mentoring-logs.interface';
+import { PaginationDto } from 'src/v1/dto/pagination.dto';
 
 @Injectable()
 export class MentoringsService {
@@ -95,6 +95,34 @@ export class MentoringsService {
     try {
       return await this.mentoringsLogsRepository.save(mentoringsData);
     } catch {
+      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+    }
+  }
+
+  async getSimpleLogsPagination(
+    mentorIntraId: string,
+    paginationDto: PaginationDto,
+  ): Promise<[MentoringLogs[], number]> {
+    try {
+      const simpleLogs = await this.mentoringsLogsRepository.findAndCount({
+        select: {
+          id: true,
+          createdAt: true,
+          meetingAt: true,
+          topic: true,
+          status: true,
+        },
+        where: {
+          mentors: { intraId: mentorIntraId },
+          status: '완료',
+        },
+        take: paginationDto.take,
+        skip: paginationDto.take * (paginationDto.page - 1),
+        order: { createdAt: 'DESC' },
+      });
+      return simpleLogs;
+    } catch (e) {
+      console.log(e);
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
   }

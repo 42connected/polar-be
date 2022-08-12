@@ -10,19 +10,13 @@ import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
-import { availableTimeDto } from 'src/v1/dto/available-time.dto';
-import { Comments } from 'src/v1/entities/comments.entity';
-import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 
 @Injectable()
 export class MentorsService {
   constructor(
     @InjectRepository(Mentors)
     private readonly mentorsRepository: Repository<Mentors>,
-    @InjectRepository(Comments)
-    private readonly commentsRepository: Repository<Comments>,
-    @InjectRepository(MentoringLogs)
-    private readonly mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
   async createUser(user: CreateMentorDto): Promise<jwtUser> {
@@ -74,75 +68,11 @@ export class MentorsService {
     return mentor;
   }
 
-  async findMentoringLogsByMentorIntraId(
-    intraId: string,
-  ): Promise<MentoringLogs[]> {
-    let mentoringLogs: MentoringLogs[];
-    try {
-      mentoringLogs = await this.mentoringLogsRepository.find({
-        where: {
-          mentors: {
-            intraId: intraId,
-          },
-        },
-        select: {
-          meetingAt: true,
-          topic: true,
-          status: true,
-        },
-      });
-    } catch {
-      throw new ConflictException(
-        '해당 아이디의 멘토링 로그를 찾는중 오류가 발생하였습니다',
-      );
-    }
-    if (!mentoringLogs) {
-      throw new NotFoundException(`해당 멘토의 멘토링 로그를 찾을 수 없습니다`);
-    }
-    return mentoringLogs;
-  }
-
-  async findCommentByMentorIntraId(intraId: string): Promise<Comments[]> {
-    let comments: Comments[];
-    try {
-      comments = await this.commentsRepository.find({
-        where: {
-          mentors: {
-            intraId: intraId,
-          },
-          isDeleted: false,
-        },
-        relations: {
-          cadets: true,
-        },
-        select: {
-          content: true,
-          createdAt: true,
-          cadets: {
-            intraId: true,
-          },
-        },
-      });
-    } catch {
-      throw new ConflictException(
-        '해당 아이디의 코멘트 찾는중 오류가 발생하였습니다',
-      );
-    }
-    if (!comments) {
-      throw new NotFoundException(`해당 멘토의 코멘트를 찾을 수 없습니다`);
-    }
-    return comments;
-  }
-
   /*
    * @Get
    */
   async getMentorDetails(intraId: string): Promise<Mentors> {
     const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    mentor.comments = await this.findCommentByMentorIntraId(mentor.intraId);
-    mentor.mentoringLogs = await this.findMentoringLogsByMentorIntraId(
-      mentor.intraId,
-    );
     return mentor;
   }
 
@@ -171,7 +101,7 @@ export class MentorsService {
       if (mentor.name === null) {
         return false;
       }
-      const week: availableTimeDto[][] = JSON.parse(mentor.availableTime);
+      const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
       week.forEach(day => {
         if (day.length > 0) {
           return true;
@@ -186,7 +116,7 @@ export class MentorsService {
   async saveInfos(
     user: jwtUser,
     name: string,
-    availableTime: availableTimeDto[][],
+    availableTime: AvailableTimeDto[][],
   ): Promise<void> {
     if (name === '') {
       throw new BadRequestException('입력된 이름이 없습니다.');
@@ -204,7 +134,7 @@ export class MentorsService {
     }
   }
 
-  isValidTime(time: availableTimeDto): boolean {
+  isValidTime(time: AvailableTimeDto): boolean {
     if (
       !(time.start_hour >= 0 && time.start_hour < 24) ||
       !(time.start_minute === 0 || time.start_minute === 30) ||
@@ -224,7 +154,7 @@ export class MentorsService {
     return true;
   }
 
-  validateAvailableTime(time: availableTimeDto[][]): availableTimeDto[][] {
+  validateAvailableTime(time: AvailableTimeDto[][]): AvailableTimeDto[][] {
     time.forEach(t =>
       t.forEach(tt => {
         if (!this.isValidTime(tt)) {

@@ -1,19 +1,24 @@
 import 'dotenv/config';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
-import { MainSeeder } from './v1/seeds/main.seeder';
+import { MainSeeder } from './v1/seeder/seeds/main.seeder';
 
 export const appDataSource = new DataSource({
   type: 'postgres',
   database: process.env.POSTGRES_DATABASE,
   entities: ['**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
+<<<<<<< HEAD
   //ssl: { rejectUnauthorized: false },
+=======
+  // ssl: { rejectUnauthorized: true },
+>>>>>>> a98bb6f16605f877f41f8ea867e55918dd4d80ae
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT, 10),
   username: process.env.POSTGRES_USERNAME,
   password: process.env.POSTGRES_PASSWORD,
   seeds: [MainSeeder],
+  factories: ['src/v1/seeder/factories/**/*.ts'],
   synchronize: false,
   namingStrategy: new SnakeNamingStrategy(),
 } as DataSourceOptions);
