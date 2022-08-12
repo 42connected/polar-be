@@ -8,61 +8,6 @@ import {
   Min,
 } from 'class-validator';
 
-export class CreateReportDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'place', required: true })
-  place: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'topic', required: true })
-  topic: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'content', required: true })
-  content: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({ description: 'feedbackMessage', required: true })
-  feedbackMessage: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  @Max(5)
-  @ApiProperty({
-    description: 'feedback1',
-    required: true,
-    type: Number,
-  })
-  feedback1: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  @Max(5)
-  @ApiProperty({
-    description: 'feedback2',
-    required: true,
-    type: Number,
-  })
-  feedback2: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  @Min(1)
-  @Max(5)
-  @ApiProperty({
-    description: 'feedback3',
-    required: true,
-    type: Number,
-  })
-  feedback3: number;
-}
-
 export class UpdateReportDto {
   @IsString()
   @IsOptional()
