@@ -74,6 +74,20 @@ describe('CadetsController (e2e)', () => {
     await app.init();
   });
 
+  // const result: AxiosResponse = {
+  //   data: '이게리턴값?',
+  //   status: 201,
+  //   statusText: '여기뭘적든상관없는듯',
+  //   headers: {},
+  //   config: {},
+  // };
+  // // jest.spyOn(httpService, 'post').mockImplementationOnce(() => of(result));
+  // jest.spyOn(cadetsService, 'findCadetByIntraId').mockImplementationOnce(() => of(result));
+  // const expectedGpaString = 'ok';
+  // const response = await request(app.getHttpServer()).post('/').expect(201);
+  // console.log(response.text);
+  // expect(response.text).toEqual(expectedGpaString);
+
   it('/ (POST)', () => {
     return request(app.getHttpServer())
       .post('/')
