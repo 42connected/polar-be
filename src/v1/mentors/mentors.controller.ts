@@ -23,6 +23,7 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
+import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller()
 export class MentorsController {
@@ -39,6 +40,18 @@ export class MentorsController {
     @User() user: jwtUser,
   ): Promise<MentorMentoringInfo> {
     return await this.mentoringsService.getMentoringsLists(user);
+  }
+
+  @Get('simplelogs/:mentorIntraId')
+  @UseGuards(JwtGuard)
+  async getSimpleLogs(
+    @Param('mentorIntraId') mentorIntraId: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<[MentoringLogs[], number]> {
+    return await this.mentoringsService.getSimpleLogsPagination(
+      mentorIntraId,
+      paginationDto,
+    );
   }
 
   @Patch('mentorings')
