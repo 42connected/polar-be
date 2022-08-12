@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -73,4 +74,13 @@ export class UpdateReportDto {
     type: Number,
   })
   feedback3: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'isDone',
+    required: false,
+    type: Boolean,
+  })
+  isDone: boolean;
 }
