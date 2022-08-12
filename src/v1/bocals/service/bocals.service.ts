@@ -9,6 +9,7 @@ import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
 import * as Excel from 'exceljs';
 
 @Injectable()
@@ -154,9 +155,12 @@ export class BocalsService {
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-    await workbook.xlsx.write(res).then(function () {
-      res.end();
-    });
+    try {
+      await workbook.xlsx.write(res);
+      await res.end();
+    } catch {
+      throw new ConflictException('엑셀 파일을 만드는 중 오류가 발생했습니다.');
+    }
   }
 
   async getOneMentoringInfo(
@@ -199,18 +203,4 @@ export class BocalsService {
     };
     return result;
   }
-}
-
-export interface MentoringExcelData {
-  mentorName: string;
-  mentorCompany: string;
-  mentorDuty: string;
-  date: string;
-  place: string;
-  isCommon: string;
-  startTime: string;
-  endTime: string;
-  totalHour: number;
-  money: number;
-  cadetName: string;
 }

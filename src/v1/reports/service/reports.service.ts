@@ -135,7 +135,7 @@ export class ReportsService {
     start: Date,
     end: Date,
   ): Promise<number> {
-    let finishedMentorings: MentoringLogs[] = [];
+    let finishedMentorings: MentoringLogs[];
     const finishedMentoringsInDay: MentoringLogs[] = [];
     const finishedMentoringsInMonth: MentoringLogs[] = [];
 
@@ -143,11 +143,15 @@ export class ReportsService {
       (end.getTime() - start.getTime()) / (1000 * 60 * 60),
     );
 
-    finishedMentorings = await this.mentoringLogsRepository.find({
-      select: { meetingAt: true },
-      where: { status: '완료', mentors: { id: mentorId } },
-      relations: { mentors: true },
-    });
+    try {
+      finishedMentorings = await this.mentoringLogsRepository.find({
+        select: { meetingAt: true },
+        where: { status: '완료', mentors: { id: mentorId } },
+        relations: { mentors: true },
+      });
+    } catch {
+      throw new ConflictException('멘토링 시간을 찾는 중 오류가 발생했습니다.');
+    }
 
     finishedMentorings.map(mentoring => {
       if (mentoring.meetingAt[0].getMonth() === start.getMonth())
@@ -323,12 +327,17 @@ export class ReportsService {
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
     }
-    const money =
-      (await this.calculateTotalHour(
-        report.mentors.id,
-        report.mentoringLogs.meetingAt[0],
-        report.mentoringLogs.meetingAt[1],
-      )) * 100000;
+    let money: number;
+    try {
+      money =
+        (await this.calculateTotalHour(
+          report.mentors.id,
+          report.mentoringLogs.meetingAt[0],
+          report.mentoringLogs.meetingAt[1],
+        )) * 100000;
+    } catch (error) {
+      throw new ConflictException(error);
+    }
     report.mentoringLogs.money = money;
     report.mentoringLogs.reportStatus = '작성완료';
     try {
