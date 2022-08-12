@@ -47,7 +47,7 @@ export class MentorsController {
   async getSimpleLogs(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
-  ) {
+  ): Promise<[MentoringLogs[], number]> {
     return await this.mentoringsService.getSimpleLogsPagination(
       mentorIntraId,
       paginationDto,

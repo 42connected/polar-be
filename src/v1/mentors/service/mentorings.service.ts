@@ -104,7 +104,7 @@ export class MentoringsService {
   async getSimpleLogsPagination(
     mentorIntraId: string,
     paginationDto: PaginationDto,
-  ) {
+  ): Promise<[MentoringLogs[], number]> {
     try {
       const simpleLogs = await this.mentoringsLogsRepository.findAndCount({
         select: {
