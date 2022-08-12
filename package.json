@@ -24,7 +24,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
     "db:createMigration": "typeorm migration:create",
-    "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed"
+    "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
+    "token": "node genToken.js"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
@@ -50,6 +51,7 @@
     "express-basic-auth": "^1.2.1",
     "handlebars": "^4.7.7",
     "jest-mock": "^28.1.3",
+    "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.7",
     "nodemailer": "^6.7.7",
     "passport-42": "^1.2.6",

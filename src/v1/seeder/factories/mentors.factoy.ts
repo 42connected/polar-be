@@ -1,5 +1,4 @@
-import { stringify } from 'querystring';
-import { Mentors } from 'src/v1/entities/mentors.entity';
+import { Mentors } from '../../entities/mentors.entity';
 import { setSeederFactory } from 'typeorm-extension';
 
 export default setSeederFactory(Mentors, faker => {
@@ -20,13 +19,21 @@ export default setSeederFactory(Mentors, faker => {
   for (let i = 0; i < 7; i++) {
     faker.datatype.boolean() ? timeRoom.push(timeSet) : timeRoom.push([]);
   }
+  const tagRoom = [];
+  for (let i = 0; i < 4; i++) {
+    tagRoom.push(faker.lorem.word());
+  }
+
   mentors.intraId = faker.name.lastName('male');
   mentors.name = faker.name.firstName('male');
+  mentors.email = faker.internet.email();
   mentors.company = faker.company.companyName();
-  mentors.duty = faker.company.bs();
+  mentors.duty = faker.company.bsNoun();
   mentors.profileImage = faker.image.avatar();
-  mentors.availableTime = timeRoom.toString();
-  mentors.introduction = faker.lorem.paragraph(149);
-
+  mentors.availableTime = JSON.stringify(timeRoom);
+  mentors.introduction = faker.lorem.sentence();
+  mentors.tags = tagRoom;
+  mentors.isActive = faker.datatype.boolean();
+  mentors.updatedAt = faker.date.soon();
   return mentors;
 });

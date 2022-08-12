@@ -22,5 +22,7 @@ export class KeywordsSeeder implements Seeder {
       const newKeyword = keywordRepository.create(keywordData);
       await keywordRepository.save(newKeyword);
     }
+    const keywordsFactory = await factoryManager.get(Keywords);
+    await keywordsFactory.saveMany(3);
   }
 }
