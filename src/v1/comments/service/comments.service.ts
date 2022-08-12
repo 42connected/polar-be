@@ -9,6 +9,7 @@ import {
   CreateCommentDto,
   UpdateCommentDto,
 } from 'src/v1/dto/comment/comment.dto';
+import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { Comments } from 'src/v1/entities/comments.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
@@ -96,6 +97,29 @@ export class CommentsService {
     try {
       await this.commentsRepository.save(comment);
       return 'ok';
+    } catch {
+      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+    }
+  }
+
+  /*
+   * @Get
+   */
+  async getCommentPagination(
+    intraId: string,
+    paginationDto: PaginationDto,
+  ): Promise<[Comments[], number]> {
+    try {
+      const comment = await this.commentsRepository.findAndCount({
+        where: {
+          isDeleted: false,
+          mentors: { intraId: intraId },
+        },
+        take: paginationDto.take,
+        skip: paginationDto.take * (paginationDto.page - 1),
+        order: { createdAt: 'DESC' },
+      });
+      return comment;
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }

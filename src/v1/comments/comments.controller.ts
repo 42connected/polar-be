@@ -2,9 +2,11 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
@@ -15,11 +17,25 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from '../dto/pagination.dto';
+import { Comments } from '../entities/comments.entity';
 
 @Controller()
 @ApiTags('comments API')
 export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
+
+  @Get(':mentorIntraId')
+  @UseGuards(JwtGuard, RolesGuard)
+  async get(
+    @Param('mentorIntraId') mentorIntraId: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<[Comments[], number]> {
+    return await this.commentService.getCommentPagination(
+      mentorIntraId,
+      paginationDto,
+    );
+  }
 
   @Post(':mentorIntraId')
   @Roles('cadet')
@@ -32,7 +48,7 @@ export class CommentsController {
     description: '멘토링 후기 생성 성공',
     type: String,
   })
-  async postComment(
+  async post(
     @User() user: jwtUser,
     @Param('mentorIntraId') mentorIntraId: string,
     @Body() createCommentDto: CreateCommentDto,
@@ -55,7 +71,7 @@ export class CommentsController {
     description: '멘토링 후기 수정 성공',
     type: String,
   })
-  async updateComment(
+  async update(
     @User() user: jwtUser,
     @Param('commentId') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
@@ -78,10 +94,7 @@ export class CommentsController {
     description: '멘토링 후기 삭제 성공',
     type: String,
   })
-  async deleteComment(
-    @User() user: jwtUser,
-    @Param('commentId') commentId: string,
-  ) {
+  async delete(@User() user: jwtUser, @Param('commentId') commentId: string) {
     return this.commentService.deleteComment(user.intraId, commentId);
   }
 }
