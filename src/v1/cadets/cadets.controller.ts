@@ -100,7 +100,14 @@ export class CadetsController {
   @Post('mentorings/apply/:mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-<<<<<<< HEAD
+  @ApiOperation({
+    summary: 'cadet mentoring apply API',
+    description: '멘토링 신청 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링 신청 정보 생성 성공',
+    type: Promise<boolean>,
+  })
   async create(
     @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
@@ -137,21 +144,5 @@ export class CadetsController {
     } catch (err) {
       throw err;
     }
-=======
-  @ApiOperation({
-    summary: 'cadet mentoring apply API',
-    description: '멘토링 신청 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링 신청 정보 생성 성공',
-    type: Promise<boolean>,
-  })
-  create(
-    @Param('mentorIntraId') mentorIntraId: string,
-    @User() user: jwtUser,
-    @Body() createApplyDto: CreateApplyDto,
-  ): Promise<boolean> {
-    return this.applyService.create(user, mentorIntraId, createApplyDto);
->>>>>>> a98bb6f16605f877f41f8ea867e55918dd4d80ae
   }
 }

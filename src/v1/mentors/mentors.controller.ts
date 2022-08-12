@@ -23,12 +23,9 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
-<<<<<<< HEAD
 import { EmailService, MailType } from '../email/service/email.service';
-=======
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
->>>>>>> a98bb6f16605f877f41f8ea867e55918dd4d80ae
 
 @Controller()
 @ApiTags('mentors API')
