@@ -23,8 +23,10 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller()
+@ApiTags('mentors API')
 export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
@@ -35,6 +37,14 @@ export class MentorsController {
   @Get('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'getMentoringsLists get API',
+    description: '멘토링 리스트 가져오는 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링 리스트 가져오기 성공',
+    type: Promise<MentorMentoringInfo>,
+  })
   async getMentoringsLists(
     @User() user: jwtUser,
   ): Promise<MentorMentoringInfo> {
@@ -44,6 +54,14 @@ export class MentorsController {
   @Patch('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'setMeetingAt patch API',
+    description: '멘토링 미팅일정 확정 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링로그 수정 성공',
+    type: Promise<MentoringLogs>,
+  })
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
     return await this.mentoringsService.setMeetingAt(body);
   }
@@ -51,6 +69,15 @@ export class MentorsController {
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'updateMentorDetails post API',
+    description: '멘토 상세정보입력 api',
+  })
+  @ApiCreatedResponse({
+    description:
+      '멘토 상세정보(introduction, isActive, markdownContent) 생성 성공',
+    type: Promise<string>,
+  })
   async updateMentorDetails(
     @User() user: jwtUser,
     @Body() body: UpdateMentorDatailDto,
@@ -61,6 +88,14 @@ export class MentorsController {
   @Post('join')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'mentor join post API',
+    description: '멘토 기본정보(name, availableTime, isActive) 입력 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 기본정보 생성 성공',
+    type: Promise<void>,
+  })
   join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
     const { name, availableTime } = body;
     this.mentorsService.saveInfos(user, name, availableTime);
@@ -69,11 +104,27 @@ export class MentorsController {
   @Get(':intraId')
   @Roles('mentor', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiOperation({
+    summary: 'getMentorDetails API',
+    description: '멘토 세부정보(comments, mentoringLogs) 받아오는 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 세부정보 받아오기 성공',
+    type: Promise<Mentors>,
+  })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.getMentorDetails(intraId);
   }
 
   @Get()
+  @ApiOperation({
+    summary: 'getMentors API',
+    description: '멘토리스트 받아오는 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토리스트 받아오기 성공',
+    type: Promise<MentorsList>,
+  })
   getMentors(
     @Query('categoryId') categoryId?: string,
     @Query('keywordId') keywordId?: string[],

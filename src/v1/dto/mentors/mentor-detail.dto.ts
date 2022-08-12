@@ -1,19 +1,38 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
 
 export class UpdateMentorDatailDto {
   @IsNotEmpty()
+  @ApiProperty({
+    description: 'availableTime',
+    required: true,
+    type: [[AvailableTimeDto]],
+  })
   availableTime: AvailableTimeDto[][];
 
   @IsString()
   @IsOptional()
+  @ApiPropertyOptional({
+    description: 'introduction',
+    required: false,
+  })
   introduction: string;
 
   @IsBoolean()
   @IsOptional()
+  @ApiPropertyOptional({
+    description: 'isActive',
+    required: false,
+    type: Boolean,
+  })
   isActive: boolean;
 
   @IsString()
   @IsOptional()
+  @ApiPropertyOptional({
+    description: 'markdownContent',
+    required: false,
+  })
   markdownContent: string;
 }
