@@ -18,6 +18,7 @@ import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
+import { Comments } from '../entities/comments.entity';
 
 @Controller()
 @ApiTags('comments API')
@@ -29,7 +30,7 @@ export class CommentsController {
   async get(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
-  ) {
+  ): Promise<[Comments[], number]> {
     return await this.commentService.getCommentPagination(
       mentorIntraId,
       paginationDto,

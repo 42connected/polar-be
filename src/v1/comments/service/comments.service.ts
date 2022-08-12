@@ -105,7 +105,10 @@ export class CommentsService {
   /*
    * @Get
    */
-  async getCommentPagination(intraId: string, paginationDto: PaginationDto) {
+  async getCommentPagination(
+    intraId: string,
+    paginationDto: PaginationDto,
+  ): Promise<[Comments[], number]> {
     try {
       const comment = await this.commentsRepository.findAndCount({
         where: {
