@@ -28,10 +28,7 @@ export default setSeederFactory(
       '완료',
     ]);
     mentoringLogs.rejectMessage = faker.lorem.paragraph(2);
-    mentoringLogs.reportStatus = faker.helpers.arrayElement([
-      '대기중',
-      '완료',
-    ]);
+    mentoringLogs.reportStatus = faker.helpers.arrayElement(['대기중', '완료']);
     mentoringLogs.requestTime1 = [faker.date.soon(), faker.date.soon(3)];
     mentoringLogs.requestTime2 = faker.datatype.boolean()
       ? [faker.date.soon(), faker.date.soon(3)]
