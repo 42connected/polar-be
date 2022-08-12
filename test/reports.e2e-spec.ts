@@ -16,13 +16,14 @@ import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
 import { AuthModule } from 'src/v1/auth/auth.module';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
-import { CreateReportDto } from 'src/v1/dto/reports/report.dto';
+import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
 
 describe('MentorsController (e2e)', () => {
   let app: INestApplication;
   let logRepo: Repository<MentoringLogs>;
   let reportRepo: Repository<Reports>;
+  const mentorIntra = 'm-dada';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -57,7 +58,7 @@ describe('MentorsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'm-engeng', role: 'mentor' };
+          req.user = { intraId: mentorIntra, role: 'mentor' };
           return true;
         },
       })
@@ -74,25 +75,31 @@ describe('MentorsController (e2e)', () => {
         },
       }),
     );
-    logRepo = moduleFixture.get<Repository<MentoringLogs>>(
-      'MentoringLogsRepository',
-    );
-    reportRepo = moduleFixture.get<Repository<Reports>>('ReposrtsRepository');
+    logRepo = moduleFixture.get('MentoringLogsRepository');
+    reportRepo = moduleFixture.get('ReportsRepository');
     await app.init();
   });
 
-  // it('GET /:reportId', () => {
-
-  // });
+  it('GET /:reportId', async () => {
+    const report = await reportRepo.find();
+    return request(app.getHttpServer()).get(`/${report[0].id}`).expect(200);
+  });
 
   it('POST /:mentoringLogId', async () => {
-    // TODO: image test
-    const log = await logRepo.findOne({ where: { topic: 'test' } });
-    // TODO: 레포트 찾아서 삭제
-    await reportRepo.delete({
-      mentoringLogs: { id: log.id },
+    const log: MentoringLogs = await logRepo.findOne({
+      where: { topic: '테스트용멘토링로그', mentors: { intraId: mentorIntra } },
     });
-    const body: CreateReportDto = {
+    const report: Reports = await reportRepo.findOneBy({
+      mentoringLogs: {
+        id: log.id,
+      },
+    });
+    if (report) {
+      await reportRepo.remove(report);
+      log.reportStatus = '작성가능';
+      await logRepo.save(log);
+    }
+    const body: Partial<UpdateReportDto> = {
       place: '강남역',
       topic: '개발중',
       content: 'test test test test test test test test test',
@@ -105,6 +112,23 @@ describe('MentorsController (e2e)', () => {
       .post(`/${log.id}`)
       .send(body)
       .expect(201);
+  });
+
+  it('PATCH /:reportId', async () => {
+    const report = await reportRepo.findOne({
+      where: {
+        mentors: { intraId: mentorIntra },
+      },
+    });
+    const body = {
+      place: '강남역',
+      topic: '개발중',
+      content: 'update report',
+    };
+    return request(app.getHttpServer())
+      .patch(`/${report.id}`)
+      .send(body)
+      .expect(200);
   });
 
   afterAll(async () => {
