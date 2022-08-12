@@ -53,7 +53,7 @@ describe('CadetsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'nakkim', role: 'cadet' };
+          req.user = { intraId: 'jojoo', role: 'cadet' };
           return true;
         },
       })
