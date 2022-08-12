@@ -20,24 +20,26 @@ export class MentoringLogsSeeder implements Seeder {
     const cadetRepository = dataSource.getRepository(Cadets);
     const reportsRepository = dataSource.getRepository(Reports);
 
-    // const mentors = await mentorRepository.findOneBy({
-    //   intraId: 'm-engeng',
-    // });
-    // const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
+    const mentors = await mentorRepository.findOneBy({
+      intraId: 'm-dada',
+    });
+    const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
 
-    // const mentoringLogsData: MentoringLogsInterface = {
-    //   mentors,
-    //   cadets,
-    //   topic: 'What is making you feel good?',
-    //   content: 'Very good morning',
-    //   status: 'sleeping',
-    //   reportStatus: 'go hard',
-    //   requestTime1: [],
-    // };
-    // mentoringLogsData.requestTime1.push(new Date());
+    const mentoringLogsData: MentoringLogsInterface = {
+      mentors,
+      cadets,
+      topic: '테스트용멘토링로그',
+      content: 'Very good morning',
+      status: '완료',
+      reportStatus: '작성가능',
+      requestTime1: [
+        new Date('2022-08-18T10:00:00Z'),
+        new Date('2022-08-18T11:30:00Z'),
+      ],
+    };
 
-    // const newUser = mentoringLogsRepository.create(mentoringLogsData);
-    // await mentoringLogsRepository.save(newUser);
+    const newUser = mentoringLogsRepository.create(mentoringLogsData);
+    await mentoringLogsRepository.save(newUser);
 
     const mentoringLogsFactory = await factoryManager.get(MentoringLogs);
     const cadetsMeta = await cadetRepository.find();
