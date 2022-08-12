@@ -116,6 +116,7 @@ export class MentoringsService {
         },
         where: {
           mentors: { intraId: mentorIntraId },
+          status: '완료',
         },
         take: paginationDto.take,
         skip: paginationDto.take * (paginationDto.page - 1),

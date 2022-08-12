@@ -75,8 +75,6 @@ export class ReportsController {
   ) {
     const filePaths: string[] = this.reportsService.getImagesPath(files);
     const signaturePaths: string = this.reportsService.getSignaturePath(files);
-    console.log(filePaths);
-    console.log(signaturePaths);
     return await this.reportsService.updateReport(
       reportId,
       user.intraId,
