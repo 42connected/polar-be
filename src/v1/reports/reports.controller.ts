@@ -36,7 +36,9 @@ export class ReportsController {
   @Get()
   @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
-  async getReportPagination(@Query() paginationDto: PaginationDto) {
+  async getReportPagination(
+    @Query() paginationDto: PaginationDto,
+  ): Promise<[Reports[], number]> {
     return await this.reportsService.getReportPagination(paginationDto);
   }
 
