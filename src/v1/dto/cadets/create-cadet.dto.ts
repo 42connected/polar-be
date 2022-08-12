@@ -14,5 +14,5 @@ export class CreateCadetDto {
 
   @IsString()
   @IsNotEmpty()
-  cadetEmail: string;
+  email: string;
 }
