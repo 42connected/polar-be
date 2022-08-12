@@ -22,17 +22,15 @@ export default setSeederFactory(
     mentoringLogs.content = faker.word.noun(1000);
     mentoringLogs.money = faker.datatype.number({ min: 0, max: 10 }) * 50000;
     mentoringLogs.status = faker.helpers.arrayElement([
-      'pending',
-      'rejected',
-      'accepted',
-      'completed',
+      '대기중',
+      '예정',
+      '거절',
+      '완료',
     ]);
     mentoringLogs.rejectMessage = faker.lorem.paragraph(2);
     mentoringLogs.reportStatus = faker.helpers.arrayElement([
-      'pending',
-      'rejected',
-      'available',
-      'no',
+      '대기중',
+      '완료',
     ]);
     mentoringLogs.requestTime1 = [faker.date.soon(), faker.date.soon(3)];
     mentoringLogs.requestTime2 = faker.datatype.boolean()
