@@ -27,7 +27,7 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get(':reportId')
-  @Roles('mentor', 'bocal', 'cadet')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   async getReport(@Param('reportId') reportId: string): Promise<Reports> {
     return await this.reportsService.getReport(reportId);

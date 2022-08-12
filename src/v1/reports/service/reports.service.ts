@@ -179,9 +179,7 @@ export class ReportsService {
         take: paginationDto.take,
         skip: paginationDto.take * (paginationDto.page - 1),
         order: {
-          mentoringLogs: {
-            meetingAt: 'DESC',
-          },
+          createdAt: 'DESC',
         },
       });
       return reports;

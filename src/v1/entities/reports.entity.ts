@@ -5,6 +5,8 @@ import {
   JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Cadets } from './cadets.entity';
 import { MentoringLogs } from './mentoring-logs.entity';
@@ -57,4 +59,10 @@ export class Reports {
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
   @JoinColumn()
   mentoringLogs: MentoringLogs;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updatedAt: Date;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
 }
