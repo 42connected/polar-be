@@ -42,3 +42,6 @@ lerna-debug.log*
 
 # Uploads
 /uploads
+
+# local redis db
+dump.rdb

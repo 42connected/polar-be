@@ -68,10 +68,9 @@ export class ApplyService {
     let findmentor: Mentors;
     let findcadet: Cadets;
     let tmpRepo: MentoringLogs;
-    let updateRepo: MentoringLogs;
     try {
       findmentor = await this.mentorsRepository.findOne({
-        where: { id: mentorId },
+        where: { intraId: mentorId },
       });
     } catch {
       throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
@@ -108,6 +107,13 @@ export class ApplyService {
       ))
     )
       throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
+    if (
+      createApplyDto.requestTime1.length != 2 ||
+      (createApplyDto.requestTime2 &&
+        createApplyDto.requestTime2.length != 2) ||
+      (createApplyDto.requestTime3 && createApplyDto.requestTime3.length != 2)
+    )
+      throw new BadRequestException();
     try {
       tmpRepo = this.mentoringlogsRepository.create({
         cadets: findcadet,
@@ -129,7 +135,7 @@ export class ApplyService {
       );
     }
     try {
-      updateRepo = await this.mentoringlogsRepository.save(tmpRepo);
+      await this.mentoringlogsRepository.save(tmpRepo);
     } catch {
       throw new ConflictException(
         '값을 repository에 저장하는 도중 오류가 발생했습니다.',

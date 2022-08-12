@@ -19,6 +19,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { BatchModule } from './v1/batch/batch.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { CalendarModule } from './v1/calendar/calendar.module';
 
 @Module({
   imports: [
@@ -90,6 +91,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
           {
             path: 'batch',
             module: BatchModule,
+          },
+          {
+            path: 'calendar',
+            module: CalendarModule,
           },
         ],
       },
