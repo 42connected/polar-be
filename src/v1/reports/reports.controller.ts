@@ -34,7 +34,7 @@ export class ReportsController {
   }
 
   @Get()
-  @Roles('mentor', 'bocal')
+  @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
   async getReportPagination(@Query() paginationDto: PaginationDto) {
     return await this.reportsService.getReportPagination(paginationDto);
