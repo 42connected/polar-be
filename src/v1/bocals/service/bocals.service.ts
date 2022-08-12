@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
-import { Raw, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import * as Excel from 'exceljs';
 
@@ -148,14 +148,9 @@ export class BocalsService {
       await worksheet.addRow(row, 'o+');
     }
 
-    //2022-09_m-engeng_mentoringdata_220812.xlsx 이런 느낌으로 할까 생각중
-    //2022-09_mentoringdata_220812.xlsx
-    //m-engeng_mengoringdata_220812.xlsx
-    //무작위는 모르겠당
-    const fileName: string = new Date().getTime().toString(36);
-
+    const fileName: string = new Date().toISOString().split('T')[0];
     res.writeHead(200, {
-      'Content-Disposition': `attachment; filename=mentoring_data-${fileName}.xlsx`,
+      'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
@@ -183,12 +178,6 @@ export class BocalsService {
     if (!mentoringLog)
       throw new NotFoundException('잘못된 멘토링 아이디입니다.');
 
-    const mentoringHour: number = await this.calculateTotalHour(
-      mentoringLogId,
-      mentoringLog.meetingAt[0],
-      mentoringLog.meetingAt[1],
-    );
-
     const result: MentoringExcelData = {
       mentorName: mentoringLog.mentors.name,
       mentorCompany: mentoringLog.mentors.company,
@@ -204,68 +193,10 @@ export class BocalsService {
         .toISOString()
         .split('T')[1]
         .substr(0, 5),
-      totalHour: mentoringHour,
-      money: mentoringHour * 100000,
+      totalHour: mentoringLog.money / 100000,
+      money: mentoringLog.money,
       cadetName: mentoringLog.cadets.name,
     };
-    return result;
-  }
-
-  async calculateTotalHour(
-    mentorId: string,
-    start: Date,
-    end: Date,
-  ): Promise<number> {
-    let finishedMentorings: MentoringLogs[] = [];
-    const finishedMentoringsInDay: MentoringLogs[] = [];
-    const finishedMentoringsInMonth: MentoringLogs[] = [];
-
-    let result: number = Math.floor(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60),
-    );
-
-    //가정: 리포트가 작성이 완료되었을 때 저장과 동시에 실행됨
-    //이 때, reportStatus는 '작성완료'가 아님 (이건 로직에 따라 변경가능)
-    //
-    finishedMentorings = await this.mentoringLogsRepository.find({
-      select: { meetingAt: true },
-      //FIX ME:mentoringStatus가 완료가 되어야 함
-      where: { reportStatus: '작성완료', mentors: { id: mentorId } },
-      relations: { mentors: true },
-    });
-
-    finishedMentorings.map(mentoring => {
-      if (mentoring.meetingAt[0].getMonth() === start.getMonth())
-        finishedMentoringsInMonth.push(mentoring);
-    });
-
-    finishedMentoringsInMonth.map(mentoring => {
-      if (mentoring.meetingAt[0].getDate() === start.getDate())
-        finishedMentoringsInDay.push(mentoring);
-    });
-
-    let mentoringTimePerDay = 0;
-    finishedMentoringsInDay.forEach(mentoring => {
-      mentoringTimePerDay += Math.floor(
-        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
-          (1000 * 60 * 60),
-      );
-    });
-    if (mentoringTimePerDay >= 4) return 0;
-    else if (mentoringTimePerDay + result >= 4)
-      result = 4 - mentoringTimePerDay;
-
-    let mentoringTimePerMonth = 0;
-    finishedMentoringsInMonth.forEach(mentoring => {
-      mentoringTimePerMonth += Math.floor(
-        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
-          (1000 * 60 * 60),
-      );
-    });
-    if (mentoringTimePerMonth >= 10) return 0;
-    else if (mentoringTimePerMonth + result >= 10)
-      result = 10 - mentoringTimePerDay;
-
     return result;
   }
 }
