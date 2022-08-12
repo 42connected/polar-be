@@ -3,12 +3,12 @@ import { BatchService } from './batch.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailService } from '../email/service/email.service';
-import { BatchController } from './batch.controller';
+import { Mentors } from '../entities/mentors.entity';
+import { Cadets } from '../entities/cadets.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MentoringLogs])],
+  imports: [TypeOrmModule.forFeature([MentoringLogs, Mentors, Cadets])],
   providers: [BatchService, EmailService],
   exports: [BatchService],
-  controllers: [BatchController],
 })
 export class BatchModule {}

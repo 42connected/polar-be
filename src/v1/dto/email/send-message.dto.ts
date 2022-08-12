@@ -4,9 +4,7 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
-  IsDate,
   IsEmail,
-  IsNumber,
   IsOptional,
   IsString,
   Length,
@@ -57,9 +55,6 @@ export class ApproveMessageDto {
   @ArrayMaxSize(2)
   @Type(() => Date)
   meetingAt: Date[];
-
-  @IsNumber()
-  mentoringTime: number;
 }
 
 export class CancelMessageDto {

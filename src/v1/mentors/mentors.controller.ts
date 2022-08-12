@@ -23,6 +23,7 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
+import { EmailService, MailType } from '../email/service/email.service';
 
 @Controller()
 export class MentorsController {
@@ -30,6 +31,7 @@ export class MentorsController {
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
     private readonly searchMentorsService: SearchMentorsService,
+    private readonly emailService: EmailService,
   ) {}
 
   @Get('mentorings')
@@ -45,7 +47,27 @@ export class MentorsController {
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
-    return await this.mentoringsService.setMeetingAt(body);
+    try {
+      const mentoringLoginfo = await this.mentoringsService.setMeetingAt(body);
+
+      if (mentoringLoginfo) {
+        if (mentoringLoginfo.status === '예정') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.ApproveToCadet,
+          );
+        } else if (mentoringLoginfo.status === '취소') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.CancelToCadet,
+          );
+        }
+      }
+
+      return mentoringLoginfo;
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Post()

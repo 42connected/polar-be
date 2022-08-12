@@ -14,6 +14,8 @@ import { SearchMentorsService } from './service/search-mentors.service';
 import { Comments } from '../entities/comments.entity';
 import { KeywordCategories } from '../entities/keyword-categories.entity';
 import { Categories } from '../entities/categories.entity';
+import { EmailModule } from '../email/email.module';
+import { EmailService } from '../email/service/email.service';
 
 @Module({
   imports: [
@@ -28,9 +30,15 @@ import { Categories } from '../entities/categories.entity';
       Comments,
     ]),
     AuthModule,
+    EmailModule,
   ],
   controllers: [MentorsController],
-  providers: [MentorsService, SearchMentorsService, MentoringsService],
+  providers: [
+    MentorsService,
+    SearchMentorsService,
+    MentoringsService,
+    EmailService,
+  ],
   exports: [MentorsService, MentoringsService],
 })
 export class MentorsModule {}

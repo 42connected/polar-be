@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
@@ -11,12 +19,18 @@ import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
 import { UpdateCadetDto } from '../dto/cadets/update-cadet.dto';
+import { BatchService } from '../batch/batch.service';
+import { EmailService, MailType } from '../email/service/email.service';
 
 @Controller()
 export class CadetsController {
+  private readonly logger = new Logger(CadetsController.name);
+
   constructor(
     private cadetsService: CadetsService,
     private applyService: ApplyService,
+    private batchSevice: BatchService,
+    private emailService: EmailService,
   ) {}
 
   @Get('test')
@@ -52,11 +66,41 @@ export class CadetsController {
   @Post('mentorings/apply/:mentorId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
-  create(
+  async create(
     @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    return this.applyService.create(user, mentorId, createApplyDto);
+    let mentoringLogs;
+    try {
+      mentoringLogs = await this.applyService.create(
+        user,
+        mentorId,
+        createApplyDto,
+      );
+
+      try {
+        this.emailService.sendMessage(
+          mentoringLogs.id,
+          MailType.ReservationToMentor,
+        );
+      } catch {
+        this.logger.warn('메일 전송 실패: ReservationToMentor');
+      }
+
+      try {
+        const twoDaytoMillseconds = 172800000;
+        this.batchSevice.cancelMeetingAuto(
+          mentoringLogs.id,
+          twoDaytoMillseconds,
+        );
+      } catch {
+        this.logger.warn('메일 전송 실패: autoCancel after 48hours');
+      }
+
+      return mentoringLogs;
+    } catch (err) {
+      throw err;
+    }
   }
 }

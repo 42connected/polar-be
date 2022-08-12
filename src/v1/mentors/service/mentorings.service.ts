@@ -8,7 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { jwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
-import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
@@ -20,7 +19,6 @@ export class MentoringsService {
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
-    @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
   async getMentoringsLists(user: jwtUser): Promise<MentorMentoringInfo> {
