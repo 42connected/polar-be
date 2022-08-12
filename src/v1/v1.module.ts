@@ -11,6 +11,7 @@ import { CommentsModule } from './comments/comments.module';
 import { ValidateInfoMiddleware } from 'src/v1/middlewares/validate-info.middleware';
 import { JwtModule } from '@nestjs/jwt';
 import { BatchModule } from './batch/batch.module';
+import { EmailModule } from './email/email.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CalendarModule } from './calendar/calendar.module';
 
@@ -33,6 +34,7 @@ import { CalendarModule } from './calendar/calendar.module';
         };
       },
     }),
+    EmailModule,
   ],
   controllers: [V1Controller],
   providers: [V1Service, JwtStrategy],

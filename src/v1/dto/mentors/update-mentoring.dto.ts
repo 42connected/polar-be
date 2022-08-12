@@ -1,6 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 
 export class UpdateMentoringDto {
   @IsUUID()
@@ -21,13 +28,14 @@ export class UpdateMentoringDto {
   })
   rejectMessage: string;
 
-  @IsDate()
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
   @Type(() => Date)
-  @IsOptional()
   @ApiPropertyOptional({
     description: ' meetingAt',
     required: false,
-    type: Date,
+    type: [Date],
   })
-  meetingAt: Date;
+  meetingAt: Date[];
 }

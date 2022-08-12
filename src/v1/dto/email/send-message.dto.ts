@@ -1,8 +1,13 @@
+import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
   IsBoolean,
   IsDate,
   IsEmail,
   IsNumber,
+  IsOptional,
   IsString,
   Length,
 } from 'class-validator';
@@ -24,21 +29,40 @@ export class ReservationMessageDto {
   })
   cadetSlackId: string;
 
-  @IsDate()
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @Type(() => Date)
   @ApiProperty({
-    description: 'reservationTime',
+    description: 'reservationTime1',
     required: true,
-    type: Date,
+    type: [Date],
   })
-  reservationTime: Date;
+  reservationTime1: Date[];
 
-  @IsNumber()
+  @IsArray()
+  @IsOptional()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @Type(() => Date)
   @ApiProperty({
-    description: 'mentoringTime',
+    description: 'reservationTime2',
     required: true,
-    type: Number,
+    type: [Date],
   })
-  mentoringTime: number;
+  reservationTime2?: Date[];
+
+  @IsArray()
+  @IsOptional()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @Type(() => Date)
+  @ApiProperty({
+    description: 'reservationTime3',
+    required: true,
+    type: [Date],
+  })
+  reservationTime3?: Date[];
 
   @IsBoolean()
   @ApiProperty({
@@ -65,21 +89,16 @@ export class ApproveMessageDto {
   })
   cadetEmail: string;
 
-  @IsDate()
+  @IsArray()
+  @ArrayMinSize(2)
+  @ArrayMaxSize(2)
+  @Type(() => Date)
   @ApiProperty({
-    description: 'cadetEmail',
+    description: 'meetingAt',
     required: true,
-    type: Date,
+    type: [Date],
   })
-  reservationTime: Date;
-
-  @IsNumber()
-  @ApiProperty({
-    description: 'mentoringTime',
-    required: true,
-    type: Number,
-  })
-  mentoringTime: number;
+  meetingAt: Date[];
 }
 
 export class CancelMessageDto {
@@ -97,4 +116,8 @@ export class CancelMessageDto {
     required: true,
   })
   cadetEmail: string;
+
+  @IsString()
+  @IsOptional()
+  rejectMessage: string;
 }

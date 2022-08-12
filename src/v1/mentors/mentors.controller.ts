@@ -30,6 +30,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
+import { EmailService, MailType } from '../email/service/email.service';
 
 @Controller()
 @ApiTags('mentors API')
@@ -38,6 +39,7 @@ export class MentorsController {
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
     private readonly searchMentorsService: SearchMentorsService,
+    private readonly emailService: EmailService,
   ) {}
 
   @Get('mentorings')
@@ -83,7 +85,27 @@ export class MentorsController {
     type: Promise<MentoringLogs>,
   })
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
-    return await this.mentoringsService.setMeetingAt(body);
+    try {
+      const mentoringLoginfo = await this.mentoringsService.setMeetingAt(body);
+
+      if (mentoringLoginfo) {
+        if (mentoringLoginfo.status === '예정') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.ApproveToCadet,
+          );
+        } else if (mentoringLoginfo.status === '취소') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.CancelToCadet,
+          );
+        }
+      }
+
+      return mentoringLoginfo;
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Post()
