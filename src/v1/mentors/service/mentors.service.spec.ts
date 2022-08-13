@@ -7,11 +7,6 @@ import { MentorsService } from './mentors.service';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 
-//jest
-//  .spyOn(service, 'findMentorByIntraId')
-//  .mockImplementationOnce(async () => entity);
-//jest.spyOn(repo, 'save').mockImplementationOnce(async () => entity);
-
 describe('MentorsService', () => {
   let service: MentorsService;
   let repo: Repository<Mentors>;
@@ -36,18 +31,6 @@ describe('MentorsService', () => {
     service = module.get<MentorsService>(MentorsService);
     repo = module.get<Repository<Mentors>>('MentorsRepository');
   });
-  //describe('Init', () => {
-  //  it('should be defined', () => {
-  //    expect(service).toBeDefined();
-  //  });
-  //});
-
-  //describe('getMentorDetails', () => {
-  //  it('null 체크', async () => {
-  //    await expect(service.getMentorDetails(null)).rejects.toThrowError(
-  //      BadRequestException,
-  //    );
-  //  });
 
   describe('getMentorDetails', () => {
     it('null', async () => {
@@ -74,7 +57,7 @@ describe('MentorsService', () => {
   });
 
   describe('updateMentorDetails', () => {
-    it('availableTime Empty Array', async () => {
+    it('availableTime: Empty', async () => {
       const MockMentor: Mentors = new Mentors();
       MockMentor.intraId = 'm-engeng';
       jest.spyOn(repo, 'findOneBy').mockImplementation(async () => MockMentor);
@@ -88,7 +71,7 @@ describe('MentorsService', () => {
       ).toBe('ok');
     });
 
-    it('availableTime Array is A Large', async () => {
+    it('availableTime: Large', async () => {
       const MockMentor: Mentors = new Mentors();
       MockMentor.intraId = 'm-engeng';
       jest.spyOn(repo, 'findOneBy').mockImplementation(async () => MockMentor);
@@ -126,7 +109,7 @@ describe('MentorsService', () => {
       ).rejects.toThrowError(BadRequestException);
     });
 
-    it('Duplicated time', async () => {
+    it('availableTime: Duplicated', async () => {
       const MockMentor: Mentors = new Mentors();
       MockMentor.intraId = 'm-engeng';
       jest.spyOn(repo, 'findOneBy').mockImplementation(async () => MockMentor);
@@ -166,7 +149,7 @@ describe('MentorsService', () => {
       ).rejects.toThrowError(BadRequestException);
     });
 
-    it('availableTime minute is without 0 or 30', async () => {
+    it('availableTime: minute is without 0 or 30', async () => {
       const MockMentor: Mentors = new Mentors();
       MockMentor.intraId = 'm-engeng';
       jest.spyOn(repo, 'findOneBy').mockImplementation(async () => MockMentor);
@@ -198,7 +181,7 @@ describe('MentorsService', () => {
       ).rejects.toThrowError(BadRequestException);
     });
 
-    it('availableTime is smaller than 1 hours', async () => {
+    it('availableTime: Time gap is smaller than 1 hours', async () => {
       const MockMentor: Mentors = new Mentors();
       MockMentor.intraId = 'm-engeng';
       jest.spyOn(repo, 'findOneBy').mockImplementation(async () => MockMentor);
@@ -230,6 +213,4 @@ describe('MentorsService', () => {
       ).rejects.toThrowError(BadRequestException);
     });
   });
-
-  console.log('asd');
 });
