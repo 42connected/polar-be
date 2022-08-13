@@ -4,11 +4,13 @@ import { Categories } from 'src/v1/entities/categories.entity';
 import { KeywordCategories } from 'src/v1/entities/keyword-categories.entity';
 import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { SearchMentorsService } from './search-mentors.service';
 
 describe('SearchMentorService', () => {
   let service: SearchMentorsService;
+  let mentorRepo: Repository<Mentors>;
   let mentoringLogsRepo: Repository<MentoringLogs>;
   let MentorKeywordsRepo: Repository<MentorKeywords>;
   let KeywordCategoriesRepo: Repository<KeywordCategories>;
@@ -18,6 +20,18 @@ describe('SearchMentorService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SearchMentorsService,
+        {
+          provide: getRepositoryToken(Mentors),
+          useValue: {
+            find: jest.fn(),
+            findOneBy: jest.fn(),
+            findOne: jest.fn(),
+            findAndCount: jest.fn(),
+            save: jest.fn(),
+            create: jest.fn(),
+            delete: jest.fn(),
+          },
+        },
         {
           provide: getRepositoryToken(MentoringLogs),
           useValue: {
@@ -70,6 +84,7 @@ describe('SearchMentorService', () => {
     }).compile();
 
     service = module.get<SearchMentorsService>(SearchMentorsService);
+    mentorRepo = module.get<Repository<Mentors>>('MentorsRepository');
     mentoringLogsRepo = module.get<Repository<MentoringLogs>>(
       'MentoringLogsRepository',
     );
@@ -80,6 +95,10 @@ describe('SearchMentorService', () => {
       'KeywordCategoriesRepository',
     );
     CategoriesRepo = module.get<Repository<Categories>>('CategoriesRepository');
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
   });
 
   //  describe('getMentorList', () => {
