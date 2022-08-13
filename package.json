@@ -22,7 +22,8 @@
     "typeorm": "typeorm-ts-node-commonjs -d src/data-source.ts",
     "db:createMigration": "typeorm migration:create",
     "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
-    "token": "node genToken.js"
+    "token": "node genToken.js",
+    "migration": "npm run typeorm migration:generate src/migrations/migration; npm run typeorm migration:run"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
@@ -101,6 +102,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "src/(.*)": "<rootDir>/$1"
+    }
   }
 }
