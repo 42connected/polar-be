@@ -70,14 +70,6 @@ export class MentorsService {
   }
 
   /*
-   * @Get
-   */
-  async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    return mentor;
-  }
-
-  /*
    * @Post
    */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {

@@ -158,7 +158,7 @@ export class MentorsController {
     type: Promise<Mentors>,
   })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
-    return await this.mentorsService.getMentorDetails(intraId);
+    return await this.mentorsService.findMentorByIntraId(intraId);
   }
 
   @Get()
