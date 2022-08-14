@@ -8,6 +8,7 @@ export class JoinMentorDto {
   @ApiProperty({
     description: 'name',
     required: true,
+    type: String,
   })
   name: string;
 
@@ -16,6 +17,7 @@ export class JoinMentorDto {
   @ApiProperty({
     description: 'email',
     required: true,
+    type: String,
   })
   email: string;
 

@@ -17,6 +17,7 @@ export class UpdateMentoringDto {
   @ApiProperty({
     description: 'status',
     required: true,
+    type: String,
   })
   status: string;
 
@@ -25,6 +26,7 @@ export class UpdateMentoringDto {
   @ApiPropertyOptional({
     description: 'rejectMessage',
     required: false,
+    type: String,
   })
   rejectMessage: string;
 
