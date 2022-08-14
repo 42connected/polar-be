@@ -45,7 +45,9 @@ export class EmailService {
     }
 
     if (messageDto === null) {
-      this.logger.warn(`해당하는 MessageDto가 없습니다 : Check your MailType`);
+      this.logger.warn(
+        `해당하는 MailTyped으로 MessageDto를 만들 수 없습니다 : Check your MailType`,
+      );
       return false;
     }
 
@@ -132,26 +134,21 @@ export class EmailService {
             messageDto.reservationTime1[1],
           ),
         );
-        let requestTime2: string;
-        if (messageDto.reservationTime2) {
-          requestTime2 = await this.reserveTimeToString(
+        let requestTime2: string = await this.reserveTimeToString(
+          messageDto.reservationTime2[0],
+          this.getMentoringHours(
             messageDto.reservationTime2[0],
-            this.getMentoringHours(
-              messageDto.reservationTime2[0],
-              messageDto.reservationTime2[1],
-            ),
-          );
-        } else requestTime2 = 'Empty';
-        let requestTime3: string;
-        if (messageDto.reservationTime3) {
-          requestTime3 = await this.reserveTimeToString(
+            messageDto.reservationTime2[1],
+          ),
+        );
+        let requestTime3: string = await this.reserveTimeToString(
+          messageDto.reservationTime3[0],
+          this.getMentoringHours(
             messageDto.reservationTime3[0],
-            this.getMentoringHours(
-              messageDto.reservationTime3[0],
-              messageDto.reservationTime3[1],
-            ),
-          );
-        } else requestTime3 = 'Empty';
+            messageDto.reservationTime3[1],
+          ),
+        );
+        /* reservation2, 3의 멘토링 시간이 0일 때 '' 전송 */
         return {
           subject: 'New mentoring request',
           template: 'ReservationMessage.hbs',
@@ -167,6 +164,7 @@ export class EmailService {
         };
       }
       case MailType.Approve: {
+        console.log(messageDto.meetingAt.length);
         const reservationTimeToString = await this.reserveTimeToString(
           messageDto.meetingAt[0],
           this.getMentoringHours(
@@ -174,6 +172,7 @@ export class EmailService {
             messageDto.meetingAt[1],
           ),
         );
+        /* meetingAt의 멘토링 시간이 0일 때 '' 전송 */
         return {
           subject: 'Mentoring Approved',
           template: 'ApproveMessage.hbs',
@@ -201,7 +200,7 @@ export class EmailService {
 
   private async getMessageDto(
     mentoringsLogsId: string,
-    mailtype: MailType,
+    mailType: MailType,
   ): Promise<ReservationMessageDto | ApproveMessageDto | CancelMessageDto> {
     let mentoringsLogsInfoDb: MentoringLogs = null;
     try {
@@ -217,11 +216,17 @@ export class EmailService {
     if (!mentoringsLogsInfoDb.cadets) {
       throw new NotFoundException('mentoringLogs 테이블에 cadets가 없습니다');
     }
-    switch (mailtype) {
+    if (!mentoringsLogsInfoDb.mentors.email) {
+      throw new NotFoundException('mentor email을 찾을 수 없습니다');
+    }
+    if (!mentoringsLogsInfoDb.cadets.email) {
+      throw new NotFoundException('cadets email을 찾을 수 없습니다');
+    }
+
+    this.vaildateDbData(mentoringsLogsInfoDb, mailType);
+
+    switch (mailType) {
       case MailType.Reservation: {
-        if (!mentoringsLogsInfoDb.mentors.email) {
-          throw new NotFoundException('mentor email을 찾을 수 없습니다');
-        }
         const reservationMessageDto: ReservationMessageDto = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
@@ -283,7 +288,7 @@ export class EmailService {
     return mentoringLogsDb;
   }
 
-  private getMentoringHours(startTime: Date, endTime: Date) {
+  private getMentoringHours(startTime: Date, endTime: Date): number {
     const millisecondToHour = 3600000;
 
     const mentoringTimeHours =
@@ -296,6 +301,10 @@ export class EmailService {
     reservationTime: Date,
     mentoringTime: number,
   ): Promise<string> {
+    if (mentoringTime === 0) {
+      return '';
+    }
+
     const reservationTimeTmp: string = reservationTime.toDateString();
     const tmp: string[] = reservationTimeTmp.split(' ');
     let mentoringMinute: string;
@@ -316,5 +325,93 @@ export class EmailService {
       mentoringTime +
       ' hours';
     return reservationTimeToString;
+  }
+
+  private vaildateDbData(
+    mentoringsLogsInfoDb: MentoringLogs,
+    mailType: MailType,
+  ) {
+    switch (mailType) {
+      case MailType.Reservation: {
+        if (!mentoringsLogsInfoDb.requestTime1) {
+          throw new NotFoundException('요청시간을 1개도 찾을 수 없습니다');
+        }
+        /* requestTime2,3은 널이나 빈 배열이 될 수 있음 */
+        /* 0000-00-00 00:00은 예외처리할 데이터 */
+        if (!mentoringsLogsInfoDb.requestTime2) {
+          mentoringsLogsInfoDb.requestTime2 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (!mentoringsLogsInfoDb.requestTime3) {
+          mentoringsLogsInfoDb.requestTime3 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (mentoringsLogsInfoDb.requestTime1.length !== 2) {
+          throw new NotFoundException('올바른 요청시간 형식이 아닙니다');
+        }
+        /* requestTime2,3은 널이나 빈 배열이 될 수 있음 */
+        /* 0000-00-00 00:00은 예외처리할 데이터 */
+        if (mentoringsLogsInfoDb.requestTime2.length < 2) {
+          mentoringsLogsInfoDb.requestTime2 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (mentoringsLogsInfoDb.requestTime3.length < 2) {
+          mentoringsLogsInfoDb.requestTime3 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        mentoringsLogsInfoDb.requestTime1.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime1',
+            );
+          }
+        });
+        mentoringsLogsInfoDb.requestTime2.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime2',
+            );
+          }
+        });
+        mentoringsLogsInfoDb.requestTime3.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime3',
+            );
+          }
+        });
+
+        break;
+      }
+      case MailType.Approve: {
+        if (!mentoringsLogsInfoDb.meetingAt) {
+          throw new NotFoundException(
+            '예약확정시간(meetingAt)을 찾을 수 없습니다',
+          );
+        }
+        if (mentoringsLogsInfoDb.meetingAt.length !== 2) {
+          throw new NotFoundException(
+            '예약확정시간(meetingAt)을 찾을 수 없습니다',
+          );
+        }
+        mentoringsLogsInfoDb.meetingAt.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : meetingAt',
+            );
+          }
+        });
+
+        break;
+      }
+    }
   }
 }
