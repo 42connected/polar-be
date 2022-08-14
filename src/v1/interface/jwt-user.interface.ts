@@ -1,4 +1,4 @@
-export interface jwtUser {
+export interface JwtUser {
   id: string;
   intraId: string;
   role: string;

@@ -8,8 +8,18 @@ export class JoinMentorDto {
   @ApiProperty({
     description: 'name',
     required: true,
+    type: String,
   })
   name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'email',
+    required: true,
+    type: String,
+  })
+  email: string;
 
   @IsNotEmpty()
   @ApiProperty({

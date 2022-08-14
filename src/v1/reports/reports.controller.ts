@@ -14,7 +14,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import { jwtUser } from '../interface/jwt-user.interface';
+import { JwtUser } from '../interface/jwt-user.interface';
 import { UpdateReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -109,7 +109,7 @@ export class ReportsController {
   })
   async updateReport(
     @Param('reportId') reportId: string,
-    @User() user: jwtUser,
+    @User() user: JwtUser,
     @Body() body: UpdateReportDto,
     @UploadedFiles()
     files: {

@@ -5,12 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
+import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
 
 @Injectable()
 export class MentorsService {
@@ -19,7 +20,7 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async createUser(user: CreateMentorDto): Promise<jwtUser> {
+  async createUser(user: CreateMentorDto): Promise<JwtUser> {
     try {
       const createdUser: Mentors = this.mentorsRepository.create(user);
       createdUser.isActive = false;
@@ -37,7 +38,7 @@ export class MentorsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<jwtUser> {
+  async findByIntra(intraId: string): Promise<JwtUser> {
     try {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,
@@ -69,14 +70,6 @@ export class MentorsService {
   }
 
   /*
-   * @Get
-   */
-  async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    return mentor;
-  }
-
-  /*
    * @Post
    */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
@@ -85,8 +78,8 @@ export class MentorsService {
       this.validateAvailableTime(body.availableTime),
     );
     mentor.introduction = body.introduction;
-    mentor.isActive = body.isActive;
     mentor.markdownContent = body.markdownContent;
+    mentor.email = body.email;
     try {
       await this.mentorsRepository.save(mentor);
       return 'ok';
@@ -113,17 +106,12 @@ export class MentorsService {
     }
   }
 
-  async saveInfos(
-    user: jwtUser,
-    name: string,
-    availableTime: AvailableTimeDto[][],
-  ): Promise<void> {
-    if (name === '') {
-      throw new BadRequestException('입력된 이름이 없습니다.');
-    }
+  async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
+    const { name, email, availableTime } = infos;
     try {
-      const foundUser: Mentors = await this.findMentorByIntraId(user.intraId);
+      const foundUser: Mentors = await this.findMentorByIntraId(intraId);
       foundUser.name = name;
+      foundUser.email = email;
       foundUser.availableTime = JSON.stringify(
         this.validateAvailableTime(availableTime),
       );
