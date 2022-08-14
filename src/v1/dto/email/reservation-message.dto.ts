@@ -4,14 +4,12 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
-  IsDate,
   IsEmail,
-  IsNumber,
   IsOptional,
   IsString,
   Length,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ReservationMessageDto {
   @IsEmail()
@@ -20,6 +18,21 @@ export class ReservationMessageDto {
     required: true,
   })
   mentorEmail: string;
+
+  @IsString()
+  @Length(0, 15)
+  @ApiProperty({
+    description: 'mentorSlackId',
+    required: true,
+  })
+  mentorSlackId: string;
+
+  @IsEmail()
+  @ApiProperty({
+    description: 'cadetEmail',
+    required: true,
+  })
+  cadetEmail: string;
 
   @IsString()
   @Length(0, 15)
@@ -71,53 +84,4 @@ export class ReservationMessageDto {
     type: Boolean,
   })
   isCommon: boolean;
-}
-
-export class ApproveMessageDto {
-  @IsString()
-  @Length(0, 15)
-  @ApiProperty({
-    description: 'mentorSlackId',
-    required: true,
-  })
-  mentorSlackId: string;
-
-  @IsEmail()
-  @ApiProperty({
-    description: 'cadetEmail',
-    required: true,
-  })
-  cadetEmail: string;
-
-  @IsArray()
-  @ArrayMinSize(2)
-  @ArrayMaxSize(2)
-  @Type(() => Date)
-  @ApiProperty({
-    description: 'meetingAt',
-    required: true,
-    type: [Date],
-  })
-  meetingAt: Date[];
-}
-
-export class CancelMessageDto {
-  @IsString()
-  @Length(0, 15)
-  @ApiProperty({
-    description: 'mentorSlackId',
-    required: true,
-  })
-  mentorSlackId: string;
-
-  @IsEmail()
-  @ApiProperty({
-    description: 'cadetEmail',
-    required: true,
-  })
-  cadetEmail: string;
-
-  @IsString()
-  @IsOptional()
-  rejectMessage: string;
 }

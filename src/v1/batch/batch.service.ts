@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
   Logger,
@@ -76,7 +75,7 @@ export class BatchService {
     const { id: mentoringId } = mentoringLogsData;
     const callback = () => {
       this.emailService
-        .sendMessage(mentoringId, MailType.CancelToCadet)
+        .sendMessage(mentoringId, MailType.Cancel)
         .then(() => {
           this.logger.log(
             `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
@@ -87,6 +86,8 @@ export class BatchService {
         );
 
       mentoringLogsData.status = '취소';
+      mentoringLogsData.rejectMessage =
+        '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
 
       this.mentoringsLogsRepository
         .save(mentoringLogsData)

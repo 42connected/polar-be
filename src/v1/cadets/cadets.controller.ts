@@ -132,10 +132,7 @@ export class CadetsController {
       );
 
       try {
-        this.emailService.sendMessage(
-          mentoringLogs.id,
-          MailType.ReservationToMentor,
-        );
+        this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
       } catch {
         this.logger.warn('메일 전송 실패: ReservationToMentor');
       }
