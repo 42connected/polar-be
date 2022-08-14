@@ -78,8 +78,8 @@ export class MentorsService {
       this.validateAvailableTime(body.availableTime),
     );
     mentor.introduction = body.introduction;
-    mentor.isActive = body.isActive;
     mentor.markdownContent = body.markdownContent;
+    mentor.email = body.email;
     try {
       await this.mentorsRepository.save(mentor);
       return 'ok';
