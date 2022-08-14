@@ -12,7 +12,7 @@ import {
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CreateCommentDto, UpdateCommentDto } from '../dto/comment/comment.dto';
-import { jwtUser } from '../interface/jwt-user.interface';
+import { JwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CommentsService } from './service/comments.service';
@@ -56,7 +56,7 @@ export class CommentsController {
     type: String,
   })
   async post(
-    @User() user: jwtUser,
+    @User() user: JwtUser,
     @Param('mentorIntraId') mentorIntraId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
@@ -80,7 +80,7 @@ export class CommentsController {
     type: String,
   })
   async update(
-    @User() user: jwtUser,
+    @User() user: JwtUser,
     @Param('commentId') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
   ) {
@@ -103,7 +103,7 @@ export class CommentsController {
     description: '멘토링 후기 삭제 성공',
     type: String,
   })
-  async delete(@User() user: jwtUser, @Param('commentId') commentId: string) {
+  async delete(@User() user: JwtUser, @Param('commentId') commentId: string) {
     return this.commentService.deleteComment(user.intraId, commentId);
   }
 }

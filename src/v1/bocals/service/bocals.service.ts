@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
@@ -20,7 +20,7 @@ export class BocalsService {
     private mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
-  async createUser(user: CreateBocalDto): Promise<jwtUser> {
+  async createUser(user: CreateBocalDto): Promise<JwtUser> {
     try {
       const createdUser: Bocals = await this.bocalsRepository.create(user);
       await this.bocalsRepository.save(createdUser);
@@ -37,7 +37,7 @@ export class BocalsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<jwtUser> {
+  async findByIntra(intraId: string): Promise<JwtUser> {
     try {
       const foundUser: Bocals = await this.bocalsRepository.findOneBy({
         intraId,

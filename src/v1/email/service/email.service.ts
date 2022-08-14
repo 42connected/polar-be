@@ -40,7 +40,7 @@ export class EmailService {
     mailType: MailType,
   ): Promise<boolean> {
     let messageDto = null;
-    let mailTypeString: string = this.stringifyMailType(mailType);
+    const mailTypeString: string = this.stringifyMailType(mailType);
     try {
       messageDto = await this.getMessageDto(mentoringLogsId, mailType);
     } catch (err) {
@@ -53,7 +53,7 @@ export class EmailService {
       return false;
     }
 
-    let messageForm: ISendMailOptions = await this.getMailMessageForm(
+    const messageForm: ISendMailOptions = await this.getMailMessageForm(
       messageDto,
       mailType,
     );
@@ -127,12 +127,13 @@ export class EmailService {
     messageDto: any,
     mailType: MailType,
   ): Promise<ISendMailOptions> {
-    let messageForm: ISendMailOptions = null;
+    const messageForm: ISendMailOptions = null;
 
     switch (mailType) {
       case MailType.ReservationToMentor: {
-        let commonType: string;
-        commonType = messageDto.isCommon ? '공통과정' : '심화과정';
+        const commonType: string = messageDto.isCommon
+          ? '공통과정'
+          : '심화과정';
 
         const requestTime1: string = await this.reserveTimeToString(
           messageDto.reservationTime1[0],

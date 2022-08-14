@@ -5,6 +5,7 @@ export interface MentorMentoringLogs {
   cadet: {
     name: string;
     intraId: string;
+    resumeUrl: string;
   };
   topic: string;
   status: string;
