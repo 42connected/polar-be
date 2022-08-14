@@ -11,7 +11,7 @@ import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
 import { CreateApplyDto } from '../dto/cadets/create-apply.dto';
-import { jwtUser } from '../interface/jwt-user.interface';
+import { JwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { CadetsService } from './service/cadets.service';
@@ -52,7 +52,7 @@ export class CadetsController {
     description: '카뎃 로그인 정보 받아오기 성공',
     type: String,
   })
-  hello(@User() user: jwtUser) {
+  hello(@User() user: JwtUser) {
     console.log('guard test', user);
     return 'hi';
   }
@@ -69,7 +69,7 @@ export class CadetsController {
     description: '카뎃 로그인 정보 생성 성공',
     type: Promise<string>,
   })
-  UpdateCadet(@User() user: jwtUser, @Body() updateCadetDto: UpdateCadetDto) {
+  UpdateCadet(@User() user: JwtUser, @Body() updateCadetDto: UpdateCadetDto) {
     return this.cadetsService.updateCadet(user.intraId, updateCadetDto);
   }
 
@@ -85,7 +85,7 @@ export class CadetsController {
     description: '멘토링로그 정보 받아오기 성공',
     type: Promise<CadetMentoringInfo>,
   })
-  async getMentoringLogs(@User() user: jwtUser): Promise<CadetMentoringInfo> {
+  async getMentoringLogs(@User() user: JwtUser): Promise<CadetMentoringInfo> {
     return await this.cadetsService.getMentoringLogs(user.id);
   }
 
@@ -101,7 +101,7 @@ export class CadetsController {
     description: '카뎃 join 성공',
     type: Promise<void>,
   })
-  join(@Body() body: JoinCadetDto, @User() user: jwtUser) {
+  join(@Body() body: JoinCadetDto, @User() user: JwtUser) {
     const { name } = body;
     this.cadetsService.saveName(user, name);
   }
@@ -120,7 +120,7 @@ export class CadetsController {
   })
   async create(
     @Param('mentorId') mentorId: string,
-    @User() user: jwtUser,
+    @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
     let mentoringLogs: MentoringLogs;

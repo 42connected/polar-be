@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
 
 @Injectable()
@@ -63,7 +63,7 @@ export class ApplyService {
   }
 
   async create(
-    cadet: jwtUser,
+    cadet: JwtUser,
     mentorId: string,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {

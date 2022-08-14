@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import { jwtUser } from '../interface/jwt-user.interface';
+import { JwtUser } from '../interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
 import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -56,7 +56,7 @@ export class MentorsController {
     type: Promise<MentorMentoringInfo>,
   })
   async getMentoringsLists(
-    @User() user: jwtUser,
+    @User() user: JwtUser,
   ): Promise<MentorMentoringInfo> {
     return await this.mentoringsService.getMentoringsLists(user);
   }
@@ -117,7 +117,7 @@ export class MentorsController {
     type: Promise<string>,
   })
   async updateMentorDetails(
-    @User() user: jwtUser,
+    @User() user: JwtUser,
     @Body() body: UpdateMentorDatailDto,
   ) {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
@@ -135,9 +135,8 @@ export class MentorsController {
     description: '멘토 기본정보 생성 성공',
     type: Promise<void>,
   })
-  join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
-    const { name, availableTime } = body;
-    this.mentorsService.saveInfos(user, name, availableTime);
+  join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+    this.mentorsService.saveInfos(user.intraId, body);
   }
 
   @Get(':intraId')
@@ -153,7 +152,7 @@ export class MentorsController {
     type: Promise<Mentors>,
   })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
-    return await this.mentorsService.getMentorDetails(intraId);
+    return await this.mentorsService.findMentorByIntraId(intraId);
   }
 
   @Get()

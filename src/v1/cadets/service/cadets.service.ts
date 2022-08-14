@@ -9,7 +9,7 @@ import { CadetMentoringInfo } from 'src/v1/dto/cadet-mentoring-info.interface';
 import { CadetMentoringLogs } from 'src/v1/dto/cadet-mentoring-logs.interface';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { UpdateCadetDto } from 'src/v1/dto/cadets/update-cadet.dto';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
@@ -20,7 +20,7 @@ export class CadetsService {
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
-  async createUser(user: CreateCadetDto): Promise<jwtUser> {
+  async createUser(user: CreateCadetDto): Promise<JwtUser> {
     try {
       const createdUser: Cadets = await this.cadetsRepository.create(user);
       await this.cadetsRepository.save(createdUser);
@@ -37,7 +37,7 @@ export class CadetsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<jwtUser> {
+  async findByIntra(intraId: string): Promise<JwtUser> {
     try {
       const foundUser: Cadets = await this.cadetsRepository.findOneBy({
         intraId,
@@ -133,7 +133,7 @@ export class CadetsService {
     }
   }
 
-  async saveName(user: jwtUser, name: string): Promise<void> {
+  async saveName(user: JwtUser, name: string): Promise<void> {
     if (name === '') {
       throw new BadRequestException('입력된 이름이 없습니다.');
     }
