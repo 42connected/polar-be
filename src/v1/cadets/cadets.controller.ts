@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
@@ -11,19 +19,31 @@ import { ApplyService } from './apply/apply.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JoinCadetDto } from '../dto/cadets/join-cadet-dto';
 import { UpdateCadetDto } from '../dto/cadets/update-cadet.dto';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { BatchService } from '../batch/batch.service';
+import { EmailService, MailType } from '../email/service/email.service';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 
 @Controller()
 @ApiTags('cadets API')
 export class CadetsController {
+  private readonly logger = new Logger(CadetsController.name);
+
   constructor(
     private cadetsService: CadetsService,
     private applyService: ApplyService,
+    private batchSevice: BatchService,
+    private emailService: EmailService,
   ) {}
 
   @Get('test')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet login test API',
     description: '카뎃 로그인 정보 가져오기 test페이지',
@@ -40,6 +60,7 @@ export class CadetsController {
   @Post()
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'updateCadet API',
     description: '카뎃 로그인 정보 생성하기',
@@ -55,6 +76,7 @@ export class CadetsController {
   @Get('mentorings')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'getMentoringLogs for cardet API',
     description: '카뎃이 신청한 멘토링로그 정보 가져오기.',
@@ -70,6 +92,7 @@ export class CadetsController {
   @Post('join')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet join post API',
     description: '카뎃 join api',
@@ -86,6 +109,7 @@ export class CadetsController {
   @Post('mentorings/apply/:mentorIntraId')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'cadet mentoring apply API',
     description: '멘토링 신청 api',
@@ -94,11 +118,41 @@ export class CadetsController {
     description: '멘토링 신청 정보 생성 성공',
     type: Promise<boolean>,
   })
-  create(
-    @Param('mentorIntraId') mentorIntraId: string,
+  async create(
+    @Param('mentorId') mentorId: string,
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
-  ): Promise<boolean> {
-    return this.applyService.create(user, mentorIntraId, createApplyDto);
+  ): Promise<MentoringLogs> {
+    let mentoringLogs;
+    try {
+      mentoringLogs = await this.applyService.create(
+        user,
+        mentorId,
+        createApplyDto,
+      );
+
+      try {
+        this.emailService.sendMessage(
+          mentoringLogs.id,
+          MailType.ReservationToMentor,
+        );
+      } catch {
+        this.logger.warn('메일 전송 실패: ReservationToMentor');
+      }
+
+      try {
+        const twoDaytoMillseconds = 172800000;
+        this.batchSevice.cancelMeetingAuto(
+          mentoringLogs.id,
+          twoDaytoMillseconds,
+        );
+      } catch {
+        this.logger.warn('메일 전송 실패: autoCancel after 48hours');
+      }
+
+      return mentoringLogs;
+    } catch (err) {
+      throw err;
+    }
   }
 }

@@ -23,8 +23,14 @@ import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.
 import { SearchMentorsService } from './service/search-mentors.service';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
+import { EmailService, MailType } from '../email/service/email.service';
 
 @Controller()
 @ApiTags('mentors API')
@@ -33,11 +39,13 @@ export class MentorsController {
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
     private readonly searchMentorsService: SearchMentorsService,
+    private readonly emailService: EmailService,
   ) {}
 
   @Get('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'getMentoringsLists get API',
     description: '멘토링 리스트 가져오는 api',
@@ -67,6 +75,7 @@ export class MentorsController {
   @Patch('mentorings')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'setMeetingAt patch API',
     description: '멘토링 미팅일정 확정 api',
@@ -76,12 +85,33 @@ export class MentorsController {
     type: Promise<MentoringLogs>,
   })
   async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
-    return await this.mentoringsService.setMeetingAt(body);
+    try {
+      const mentoringLoginfo = await this.mentoringsService.setMeetingAt(body);
+
+      if (mentoringLoginfo) {
+        if (mentoringLoginfo.status === '예정') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.ApproveToCadet,
+          );
+        } else if (mentoringLoginfo.status === '취소') {
+          this.emailService.sendMessage(
+            mentoringLoginfo.id,
+            MailType.CancelToCadet,
+          );
+        }
+      }
+
+      return mentoringLoginfo;
+    } catch (err) {
+      throw err;
+    }
   }
 
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'updateMentorDetails post API',
     description: '멘토 상세정보입력 api',
@@ -101,6 +131,7 @@ export class MentorsController {
   @Post('join')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'mentor join post API',
     description: '멘토 기본정보(name, availableTime, isActive) 입력 api',
@@ -117,6 +148,7 @@ export class MentorsController {
   @Get(':intraId')
   @Roles('mentor', 'cadet')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'getMentorDetails API',
     description: '멘토 세부정보(comments, mentoringLogs) 받아오는 api',

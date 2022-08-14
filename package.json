@@ -18,6 +18,7 @@
     "test:cadets": "jest ./test/cadets.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:mentors": "jest ./test/mentors.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:reports": "jest ./test/reports.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
+    "test:comments": "jest ./test/comments.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
