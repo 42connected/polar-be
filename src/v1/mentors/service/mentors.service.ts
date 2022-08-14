@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
@@ -20,7 +20,7 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async createUser(user: CreateMentorDto): Promise<jwtUser> {
+  async createUser(user: CreateMentorDto): Promise<JwtUser> {
     try {
       const createdUser: Mentors = this.mentorsRepository.create(user);
       createdUser.isActive = false;
@@ -38,7 +38,7 @@ export class MentorsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<jwtUser> {
+  async findByIntra(intraId: string): Promise<JwtUser> {
     try {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,

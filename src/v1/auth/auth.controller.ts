@@ -6,7 +6,7 @@ import { CadetsService } from '../cadets/service/cadets.service';
 import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
-import { jwtUser } from '../interface/jwt-user.interface';
+import { JwtUser } from '../interface/jwt-user.interface';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthService } from './auth.service';
 
@@ -39,7 +39,7 @@ export class AuthController {
       alumnized_at: isCommon,
       cursus_users: cursus,
     } = profile;
-    let result: jwtUser;
+    let result: JwtUser;
     if (intraId.startsWith('m-')) {
       result = await this.mentorsService.findByIntra(intraId);
       if (result.id === undefined) {
