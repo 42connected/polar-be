@@ -74,21 +74,9 @@ export class BatchService {
   ): Promise<void> {
     const { id: mentoringId } = mentoringLogsData;
     const callback = () => {
-      this.emailService
-        .sendMessage(mentoringId, MailType.Cancel)
-        .then(() => {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
-          );
-        })
-        .catch(error =>
-          this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
-        );
-
       mentoringLogsData.status = '취소';
       mentoringLogsData.rejectMessage =
         '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
-
       this.mentoringsLogsRepository
         .save(mentoringLogsData)
         .then(() =>
@@ -101,7 +89,16 @@ export class BatchService {
             `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 실패`,
           ),
         );
-
+      this.emailService
+        .sendMessage(mentoringId, MailType.Cancel)
+        .then(() => {
+          this.logger.log(
+            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
+          );
+        })
+        .catch(error =>
+          this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
+        );
       this.deleteTimeout(mentoringId);
     };
     const timeout = setTimeout(callback, milliseconds);
