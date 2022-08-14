@@ -53,6 +53,7 @@ export class MentoringsService {
           cadet: {
             name: mentoring.cadets.name,
             intraId: mentoring.cadets.intraId,
+            resumeUrl: mentoring.cadets.resumeUrl,
           },
           topic: mentoring.topic,
           status: mentoring.status,
