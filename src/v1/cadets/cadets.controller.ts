@@ -123,7 +123,7 @@ export class CadetsController {
     @User() user: jwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    let mentoringLogs;
+    let mentoringLogs: MentoringLogs;
     try {
       mentoringLogs = await this.applyService.create(
         user,
@@ -142,10 +142,7 @@ export class CadetsController {
 
       try {
         const twoDaytoMillseconds = 172800000;
-        this.batchSevice.cancelMeetingAuto(
-          mentoringLogs.id,
-          twoDaytoMillseconds,
-        );
+        this.batchSevice.addAutoCancel(mentoringLogs.id, twoDaytoMillseconds);
       } catch {
         this.logger.warn('메일 전송 실패: autoCancel after 48hours');
       }
