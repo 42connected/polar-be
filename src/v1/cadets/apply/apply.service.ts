@@ -126,7 +126,6 @@ export class ApplyService {
         content: createApplyDto.content,
         status: '대기중',
         rejectMessage: null,
-        reportStatus: '대기중',
         requestTime1: createApplyDto.requestTime1,
         requestTime2: createApplyDto.requestTime2,
         requestTime3: createApplyDto.requestTime3,

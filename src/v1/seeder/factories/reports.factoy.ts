@@ -26,6 +26,8 @@ export default setSeederFactory(
     reports.place = faker.helpers.arrayElement(['on-line', 'off-line']);
     reports.topic = faker.word.noun(50);
     reports.content = faker.word.noun(1000);
+    reports.money = faker.datatype.number({ min: 0, max: 10 }) * 50000;
+    reports.status = faker.helpers.arrayElement(['대기중', '완료']);
     reports.imageUrl = [faker.image.imageUrl(), faker.image.imageUrl()];
     reports.signatureUrl = faker.internet.url();
     reports.feedbackMessage = faker.lorem.paragraph(3);

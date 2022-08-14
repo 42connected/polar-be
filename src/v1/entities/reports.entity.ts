@@ -56,6 +56,12 @@ export class Reports {
   @Column({ type: 'smallint', nullable: true })
   feedback3: number;
 
+  @Column({ type: 'int', nullable: true })
+  money: number;
+
+  @Column({ length: 10 })
+  status: string;
+
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
   @JoinColumn()
   mentoringLogs: MentoringLogs;

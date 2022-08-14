@@ -14,6 +14,8 @@ import { Reports } from 'src/v1/entities/reports.entity';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
+export const MONEY_PER_HOUR = 100000;
+
 @Injectable()
 export class ReportsService {
   constructor(
@@ -212,12 +214,12 @@ export class ReportsService {
           select: {
             id: true,
             place: true,
+            money: true,
+            status: true,
             mentoringLogs: {
               id: true,
               createdAt: true,
               meetingAt: true,
-              money: true,
-              reportStatus: true,
             },
             mentors: {
               intraId: true,
@@ -249,22 +251,18 @@ export class ReportsService {
         '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
       );
     }
-    if (mentoringLog.reportStatus !== '작성가능') {
+    if (mentoringLog.status !== '완료') {
       throw new MethodNotAllowedException(
         '해당 멘토링 로그는 레포트를 생성할 수 없습니다',
-      );
-    }
-    if (mentoringLog.reports) {
-      throw new MethodNotAllowedException(
-        '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
       );
     }
     const report: Reports = this.reportsRepository.create({
       cadets: mentoringLog.cadets,
       mentors: mentoringLog.mentors,
       mentoringLogs: mentoringLog,
+      money: 0,
     });
-    mentoringLog.reportStatus = '작성중';
+    mentoringLog.reports.status = '작성중';
     try {
       await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
@@ -288,7 +286,7 @@ export class ReportsService {
   ) {
     const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(
-      report.mentoringLogs.reportStatus,
+      report.mentoringLogs.reports.status,
     );
     if (!rs.verify()) {
       throw new UnauthorizedException(
@@ -334,12 +332,12 @@ export class ReportsService {
           report.mentors.id,
           report.mentoringLogs.meetingAt[0],
           report.mentoringLogs.meetingAt[1],
-        )) * 100000;
+        )) * MONEY_PER_HOUR;
     } catch (error) {
       throw new ConflictException(error);
     }
-    report.mentoringLogs.money = money;
-    report.mentoringLogs.reportStatus = '작성완료';
+    report.mentoringLogs.reports.money = money;
+    report.mentoringLogs.reports.status = '작성완료';
     try {
       await this.mentoringLogsRepository.save(report.mentoringLogs);
     } catch (e) {
