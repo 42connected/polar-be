@@ -23,7 +23,7 @@ describe('MentorsController (e2e)', () => {
   let app: INestApplication;
   let logRepo: Repository<MentoringLogs>;
   let reportRepo: Repository<Reports>;
-  const mentorIntra = 'm-dada';
+  const mentorIntraId = 'm-dada';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -58,7 +58,7 @@ describe('MentorsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: mentorIntra, role: 'mentor' };
+          req.user = { intraId: mentorIntraId, role: 'mentor' };
           return true;
         },
       })
@@ -87,7 +87,10 @@ describe('MentorsController (e2e)', () => {
 
   it('POST /:mentoringLogId', async () => {
     const log: MentoringLogs = await logRepo.findOne({
-      where: { topic: '테스트용멘토링로그', mentors: { intraId: mentorIntra } },
+      where: {
+        topic: '테스트용멘토링로그',
+        mentors: { intraId: mentorIntraId },
+      },
     });
     const report: Reports = await reportRepo.findOneBy({
       mentoringLogs: {
@@ -117,7 +120,7 @@ describe('MentorsController (e2e)', () => {
   it('PATCH /:reportId', async () => {
     const report = await reportRepo.findOne({
       where: {
-        mentors: { intraId: mentorIntra },
+        mentors: { intraId: mentorIntraId },
       },
     });
     const body = {
