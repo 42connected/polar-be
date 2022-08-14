@@ -38,6 +38,7 @@ export class AuthController {
       image_url: profileImage,
       alumnized_at: isCommon,
       cursus_users: cursus,
+      email,
     } = profile;
     let result: JwtUser;
     if (intraId.startsWith('m-')) {
@@ -67,6 +68,7 @@ export class AuthController {
           intraId,
           profileImage,
           isCommon: isCommon === null ? true : false,
+          email,
         };
         result = await this.cadetsService.createUser(user);
       }
