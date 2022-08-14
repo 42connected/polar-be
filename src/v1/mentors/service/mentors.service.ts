@@ -11,6 +11,7 @@ import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
+import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
 
 @Injectable()
 export class MentorsService {
@@ -113,17 +114,12 @@ export class MentorsService {
     }
   }
 
-  async saveInfos(
-    user: jwtUser,
-    name: string,
-    availableTime: AvailableTimeDto[][],
-  ): Promise<void> {
-    if (name === '') {
-      throw new BadRequestException('입력된 이름이 없습니다.');
-    }
+  async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
+    const { name, email, availableTime } = infos;
     try {
-      const foundUser: Mentors = await this.findMentorByIntraId(user.intraId);
+      const foundUser: Mentors = await this.findMentorByIntraId(intraId);
       foundUser.name = name;
+      foundUser.email = email;
       foundUser.availableTime = JSON.stringify(
         this.validateAvailableTime(availableTime),
       );

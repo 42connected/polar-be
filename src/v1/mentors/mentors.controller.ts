@@ -142,8 +142,7 @@ export class MentorsController {
     type: Promise<void>,
   })
   join(@Body() body: JoinMentorDto, @User() user: jwtUser) {
-    const { name, availableTime } = body;
-    this.mentorsService.saveInfos(user, name, availableTime);
+    this.mentorsService.saveInfos(user.intraId, body);
   }
 
   @Get(':intraId')

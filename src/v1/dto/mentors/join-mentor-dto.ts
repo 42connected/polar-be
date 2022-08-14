@@ -11,6 +11,14 @@ export class JoinMentorDto {
   })
   name: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'email',
+    required: true,
+  })
+  email: string;
+
   @IsNotEmpty()
   @ApiProperty({
     description: 'availableTime',
