@@ -130,15 +130,62 @@ export class ReportsService {
     return true;
   }
 
-  calcMoney(report: Reports): number {
-    const meetingAt: Date[] = report.mentoringLogs.meetingAt;
-    const time =
-      meetingAt[1].getHours() * 60 +
-      meetingAt[1].getMinutes() -
-      (meetingAt[0].getHours() * 60 + meetingAt[0].getMinutes());
-    const hour = time / 60;
-    const money = hour * 100000;
-    return money;
+  async calculateTotalHour(
+    mentorId: string,
+    start: Date,
+    end: Date,
+  ): Promise<number> {
+    let finishedMentorings: MentoringLogs[];
+    const finishedMentoringsInDay: MentoringLogs[] = [];
+    const finishedMentoringsInMonth: MentoringLogs[] = [];
+
+    let result: number = Math.floor(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60),
+    );
+
+    try {
+      finishedMentorings = await this.mentoringLogsRepository.find({
+        select: { meetingAt: true },
+        where: { status: '완료', mentors: { id: mentorId } },
+        relations: { mentors: true },
+      });
+    } catch {
+      throw new ConflictException('멘토링 시간을 찾는 중 오류가 발생했습니다.');
+    }
+
+    finishedMentorings.map(mentoring => {
+      if (mentoring.meetingAt[0].getMonth() === start.getMonth())
+        finishedMentoringsInMonth.push(mentoring);
+    });
+
+    finishedMentoringsInMonth.map(mentoring => {
+      if (mentoring.meetingAt[0].getDate() === start.getDate())
+        finishedMentoringsInDay.push(mentoring);
+    });
+
+    let mentoringTimePerDay = 0;
+    finishedMentoringsInDay.forEach(mentoring => {
+      mentoringTimePerDay += Math.floor(
+        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
+          (1000 * 60 * 60),
+      );
+    });
+    if (mentoringTimePerDay >= 4) return 0;
+    else if (mentoringTimePerDay + result >= 4)
+      result = 4 - mentoringTimePerDay;
+
+    let mentoringTimePerMonth = 0;
+    finishedMentoringsInMonth.forEach(mentoring => {
+      mentoringTimePerMonth += Math.floor(
+        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
+          (1000 * 60 * 60),
+      );
+    });
+    if (mentoringTimePerMonth >= 10) return 0;
+    else if (mentoringTimePerMonth + result >= 10)
+      result = 10 - mentoringTimePerDay;
+
+    return result;
   }
 
   /*
@@ -280,7 +327,17 @@ export class ReportsService {
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
     }
-    const money = this.calcMoney(report);
+    let money: number;
+    try {
+      money =
+        (await this.calculateTotalHour(
+          report.mentors.id,
+          report.mentoringLogs.meetingAt[0],
+          report.mentoringLogs.meetingAt[1],
+        )) * 100000;
+    } catch (error) {
+      throw new ConflictException(error);
+    }
     report.mentoringLogs.money = money;
     report.mentoringLogs.reportStatus = '작성완료';
     try {

@@ -44,6 +44,7 @@
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "express-basic-auth": "^1.2.1",
+    "exceljs": "^4.3.0",
     "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.7",
