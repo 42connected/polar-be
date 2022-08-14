@@ -8,7 +8,7 @@ import { BocalsService } from './service/bocals.service';
 export class BocalsController {
   constructor(private readonly bocalsService: BocalsService) {}
 
-  @Get('dataroom/excel')
+  @Get('data-room/excel')
   @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringExcelFile(

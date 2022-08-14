@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { MentorSimpleInfo } from 'src/v1/interface/mentors/mentor-simple-info.interface';
 import { MentorsListElement } from 'src/v1/interface/mentors/mentors-list-element.interface';
 import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
@@ -226,14 +226,14 @@ export class SearchMentorsService {
     let matchMentors: MentorSimpleInfo[];
     if (mentorSimpleInfo && mentorSimpleInfo.length !== 0) {
       mentorSimpleInfo.forEach(mentor => {
-        if (mentor.id === searchText || mentor.name === searchText)
+        if (mentor.id.includes(searchText) || mentor.name.includes(searchText))
           matchMentors.push(mentor);
       });
     } else {
       try {
         matchMentors = await this.mentorsRepository.find({
           select: { id: true, name: true, intraId: true },
-          where: [{ intraId: searchText }, { name: searchText }],
+          where: [{ intraId: Like(`%${searchText}%`) }, { name: Like(`%${searchText}%`) }],
         });
       } catch {
         throw new ConflictException(
