@@ -221,9 +221,11 @@ export class ReportsService {
             },
             mentors: {
               intraId: true,
+              name: true,
             },
             cadets: {
               intraId: true,
+              name: true,
             },
           },
           take: paginationDto.take,
