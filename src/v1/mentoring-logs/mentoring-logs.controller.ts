@@ -33,12 +33,12 @@ export class MentoringLogsController {
     @User() user: JwtUser,
     @Body() body: ApproveMentoringDto,
   ) {
-    const log = await this.mentoringLogsService.changeStatus(
-      user.intraId,
-      body.mentoringLogId,
-      MentoringLogStatus.Approve,
-      body.meetingAt,
-    );
+    const log = await this.mentoringLogsService.changeStatus({
+      userId: user.intraId,
+      mentoringLogId: body.mentoringLogId,
+      status: MentoringLogStatus.Approve,
+      meetingAt: body.meetingAt,
+    });
     this.emailService.sendMessage(log.id, MailType.Approve);
   }
 
@@ -54,13 +54,12 @@ export class MentoringLogsController {
     @User() user: JwtUser,
     @Body() body: RejectMentoringDto,
   ) {
-    const log = await this.mentoringLogsService.changeStatus(
-      user.intraId,
-      body.mentoringLogId,
-      MentoringLogStatus.Cancel,
-      null,
-      body.rejectMessage,
-    );
+    const log = await this.mentoringLogsService.changeStatus({
+      userId: user.intraId,
+      mentoringLogId: body.mentoringLogId,
+      status: MentoringLogStatus.Cancel,
+      rejectMessage: body.rejectMessage,
+    });
     this.emailService.sendMessage(log.id, MailType.Cancel);
   }
 
@@ -76,10 +75,10 @@ export class MentoringLogsController {
     @User() user: JwtUser,
     @Body() body: CompleteMentoringDto,
   ) {
-    const log = await this.mentoringLogsService.changeStatus(
-      user.intraId,
-      body.mentoringLogId,
-      MentoringLogStatus.Done,
-    );
+    const log = await this.mentoringLogsService.changeStatus({
+      userId: user.intraId,
+      mentoringLogId: body.mentoringLogId,
+      status: MentoringLogStatus.Done,
+    });
   }
 }

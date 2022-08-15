@@ -6,8 +6,10 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { info } from 'console';
 import { ApplyService } from 'src/v1/cadets/apply/apply.service';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { ChangeStatus } from 'src/v1/interface/mentoring-log/change-status.interface';
 import { Repository } from 'typeorm';
 
 export enum MentoringLogStatus {
@@ -109,25 +111,19 @@ export class MentoringLogsService {
     }
   }
 
-  async changeStatus(
-    userId: string,
-    mentoringLogId: string,
-    status: MentoringLogStatus,
-    meetingAt?: Date[],
-    rejectMessage?: string,
-  ) {
+  async changeStatus(infos: ChangeStatus) {
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
-      mentoringLogId,
+      infos.mentoringLogId,
     );
-    this.validateUser(userId, status, foundLog);
-    this.validateStatus(foundLog.status, status);
-    foundLog.status = status;
-    if (status === MentoringLogStatus.Cancel) {
-      foundLog.rejectMessage = rejectMessage;
+    this.validateUser(infos.userId, infos.status, foundLog);
+    this.validateStatus(foundLog.status, infos.status);
+    foundLog.status = infos.status;
+    if (infos.status === MentoringLogStatus.Cancel) {
+      foundLog.rejectMessage = infos.rejectMessage;
     }
-    if (status === MentoringLogStatus.Approve) {
-      this.applyService.checkDate(meetingAt[0], meetingAt[1]);
-      foundLog.meetingAt = meetingAt;
+    if (infos.status === MentoringLogStatus.Approve) {
+      this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
+      foundLog.meetingAt = infos.meetingAt;
     }
     try {
       await this.mentoringLogsRepository.save(foundLog);
