@@ -49,8 +49,6 @@ export class ReportsController {
     return await this.reportsService.getReport(reportId);
   }
 
-
-
   @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
