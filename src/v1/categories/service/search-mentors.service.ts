@@ -13,6 +13,7 @@ import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
 import { KeywordCategories } from 'src/v1/entities/keyword-categories.entity';
 import { MentorRawSimpleInfo } from 'src/v1/interface/mentors/mentor-raw-simple-info.interface';
 import { Categories } from 'src/v1/entities/categories.entity';
+import { GetMentorsQueryDto } from 'src/v1/dto/mentors/get-mentors.dto';
 
 @Injectable()
 export class SearchMentorsService {
@@ -26,19 +27,17 @@ export class SearchMentorsService {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
-  async getMentorList(
-    categoryId?: string,
-    keywordsId?: string[],
-    searchText?: string,
-  ): Promise<MentorsList> {
+  async getMentorList(category ,getMentorsQueryDto:GetMentorsQueryDto): Promise<MentorsList> {
     const result: MentorsList = {
       mentorCount: 0,
       mentors: [],
     };
-
-    if (categoryId) {
+    const { keywordsId,  mentorName } = getMentorsQueryDto;
+    let categoryId: string;
       try {
-        result.category = await this.getCategoryInfo(categoryId);
+        categoryId = await( await this.categoriesRepository.findOneBy({
+          name: category,
+        })).id;
       } catch (error) {
         throw new ConflictException(error);
       }
@@ -51,10 +50,11 @@ export class SearchMentorsService {
         }
         keywordsId.forEach(keywordId => {
           if (!keywords.includes(keywordId))
-            throw new NotFoundException('잘못된 키워드가 포함되었습니다.');
+          throw new NotFoundException('잘못된 키워드가 포함되었습니다.');
         });
       }
-    }
+    
+    result.category = category;
 
     let mentorsInfo: MentorSimpleInfo[];
     if (keywordsId) {
@@ -70,9 +70,9 @@ export class SearchMentorsService {
         throw new ConflictException(error);
       }
     }
-    if (searchText) {
+    if (mentorName) {
       try {
-        mentorsInfo = await this.getMentorsInfoByText(searchText, mentorsInfo);
+        mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
       } catch (error) {
         throw new ConflictException(error);
       }
@@ -151,6 +151,8 @@ export class SearchMentorsService {
         id: rawInfo.id,
         name: rawInfo.name,
         intraId: rawInfo.intraid,
+        tags: rawInfo.tags,
+        profileImage: rawInfo.profileImage,
       });
     });
     return matchMentors;
@@ -172,6 +174,8 @@ export class SearchMentorsService {
           'mentors.id AS id',
           'mentors.name AS name',
           'mentors.intraId AS intraId',
+          'mentors.profileImage AS profileImage',
+          'mentors.tags AS tags',
         ])
         .where('mentorKeywords.keywordId IN (:...keywordsId)', {
           keywordsId: keywordsId,
@@ -181,7 +185,7 @@ export class SearchMentorsService {
         .getRawMany();
     } catch {
       throw new ConflictException(
-        '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
+        '멘토 정보를 가져오는 도중 오류가 발생했습니다!',
       );
     }
     if (!rawMentorInfos) {
@@ -209,6 +213,8 @@ export class SearchMentorsService {
           id: rawInfo.id,
           name: rawInfo.name,
           intraId: rawInfo.intraid,
+          tags: rawInfo.tags,
+          profileImage: rawInfo.profileImage,
         });
     });
     if (matchMentors.length === 0) {
@@ -220,24 +226,27 @@ export class SearchMentorsService {
   }
 
   async getMentorsInfoByText(
-    searchText: string,
+    mentorName: string,
     mentorSimpleInfo?: MentorSimpleInfo[],
   ): Promise<MentorSimpleInfo[]> {
     let matchMentors: MentorSimpleInfo[];
+    console.log(mentorSimpleInfo);
     if (mentorSimpleInfo && mentorSimpleInfo.length !== 0) {
       mentorSimpleInfo.forEach(mentor => {
-        if (mentor.id.includes(searchText) || mentor.name.includes(searchText))
+        console.log(mentor)
+        if (mentor.id.includes(mentorName) || mentor.name.includes(mentorName)){
           matchMentors.push(mentor);
+        }
       });
     } else {
       try {
         matchMentors = await this.mentorsRepository.find({
           select: { id: true, name: true, intraId: true },
-          where: [{ intraId: Like(`%${searchText}%`) }, { name: Like(`%${searchText}%`) }],
+          where: [{ intraId: Like(`%${mentorName}%`) }, { name: Like(`%${mentorName}%`) }],
         });
       } catch {
         throw new ConflictException(
-          '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
+          '멘토 정보를 가져오는 도중 오류가 발생했습니다..!',
         );
       }
     }

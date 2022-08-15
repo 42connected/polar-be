@@ -21,8 +21,7 @@ import { MentoringsService } from './service/mentorings.service';
 import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
-import { SearchMentorsService } from './service/search-mentors.service';
-import { MentorsList } from '../interface/mentors/mentors-list.interface';
+import { SearchMentorsService } from '../categories/service/search-mentors.service';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -32,6 +31,7 @@ import {
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 import { EmailService, MailType } from '../email/service/email.service';
+import { GetMentorsQueryDto } from '../dto/mentors/get-mentors.dto';
 
 @Controller()
 @ApiTags('mentors API')
@@ -162,27 +162,5 @@ export class MentorsController {
     return await this.mentorsService.getMentorDetails(intraId);
   }
 
-  @Get()
-  @ApiOperation({
-    summary: 'getMentors API',
-    description: '멘토리스트 받아오는 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토리스트 받아오기 성공',
-    type: Promise<MentorsList>,
-  })
-  getMentors(
-    @Query('categoryId') categoryId?: string,
-    @Query('keywordId') keywordId?: string[],
-    @Query('searchText') searchText?: string,
-  ): Promise<MentorsList> {
-    if (typeof keywordId === 'string') keywordId = [keywordId];
-    if (typeof categoryId === 'object' || typeof searchText === 'object')
-      throw new ConflictException('잘못된 입력이 들어왔습니다.');
-    return this.searchMentorsService.getMentorList(
-      categoryId,
-      keywordId,
-      searchText,
-    );
-  }
+
 }
