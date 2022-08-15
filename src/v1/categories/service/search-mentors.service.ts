@@ -33,22 +33,28 @@ export class SearchMentorsService {
     mentorSimpleInfo?: MentorSimpleInfo[],
   ): Promise<MentorSimpleInfo[]> {
     let matchMentors: MentorSimpleInfo[] = [];
-    
+
     if (mentorSimpleInfo?.length !== 0) {
       try {
         mentorSimpleInfo.forEach(mentor => {
-          if (mentor.intraId.includes(mentorName) || mentor.name.includes(mentorName)) {
+          if (
+            mentor.intraId.includes(mentorName) ||
+            mentor.name.includes(mentorName)
+          ) {
             matchMentors.push(mentor);
           }
         });
-      }catch(error){
+      } catch (error) {
         throw new ConflictException(error);
       }
     } else {
       try {
         matchMentors = await this.mentorsRepository.find({
           select: { id: true, name: true, intraId: true },
-          where: [{ intraId: Like(`%${mentorName}%`) }, { name: Like(`%${mentorName}%`) }],
+          where: [
+            { intraId: Like(`%${mentorName}%`) },
+            { name: Like(`%${mentorName}%`) },
+          ],
         });
       } catch {
         throw new ConflictException(
@@ -64,33 +70,38 @@ export class SearchMentorsService {
     return matchMentors;
   }
 
-  async getMentorList(category ,getMentorsQueryDto:GetMentorsQueryDto): Promise<MentorsList> {
+  async getMentorList(
+    category,
+    getMentorsQueryDto: GetMentorsQueryDto,
+  ): Promise<MentorsList> {
     const result: MentorsList = {
       mentorCount: 0,
       mentors: [],
     };
-    const { keywordsId,  mentorName } = getMentorsQueryDto;
+    const { keywordsId, mentorName } = getMentorsQueryDto;
     let categoryId: string;
-      try {
-        categoryId = await( await this.categoriesRepository.findOneBy({
+    try {
+      categoryId = await (
+        await this.categoriesRepository.findOneBy({
           name: category,
-        })).id;
+        })
+      ).id;
+    } catch (error) {
+      throw new ConflictException(error);
+    }
+    if (keywordsId) {
+      let keywords: string[];
+      try {
+        keywords = await this.getKeywordsIdByCategory(categoryId);
       } catch (error) {
         throw new ConflictException(error);
       }
-      if (keywordsId) {
-        let keywords: string[];
-        try {
-          keywords = await this.getKeywordsIdByCategory(categoryId);
-        } catch (error) {
-          throw new ConflictException(error);
-        }
-        keywordsId.forEach(keywordId => {
-          if (!keywords.includes(keywordId))
+      keywordsId.forEach(keywordId => {
+        if (!keywords.includes(keywordId))
           throw new NotFoundException('잘못된 키워드가 포함되었습니다.');
-        });
-      }
-    
+      });
+    }
+
     result.category = category;
 
     let mentorsInfo: MentorSimpleInfo[];
@@ -262,7 +273,6 @@ export class SearchMentorsService {
     return matchMentors;
   }
 
- 
   async getMentorListElements(
     matchMentors: MentorSimpleInfo[],
   ): Promise<MentorsListElement[]> {

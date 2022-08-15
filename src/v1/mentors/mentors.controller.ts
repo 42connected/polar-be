@@ -158,6 +158,4 @@ export class MentorsController {
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.findMentorByIntraId(intraId);
   }
-
-
 }

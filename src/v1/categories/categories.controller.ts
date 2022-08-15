@@ -9,8 +9,10 @@ import { SearchMentorsService } from './service/search-mentors.service';
 @Controller()
 @ApiTags('categories API')
 export class CategoriesController {
-  constructor(private categoriesService: CategoriesService,
-  private searchMentorsService: SearchMentorsService) {}
+  constructor(
+    private categoriesService: CategoriesService,
+    private searchMentorsService: SearchMentorsService,
+  ) {}
 
   @Get(':category')
   @ApiOperation({
@@ -25,9 +27,12 @@ export class CategoriesController {
     @Query() getMentorsQueryDto: GetMentorsQueryDto,
     @Param('category') category: string,
   ): Promise<MentorsList> {
-    return this.searchMentorsService.getMentorList(category, getMentorsQueryDto);
+    return this.searchMentorsService.getMentorList(
+      category,
+      getMentorsQueryDto,
+    );
   }
-  
+
   @Get()
   @ApiOperation({
     summary: 'getcategories API',
@@ -40,6 +45,4 @@ export class CategoriesController {
   getCategories(): Promise<Categories[]> {
     return this.categoriesService.getCategories();
   }
-
- 
 }

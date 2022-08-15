@@ -11,7 +11,16 @@ import { CategoriesService } from './service/categories.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Categories, Mentors, MentorKeywords, MentoringLogs, KeywordCategories]), AuthModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Categories,
+      Mentors,
+      MentorKeywords,
+      MentoringLogs,
+      KeywordCategories,
+    ]),
+    AuthModule,
+  ],
   controllers: [CategoriesController],
   providers: [CategoriesService, SearchMentorsService],
 })
