@@ -37,7 +37,6 @@ export class SearchMentorsService {
     if (mentorSimpleInfo?.length !== 0) {
       try {
         mentorSimpleInfo.forEach(mentor => {
-          console.log(mentor.name);
           if (mentor.intraId.includes(mentorName) || mentor.name.includes(mentorName)) {
             matchMentors.push(mentor);
           }
