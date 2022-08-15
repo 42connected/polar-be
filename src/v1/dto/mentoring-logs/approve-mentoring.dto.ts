@@ -23,7 +23,7 @@ export class ApproveMentoringDto {
   @ArrayMaxSize(2)
   @Type(() => Date)
   @ApiPropertyOptional({
-    description: ' meetingAt',
+    description: 'meetingAt',
     required: true,
     type: [Date],
   })
