@@ -38,26 +38,27 @@ export class DataroomService {
             cadets: {
               intraId: true,
               name: true,
-              },
             },
+          },
           // take: paginationDto.take,
           // skip: paginationDto.take * (paginationDto.page - 1),
           order: {
-            createdAt: getDataroomDto.isAscending? 'ASC' : 'DESC',
+            createdAt: getDataroomDto.isAscending ? 'ASC' : 'DESC',
           },
         });
 
-        if (getDataroomDto.mentorIntra)
-        {
-            reports[0] = reports[0].filter(report => report.mentors.intraId === getDataroomDto.mentorIntra);
-            reports[1] = reports[0].length;
-
-        }
-        if (getDataroomDto.mentorName)
-        {
-            reports[0] = reports[0].filter(report => report.mentors.name === getDataroomDto.mentorName);
-            reports[1] = reports[0].length;
-        }
+      if (getDataroomDto.mentorIntra) {
+        reports[0] = reports[0].filter(
+          report => report.mentors.intraId === getDataroomDto.mentorIntra,
+        );
+        reports[1] = reports[0].length;
+      }
+      if (getDataroomDto.mentorName) {
+        reports[0] = reports[0].filter(
+          report => report.mentors.name === getDataroomDto.mentorName,
+        );
+        reports[1] = reports[0].length;
+      }
       return reports;
     } catch (e) {
       console.log(e);

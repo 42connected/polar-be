@@ -46,7 +46,7 @@ export class GetDataRoomDto {
     type: String,
   })
   mentorName: string;
-    
+
   @IsOptional()
   @IsString()
   @ApiProperty({
