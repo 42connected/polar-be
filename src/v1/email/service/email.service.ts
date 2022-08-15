@@ -6,10 +6,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ApproveMessageDto } from 'src/v1/dto/email/approve-message.dto';
-import { CancelMessageDto } from 'src/v1/dto/email/cancel-message.dto';
-import { ReservationMessageDto } from 'src/v1/dto/email/reservation-message.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
+import { ApproveMessage } from 'src/v1/interface/email/approve-message.interface';
+import { CancelMessage } from 'src/v1/interface/email/cancel-message.interface';
+import { ReservationMessage } from 'src/v1/interface/email/reservation-message.interface';
 import { Repository } from 'typeorm';
 
 export enum MailType {
@@ -32,10 +32,7 @@ export class EmailService {
     mentoringLogsId: string,
     mailType: MailType,
   ): Promise<boolean> {
-    let messageDto:
-      | ReservationMessageDto
-      | ApproveMessageDto
-      | CancelMessageDto = null;
+    let messageDto: ReservationMessage | ApproveMessage | CancelMessage = null;
     const mailTypeString: string = this.stringifyMailType(mailType);
     try {
       messageDto = await this.getMessageDto(mentoringLogsId, mailType);
@@ -204,7 +201,7 @@ export class EmailService {
   private async getMessageDto(
     mentoringsLogsId: string,
     mailType: MailType,
-  ): Promise<ReservationMessageDto | ApproveMessageDto | CancelMessageDto> {
+  ): Promise<ReservationMessage | ApproveMessage | CancelMessage> {
     let mentoringsLogsInfoDb: MentoringLogs = null;
     try {
       mentoringsLogsInfoDb = await this.getMentoringLogsAllRealtions(
@@ -230,7 +227,7 @@ export class EmailService {
 
     switch (mailType) {
       case MailType.Reservation: {
-        const reservationMessageDto: ReservationMessageDto = {
+        const reservationMessage: ReservationMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
@@ -240,27 +237,27 @@ export class EmailService {
           reservationTime3: mentoringsLogsInfoDb.requestTime3,
           isCommon: mentoringsLogsInfoDb.cadets.isCommon,
         };
-        return reservationMessageDto;
+        return reservationMessage;
       }
       case MailType.Approve: {
-        const approveMessageDto: ApproveMessageDto = {
+        const approveMessage: ApproveMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           meetingAt: mentoringsLogsInfoDb.meetingAt,
         };
-        return approveMessageDto;
+        return approveMessage;
       }
       case MailType.Cancel: {
-        const cancelMessageDto: CancelMessageDto = {
+        const cancelMessage: CancelMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           rejectMessage: mentoringsLogsInfoDb.rejectMessage,
         };
-        return cancelMessageDto;
+        return cancelMessage;
       }
       default: {
         return null;
