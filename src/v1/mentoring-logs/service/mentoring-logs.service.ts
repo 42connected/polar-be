@@ -51,15 +51,15 @@ export class MentoringLogsService {
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       mentoringLogId,
     );
-    // if (userId !== foundLog.mentors.intraId) {
-    //   throw new HttpException(
-    //     {
-    //       status: HttpStatus.FORBIDDEN,
-    //       error: '멘토링 로그에 대한 처리 권한이 없습니다.',
-    //     },
-    //     HttpStatus.FORBIDDEN,
-    //   );
-    // }
+    if (userId !== foundLog.mentors.intraId) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: '멘토링 로그에 대한 처리 권한이 없습니다.',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
     foundLog.status = MentoringLogStatus.Approve;
     // TODO: 시간 예외처리
     foundLog.meetingAt = meetingAt;
