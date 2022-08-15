@@ -12,9 +12,10 @@ import { DataroomService } from './service/data-room.service';
 @ApiTags('bocals API')
 @Controller()
 export class BocalsController {
-  constructor(private readonly bocalsService: BocalsService,
-    private readonly dataroomService: DataroomService) 
-  {}
+  constructor(
+    private readonly bocalsService: BocalsService,
+    private readonly dataroomService: DataroomService,
+  ) {}
 
   @ApiOperation({
     summary: 'getMentoringExcelFile API',
