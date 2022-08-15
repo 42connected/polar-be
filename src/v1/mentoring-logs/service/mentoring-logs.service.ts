@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApplyService } from 'src/v1/cadets/apply/apply.service';
 import { ApproveMentoringDto } from 'src/v1/dto/mentoring-logs/approve-mentoring.dto';
 import { RejectMentoringDto } from 'src/v1/dto/mentoring-logs/reject-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -22,6 +23,7 @@ export class MentoringLogsService {
   constructor(
     @InjectRepository(MentoringLogs)
     private mentoringLogsRepository: Repository<MentoringLogs>,
+    private applyService: ApplyService,
   ) {}
 
   async findMentoringLogWithRelations(id: string): Promise<MentoringLogs> {
@@ -60,8 +62,8 @@ export class MentoringLogsService {
         HttpStatus.FORBIDDEN,
       );
     }
+    this.applyService.checkDate(meetingAt[0], meetingAt[1]);
     foundLog.status = MentoringLogStatus.Approve;
-    // TODO: 시간 예외처리
     foundLog.meetingAt = meetingAt;
     try {
       await this.mentoringLogsRepository.save(foundLog);
