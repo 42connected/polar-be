@@ -5,36 +5,36 @@ export class AvailableTimeDto {
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'start_hour',
+    description: 'start hour',
     required: true,
     type: Number,
   })
-  start_hour: number;
+  startHour: number;
 
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'start_minute',
+    description: 'start minute',
     required: true,
     type: Number,
   })
-  start_minute: number;
+  startMinute: number;
 
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'end_hour',
+    description: 'end hour',
     required: true,
     type: Number,
   })
-  end_hour: number;
+  endHour: number;
 
   @IsNumber()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'end_minute',
+    description: 'end minute',
     required: true,
     type: Number,
   })
-  end_minute: number;
+  endMinute: number;
 }

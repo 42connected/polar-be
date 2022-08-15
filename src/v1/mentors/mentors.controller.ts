@@ -18,7 +18,6 @@ import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
-import { SearchMentorsService } from '../categories/service/search-mentors.service';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -27,7 +26,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
-import { EmailService } from '../email/service/email.service';
 
 @Controller()
 @ApiTags('mentors API')
@@ -104,6 +102,7 @@ export class MentorsController {
     type: Promise<void>,
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+    this.mentorsService.validateAvailableTime(body.availableTime);
     this.mentorsService.saveInfos(user.intraId, body);
   }
 
