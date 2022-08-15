@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
 
 export class UpdateMentorDatailDto {
@@ -18,6 +24,14 @@ export class UpdateMentorDatailDto {
     required: false,
   })
   introduction: string;
+
+  @IsOptional()
+  @IsEmail()
+  @ApiPropertyOptional({
+    description: 'email',
+    required: false,
+  })
+  email: string;
 
   @IsBoolean()
   @IsOptional()

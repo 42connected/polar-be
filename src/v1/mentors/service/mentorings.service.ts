@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -21,7 +21,7 @@ export class MentoringsService {
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async getMentoringsLists(user: jwtUser): Promise<MentorMentoringInfo> {
+  async getMentoringsLists(user: JwtUser): Promise<MentorMentoringInfo> {
     const mentorIntraId = user.intraId;
     let mentorDb = null;
 
@@ -53,6 +53,7 @@ export class MentoringsService {
           cadet: {
             name: mentoring.cadets.name,
             intraId: mentoring.cadets.intraId,
+            resumeUrl: mentoring.cadets.resumeUrl,
           },
           topic: mentoring.topic,
           status: mentoring.status,

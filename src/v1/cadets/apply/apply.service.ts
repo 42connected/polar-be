@@ -10,7 +10,7 @@ import { Repository } from 'typeorm';
 import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
 
 @Injectable()
@@ -63,13 +63,13 @@ export class ApplyService {
   }
 
   async create(
-    cadet: jwtUser,
+    cadet: JwtUser,
     mentorId: string,
     createApplyDto: CreateApplyDto,
-  ): Promise<boolean> {
+  ): Promise<MentoringLogs> {
     let findmentor: Mentors;
     let findcadet: Cadets;
-    let tmpRepo: MentoringLogs;
+    let createdLog: MentoringLogs;
     try {
       findmentor = await this.mentorsRepository.findOne({
         where: { intraId: mentorId },
@@ -117,7 +117,7 @@ export class ApplyService {
     )
       throw new BadRequestException();
     try {
-      tmpRepo = this.mentoringlogsRepository.create({
+      createdLog = this.mentoringlogsRepository.create({
         cadets: findcadet,
         mentors: findmentor,
         createdAt: new Date(),
@@ -149,13 +149,13 @@ export class ApplyService {
       throw new ConflictException('이미 예약된 시간을 선택했습니다.');
     }
     try {
-      await this.mentoringlogsRepository.save(tmpRepo);
+      await this.mentoringlogsRepository.save(createdLog);
     } catch {
       throw new ConflictException(
         '값을 repository에 저장하는 도중 오류가 발생했습니다.',
       );
     }
-    return true;
+    return createdLog;
   }
 
   async checkDuplicatedTime(

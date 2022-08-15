@@ -6,21 +6,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  ApproveMessageDto,
-  CancelMessageDto,
-  ReservationMessageDto,
-} from 'src/v1/dto/email/send-message.dto';
-import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
-import { Mentors } from 'src/v1/entities/mentors.entity';
+import { ApproveMessage } from 'src/v1/interface/email/approve-message.interface';
+import { CancelMessage } from 'src/v1/interface/email/cancel-message.interface';
+import { ReservationMessage } from 'src/v1/interface/email/reservation-message.interface';
 import { Repository } from 'typeorm';
 
 export enum MailType {
-  ReservationToMentor = 1,
-  ApproveToCadet = 2,
-  CancelToCadet = 3,
-  AutoCancelToCadet = 4,
+  Reservation = 1,
+  Approve = 2,
+  Cancel = 3,
 }
 
 @Injectable()
@@ -31,16 +26,14 @@ export class EmailService {
     private mailService: MailerService,
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
-    @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
-    @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
   async sendMessage(
     mentoringLogsId: string,
     mailType: MailType,
   ): Promise<boolean> {
-    let messageDto = null;
-    let mailTypeString: string = this.stringifyMailType(mailType);
+    let messageDto: ReservationMessage | ApproveMessage | CancelMessage = null;
+    const mailTypeString: string = this.stringifyMailType(mailType);
     try {
       messageDto = await this.getMessageDto(mentoringLogsId, mailType);
     } catch (err) {
@@ -49,18 +42,20 @@ export class EmailService {
     }
 
     if (messageDto === null) {
-      this.logger.warn(`해당하는 MessageDto가 없습니다 : Check you MailType`);
+      this.logger.warn(
+        `해당하는 MailTyped으로 MessageDto를 만들 수 없습니다 : Check your MailType`,
+      );
       return false;
     }
 
-    let messageForm: ISendMailOptions = await this.getMailMessageForm(
+    const messageForm: ISendMailOptions = await this.getMailMessageForm(
       messageDto,
       mailType,
     );
 
     if (messageForm === null) {
       this.logger.warn(
-        `해당하는 MailMessageForm이 없습니다 : Check you MailType`,
+        `해당하는 MailMessageForm이 없습니다 : Check your MailType`,
       );
       return false;
     }
@@ -68,7 +63,11 @@ export class EmailService {
     let mailSendState = false;
     for (let i = 0; i < 2 && mailSendState === false; i++) {
       try {
-        mailSendState = await this.sendMailMessage(messageForm);
+        mailSendState = await this.sendMailMessage(
+          messageDto.mentorEmail,
+          messageDto.cadetEmail,
+          messageForm,
+        );
       } catch (err) {
         this.logger.warn(
           `${mailTypeString} 이메일 전송 실패 Mail Error : ${err}`,
@@ -84,38 +83,31 @@ export class EmailService {
   }
 
   private stringifyMailType(mailType: MailType): string {
-    let mailTypeString: string;
-
     switch (mailType) {
-      case MailType.ApproveToCadet: {
-        mailTypeString = '카뎃에게 승인';
-        break;
+      case MailType.Reservation: {
+        return '예약';
       }
-      case MailType.ReservationToMentor: {
-        mailTypeString = '멘토에게 예약';
-        break;
+      case MailType.Approve: {
+        return '승인';
       }
-      case MailType.CancelToCadet: {
-        mailTypeString = '카뎃에게 취소';
-        break;
-      }
-      case MailType.AutoCancelToCadet: {
-        mailTypeString = '카뎃에게 자동취소';
-        break;
+      case MailType.Cancel: {
+        return '취소';
       }
       default: {
-        mailTypeString = 'undefind mailtype';
-        break;
+        return 'undefind mailtype';
       }
     }
-
-    return mailTypeString;
   }
 
   private async sendMailMessage(
+    mentorEmail: string,
+    cadetEmail: string,
     messageForm: ISendMailOptions,
   ): Promise<boolean> {
     try {
+      messageForm.to = cadetEmail;
+      await this.mailService.sendMail(messageForm);
+      messageForm.to = mentorEmail;
       await this.mailService.sendMail(messageForm);
       return true;
     } catch (error) {
@@ -127,48 +119,38 @@ export class EmailService {
     messageDto: any,
     mailType: MailType,
   ): Promise<ISendMailOptions> {
-    let messageForm: ISendMailOptions = null;
-
     switch (mailType) {
-      case MailType.ReservationToMentor: {
-        let commonType: string;
-        commonType = messageDto.isCommon ? '공통과정' : '심화과정';
-
+      case MailType.Reservation: {
+        const commonType: string = messageDto.isCommon
+          ? '공통과정'
+          : '심화과정';
         const requestTime1: string = await this.reserveTimeToString(
           messageDto.reservationTime1[0],
-          this.getMetoingHours(
+          this.getMentoringHours(
             messageDto.reservationTime1[0],
             messageDto.reservationTime1[1],
           ),
         );
-
-        let requestTime2: string;
-        if (messageDto.reservationTime2) {
-          requestTime2 = await this.reserveTimeToString(
+        const requestTime2: string = await this.reserveTimeToString(
+          messageDto.reservationTime2[0],
+          this.getMentoringHours(
             messageDto.reservationTime2[0],
-            this.getMetoingHours(
-              messageDto.reservationTime2[0],
-              messageDto.reservationTime2[1],
-            ),
-          );
-        } else requestTime2 = 'Empty';
-
-        let requestTime3: string;
-        if (messageDto.reservationTime3) {
-          const mentoringTime3 = (requestTime3 = await this.reserveTimeToString(
+            messageDto.reservationTime2[1],
+          ),
+        );
+        const requestTime3: string = await this.reserveTimeToString(
+          messageDto.reservationTime3[0],
+          this.getMentoringHours(
             messageDto.reservationTime3[0],
-            this.getMetoingHours(
-              messageDto.reservationTime3[0],
-              messageDto.reservationTime3[1],
-            ),
-          ));
-        } else requestTime3 = 'Empty';
-
+            messageDto.reservationTime3[1],
+          ),
+        );
+        /* reservation2, 3의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          to: messageDto.mentorEmail,
           subject: 'New mentoring request',
           template: 'ReservationMessage.hbs',
           context: {
+            mentorSlackId: messageDto.mentorSlackId,
             cadetSlackId: messageDto.cadetSlackId,
             intraProfileUrl:
               'https://profile.intra.42.fr/users/' + messageDto.cadetSlackId,
@@ -179,42 +161,32 @@ export class EmailService {
           },
         };
       }
-      case MailType.ApproveToCadet: {
+      case MailType.Approve: {
+        console.log(messageDto.meetingAt.length);
         const reservationTimeToString = await this.reserveTimeToString(
           messageDto.meetingAt[0],
-          this.getMetoingHours(
+          this.getMentoringHours(
             messageDto.meetingAt[0],
             messageDto.meetingAt[1],
           ),
         );
-
+        /* meetingAt의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          to: messageDto.cadetEmail,
-          subject: 'New mentoring request',
+          subject: 'Mentoring Approved',
           template: 'ApproveMessage.hbs',
           context: {
+            cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
             reservationTimeToString: reservationTimeToString,
           },
         };
       }
-      case MailType.CancelToCadet: {
+      case MailType.Cancel: {
         return {
-          to: messageDto.cadetEmail,
-          subject: 'New mentoring request',
+          subject: 'Mentoring canceled',
           template: 'CancelMessage.hbs',
           context: {
-            mentorSlackId: messageDto.mentorSlackId,
-            rejectMessage: messageDto.rejectMessage,
-          },
-        };
-      }
-      case MailType.AutoCancelToCadet: {
-        return {
-          to: messageDto.cadetEmail,
-          subject: 'New mentoring request',
-          template: 'CancelMessage.hbs',
-          context: {
+            cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
             rejectMessage: messageDto.rejectMessage,
           },
@@ -228,9 +200,9 @@ export class EmailService {
 
   private async getMessageDto(
     mentoringsLogsId: string,
-    mailtype: MailType,
-  ): Promise<any> {
-    let mentoringsLogsInfoDb = null;
+    mailType: MailType,
+  ): Promise<ReservationMessage | ApproveMessage | CancelMessage> {
+    let mentoringsLogsInfoDb: MentoringLogs = null;
     try {
       mentoringsLogsInfoDb = await this.getMentoringLogsAllRealtions(
         mentoringsLogsId,
@@ -238,64 +210,54 @@ export class EmailService {
     } catch (err) {
       throw err;
     }
-
     if (!mentoringsLogsInfoDb.mentors) {
       throw new NotFoundException('mentoringLogs 테이블에 mentors이 없습니다');
     }
-
     if (!mentoringsLogsInfoDb.cadets) {
       throw new NotFoundException('mentoringLogs 테이블에 cadets가 없습니다');
     }
+    if (!mentoringsLogsInfoDb.mentors.email) {
+      throw new NotFoundException('mentor email을 찾을 수 없습니다');
+    }
+    if (!mentoringsLogsInfoDb.cadets.email) {
+      throw new NotFoundException('cadets email을 찾을 수 없습니다');
+    }
 
-    const cadetEmailForm = '@student.42seoul.kr';
+    this.vaildateDbData(mentoringsLogsInfoDb, mailType);
 
-    const cadetEmail = mentoringsLogsInfoDb.cadets.email
-      ? mentoringsLogsInfoDb.cadets.email
-      : mentoringsLogsInfoDb.cadets.intraId + cadetEmailForm;
-
-    switch (mailtype) {
-      case MailType.ReservationToMentor: {
-        if (!mentoringsLogsInfoDb.mentors.email)
-          throw new NotFoundException('mentor email을 찾을 수 없습니다');
-
-        const reservationMessageDto: ReservationMessageDto = {
+    switch (mailType) {
+      case MailType.Reservation: {
+        const reservationMessage: ReservationMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
+          mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           reservationTime1: mentoringsLogsInfoDb.requestTime1,
           reservationTime2: mentoringsLogsInfoDb.requestTime2,
           reservationTime3: mentoringsLogsInfoDb.requestTime3,
           isCommon: mentoringsLogsInfoDb.cadets.isCommon,
         };
-
-        return reservationMessageDto;
+        return reservationMessage;
       }
-      case MailType.ApproveToCadet: {
-        const approveMessageDto: ApproveMessageDto = {
+      case MailType.Approve: {
+        const approveMessage: ApproveMessage = {
+          mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
-          cadetEmail: cadetEmail,
+          cadetEmail: mentoringsLogsInfoDb.cadets.email,
+          cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           meetingAt: mentoringsLogsInfoDb.meetingAt,
         };
-
-        return approveMessageDto;
+        return approveMessage;
       }
-      case MailType.CancelToCadet: {
-        const cancelMessageDto: CancelMessageDto = {
+      case MailType.Cancel: {
+        const cancelMessage: CancelMessage = {
+          mentorEmail: mentoringsLogsInfoDb.mentors.email,
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
-          cadetEmail: cadetEmail,
+          cadetEmail: mentoringsLogsInfoDb.cadets.email,
+          cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           rejectMessage: mentoringsLogsInfoDb.rejectMessage,
         };
-        return cancelMessageDto;
-      }
-      case MailType.AutoCancelToCadet: {
-        const autoCancelRejectMessage =
-          '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
-
-        const cancelMessageDto: CancelMessageDto = {
-          mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
-          cadetEmail: cadetEmail,
-          rejectMessage: autoCancelRejectMessage,
-        };
-        return cancelMessageDto;
+        return cancelMessage;
       }
       default: {
         return null;
@@ -326,7 +288,7 @@ export class EmailService {
     return mentoringLogsDb;
   }
 
-  private getMetoingHours(startTime: Date, endTime: Date) {
+  private getMentoringHours(startTime: Date, endTime: Date): number {
     const millisecondToHour = 3600000;
 
     const mentoringTimeHours =
@@ -339,6 +301,10 @@ export class EmailService {
     reservationTime: Date,
     mentoringTime: number,
   ): Promise<string> {
+    if (mentoringTime === 0) {
+      return '';
+    }
+
     const reservationTimeTmp: string = reservationTime.toDateString();
     const tmp: string[] = reservationTimeTmp.split(' ');
     let mentoringMinute: string;
@@ -359,5 +325,93 @@ export class EmailService {
       mentoringTime +
       ' hours';
     return reservationTimeToString;
+  }
+
+  private vaildateDbData(
+    mentoringsLogsInfoDb: MentoringLogs,
+    mailType: MailType,
+  ) {
+    switch (mailType) {
+      case MailType.Reservation: {
+        if (!mentoringsLogsInfoDb.requestTime1) {
+          throw new NotFoundException('요청시간을 1개도 찾을 수 없습니다');
+        }
+        /* requestTime2,3은 널이나 빈 배열이 될 수 있음 */
+        /* 0000-00-00 00:00은 예외처리할 데이터 */
+        if (!mentoringsLogsInfoDb.requestTime2) {
+          mentoringsLogsInfoDb.requestTime2 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (!mentoringsLogsInfoDb.requestTime3) {
+          mentoringsLogsInfoDb.requestTime3 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (mentoringsLogsInfoDb.requestTime1.length !== 2) {
+          throw new NotFoundException('올바른 요청시간 형식이 아닙니다');
+        }
+        /* requestTime2,3은 널이나 빈 배열이 될 수 있음 */
+        /* 0000-00-00 00:00은 예외처리할 데이터 */
+        if (mentoringsLogsInfoDb.requestTime2.length < 2) {
+          mentoringsLogsInfoDb.requestTime2 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        if (mentoringsLogsInfoDb.requestTime3.length < 2) {
+          mentoringsLogsInfoDb.requestTime3 = [
+            new Date(0, 0, 0, 0, 0, 0, 0),
+            new Date(0, 0, 0, 0, 0, 0),
+          ];
+        }
+        mentoringsLogsInfoDb.requestTime1.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime1',
+            );
+          }
+        });
+        mentoringsLogsInfoDb.requestTime2.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime2',
+            );
+          }
+        });
+        mentoringsLogsInfoDb.requestTime3.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : requestTime3',
+            );
+          }
+        });
+
+        break;
+      }
+      case MailType.Approve: {
+        if (!mentoringsLogsInfoDb.meetingAt) {
+          throw new NotFoundException(
+            '예약확정시간(meetingAt)을 찾을 수 없습니다',
+          );
+        }
+        if (mentoringsLogsInfoDb.meetingAt.length !== 2) {
+          throw new NotFoundException(
+            '예약확정시간(meetingAt)을 찾을 수 없습니다',
+          );
+        }
+        mentoringsLogsInfoDb.meetingAt.forEach(function (value) {
+          if (value === null) {
+            throw new NotFoundException(
+              '올바른 데이터 형식이 아닙니다 : meetingAt',
+            );
+          }
+        });
+
+        break;
+      }
+    }
   }
 }
