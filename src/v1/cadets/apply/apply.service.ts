@@ -12,6 +12,7 @@ import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class ApplyService {
@@ -124,7 +125,7 @@ export class ApplyService {
         meetingAt: null,
         topic: createApplyDto.topic,
         content: createApplyDto.content,
-        status: '대기중',
+        status: MentoringLogStatus.Wait,
         rejectMessage: null,
         reportStatus: '대기중',
         requestTime1: createApplyDto.requestTime1,

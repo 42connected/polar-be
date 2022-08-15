@@ -12,6 +12,7 @@ import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { MentorMentoringLogs } from 'src/v1/interface/mentors/mentor-mentoring-logs.interface';
 import { PaginationDto } from 'src/v1/dto/pagination.dto';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class MentoringsService {
@@ -115,7 +116,7 @@ export class MentoringsService {
         },
         where: {
           mentors: { intraId: mentorIntraId },
-          status: '완료',
+          status: MentoringLogStatus.Done,
         },
         take: paginationDto.take,
         skip: paginationDto.take * (paginationDto.page - 1),
