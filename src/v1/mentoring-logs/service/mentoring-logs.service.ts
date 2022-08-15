@@ -15,26 +15,31 @@ export class MentoringLogsService {
     private mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
-  async approve(
-    mentoringLogId: string,
-    userId: string,
-  ): Promise<MentoringLogs> {
-    let foundLog: MentoringLogs;
+  async findMentoringLogWithMentor(id: string): Promise<MentoringLogs> {
     try {
-      foundLog = await this.mentoringLogsRepository.findOne({
-        where: {
-          id: mentoringLogId,
-        },
-        relations: {
-          mentors: true,
-        },
-      });
+      const foundLog: MentoringLogs =
+        await this.mentoringLogsRepository.findOne({
+          where: { id },
+          relations: {
+            mentors: true,
+          },
+        });
+      return foundLog;
     } catch (err) {
       throw new ConflictException(
         err,
         '멘토링 로그 검색 중 에러가 발생했습니다.',
       );
     }
+  }
+
+  async approve(
+    mentoringLogId: string,
+    userId: string,
+  ): Promise<MentoringLogs> {
+    const foundLog: MentoringLogs = await this.findMentoringLogWithMentor(
+      mentoringLogId,
+    );
     if (userId !== foundLog.mentors.intraId) {
       throw new HttpException(
         {
