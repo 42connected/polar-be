@@ -29,10 +29,7 @@ export class MentoringLogsController {
     @User() user: JwtUser,
     @Body() body: ApproveMentoringDto,
   ) {
-    const log = await this.mentoringLogsService.approve(
-      body.mentoringLogId,
-      user.intraId,
-    );
+    const log = await this.mentoringLogsService.approve(body, user.intraId);
     this.emailService.sendMessage(log.id, MailType.Approve);
   }
 
