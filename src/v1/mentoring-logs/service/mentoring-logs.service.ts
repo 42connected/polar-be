@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ApproveMentoringDto } from 'src/v1/dto/mentoring-logs/approve-mentoring.dto';
 import { RejectMentoringDto } from 'src/v1/dto/mentoring-logs/reject-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
@@ -43,22 +44,25 @@ export class MentoringLogsService {
   }
 
   async approve(
-    mentoringLogId: string,
+    approveInfos: ApproveMentoringDto,
     userId: string,
   ): Promise<MentoringLogs> {
+    const { mentoringLogId, meetingAt } = approveInfos;
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       mentoringLogId,
     );
-    if (userId !== foundLog.mentors.intraId) {
-      throw new HttpException(
-        {
-          status: HttpStatus.FORBIDDEN,
-          error: '멘토링 로그에 대한 처리 권한이 없습니다.',
-        },
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    // if (userId !== foundLog.mentors.intraId) {
+    //   throw new HttpException(
+    //     {
+    //       status: HttpStatus.FORBIDDEN,
+    //       error: '멘토링 로그에 대한 처리 권한이 없습니다.',
+    //     },
+    //     HttpStatus.FORBIDDEN,
+    //   );
+    // }
     foundLog.status = MentoringLogStatus.Approve;
+    // TODO: 시간 예외처리
+    foundLog.meetingAt = meetingAt;
     try {
       await this.mentoringLogsRepository.save(foundLog);
     } catch (err) {
