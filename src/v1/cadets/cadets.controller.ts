@@ -123,7 +123,7 @@ export class CadetsController {
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    let mentoringLogs;
+    let mentoringLogs: MentoringLogs;
     try {
       mentoringLogs = await this.applyService.create(
         user,
@@ -132,20 +132,14 @@ export class CadetsController {
       );
 
       try {
-        this.emailService.sendMessage(
-          mentoringLogs.id,
-          MailType.ReservationToMentor,
-        );
+        this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
       } catch {
         this.logger.warn('메일 전송 실패: ReservationToMentor');
       }
 
       try {
         const twoDaytoMillseconds = 172800000;
-        this.batchSevice.cancelMeetingAuto(
-          mentoringLogs.id,
-          twoDaytoMillseconds,
-        );
+        this.batchSevice.addAutoCancel(mentoringLogs.id, twoDaytoMillseconds);
       } catch {
         this.logger.warn('메일 전송 실패: autoCancel after 48hours');
       }

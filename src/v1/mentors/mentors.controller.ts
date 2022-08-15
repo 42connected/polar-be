@@ -95,15 +95,9 @@ export class MentorsController {
 
       if (mentoringLoginfo) {
         if (mentoringLoginfo.status === '예정') {
-          this.emailService.sendMessage(
-            mentoringLoginfo.id,
-            MailType.ApproveToCadet,
-          );
+          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Approve);
         } else if (mentoringLoginfo.status === '취소') {
-          this.emailService.sendMessage(
-            mentoringLoginfo.id,
-            MailType.CancelToCadet,
-          );
+          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Cancel);
         }
       }
 

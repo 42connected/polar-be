@@ -16,14 +16,14 @@ export class MainSeeder implements Seeder {
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
   ): Promise<void> {
-    // await runSeeder(dataSource, BocalsSeeder);
-    // await runSeeder(dataSource, CadetsSeeder);
-    // await runSeeder(dataSource, MentorsSeeder);
+    await runSeeder(dataSource, BocalsSeeder);
+    await runSeeder(dataSource, CadetsSeeder);
+    await runSeeder(dataSource, MentorsSeeder);
     // await runSeeder(dataSource, CommentsSeeder);
     // await runSeeder(dataSource, KeywordsSeeder);
     // await runSeeder(dataSource, MentorKeywordsSeeder);
     // await runSeeder(dataSource, MentoringLogsSeeder);
-    await runSeeder(dataSource, ReportsSeeder);
+    // await runSeeder(dataSource, ReportsSeeder);
     // await runSeeder(dataSource, CategoriesSeeder);
     // await runSeeder(dataSource, KeywordCategoriesSeeder);
   }

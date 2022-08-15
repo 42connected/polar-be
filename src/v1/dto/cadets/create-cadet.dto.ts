@@ -19,4 +19,9 @@ export class CreateCadetDto {
     type: Boolean,
   })
   isCommon: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'email', required: true })
+  email: string;
 }

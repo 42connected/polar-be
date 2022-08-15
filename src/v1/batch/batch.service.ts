@@ -40,14 +40,13 @@ export class BatchService {
     return mentoringLogsDb;
   }
 
-  async cancelMeetingAuto(
+  async addAutoCancel(
     mentoringsId: string,
     millisecondsTime: number,
   ): Promise<boolean> {
     if (!mentoringsId) {
       return false;
     }
-
     let mentoringLogsData: MentoringLogs = null;
     try {
       mentoringLogsData = await this.getMentoringLogsDB(mentoringsId);
@@ -55,7 +54,15 @@ export class BatchService {
       this.logger.log('DB에서 정보를 읽어오는데 실패했습니다');
       return false;
     }
-
+    if (mentoringLogsData.status !== '대기중') {
+      this.logger.log(
+        '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
+      );
+      // TODO: 로그를 예외로 변경
+      // throw new BadRequestException(
+      //   '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
+      // );
+    }
     await this.addTimeout(millisecondsTime, mentoringLogsData);
 
     return true;
@@ -65,51 +72,35 @@ export class BatchService {
     milliseconds: number,
     mentoringLogsData: MentoringLogs,
   ): Promise<void> {
+    const { id: mentoringId } = mentoringLogsData;
     const callback = () => {
-      const meetingStatus = mentoringLogsData.status;
-      const waitingStatus = '대기중';
-      const mentoringId = mentoringLogsData.id;
-
-      if (meetingStatus !== waitingStatus) {
-        this.logger.log(
-          `autoCancel mentoringsLogs ${mentoringId} after (${milliseconds}) : 실행취소 상태가 '대기중'이 아닙니다`,
-        );
-        return;
-      }
-
-      const mailPromise = this.emailService
-        .sendMessage(mentoringId, MailType.CancelToCadet)
-        .then(() => {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
-          );
-        });
-
-      mailPromise.catch(error =>
-        this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
-      );
-
-      const cancelStatus = '자동취소';
-      mentoringLogsData.status = cancelStatus;
-
-      const mentoringLogsUpdatePromise = this.mentoringsLogsRepository
+      mentoringLogsData.status = '취소';
+      mentoringLogsData.rejectMessage =
+        '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
+      this.mentoringsLogsRepository
         .save(mentoringLogsData)
         .then(() =>
           this.logger.log(
             `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 완료`,
           ),
+        )
+        .catch(() =>
+          this.logger.log(
+            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 실패`,
+          ),
         );
-
-      mentoringLogsUpdatePromise.catch(() =>
-        this.logger.log(
-          `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 실패`,
-        ),
-      );
-
+      this.emailService
+        .sendMessage(mentoringId, MailType.Cancel)
+        .then(() => {
+          this.logger.log(
+            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
+          );
+        })
+        .catch(error =>
+          this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
+        );
       this.deleteTimeout(mentoringId);
     };
-
-    const mentoringId = mentoringLogsData.id;
     const timeout = setTimeout(callback, milliseconds);
     const millisecondsToHours = milliseconds / 3600000;
     try {
