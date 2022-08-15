@@ -124,18 +124,18 @@ export class MentorsService {
 
   isValidTime(time: AvailableTimeDto): boolean {
     if (
-      !(time.start_hour >= 0 && time.start_hour < 24) ||
-      !(time.start_minute === 0 || time.start_minute === 30) ||
-      !(time.end_hour >= 0 && time.end_hour < 24) ||
-      !(time.end_minute === 0 || time.end_minute === 30)
+      !(time.startHour >= 0 && time.startHour < 24) ||
+      !(time.startMinute === 0 || time.startMinute === 30) ||
+      !(time.endHour >= 0 && time.endHour < 24) ||
+      !(time.endMinute === 0 || time.endMinute === 30)
     ) {
       return false;
     }
-    if (time.start_hour >= time.end_hour) {
+    if (time.startHour >= time.endHour) {
       return false;
     }
-    const endTotalMinute = time.end_hour * 60 + time.end_minute;
-    const startTotalMinute = time.start_hour * 60 + time.start_minute;
+    const endTotalMinute = time.endHour * 60 + time.endMinute;
+    const startTotalMinute = time.startHour * 60 + time.startMinute;
     if (endTotalMinute - startTotalMinute < 60) {
       return false;
     }
