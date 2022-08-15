@@ -75,32 +75,6 @@ export class MentoringsService {
     return { intraId: mentorIntraId, mentoringLogs };
   }
 
-  async setMeetingAt(body: UpdateMentoringDto): Promise<MentoringLogs> {
-    let mentoringsData = null;
-
-    try {
-      mentoringsData = await this.mentoringsLogsRepository.findOne({
-        where: { id: body.id },
-      });
-    } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
-
-    if (mentoringsData === null) {
-      throw new NotFoundException('데이터를 찾을 수 없습니다');
-    }
-
-    mentoringsData.status = body.status;
-    if (body.meetingAt) mentoringsData.meetingAt = body.meetingAt;
-    if (body.rejectMessage) mentoringsData.rejectMessage = body.rejectMessage;
-
-    try {
-      return await this.mentoringsLogsRepository.save(mentoringsData);
-    } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
-  }
-
   async getSimpleLogsPagination(
     mentorIntraId: string,
     paginationDto: PaginationDto,

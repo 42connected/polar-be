@@ -73,36 +73,6 @@ export class MentorsController {
     );
   }
 
-  @Patch('mentorings')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'setMeetingAt patch API',
-    description: '멘토링 미팅일정 확정 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링로그 수정 성공',
-    type: Promise<MentoringLogs>,
-  })
-  async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
-    try {
-      const mentoringLoginfo = await this.mentoringsService.setMeetingAt(body);
-
-      if (mentoringLoginfo) {
-        if (mentoringLoginfo.status === '예정') {
-          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Approve);
-        } else if (mentoringLoginfo.status === '취소') {
-          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Cancel);
-        }
-      }
-
-      return mentoringLoginfo;
-    } catch (err) {
-      throw err;
-    }
-  }
-
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
