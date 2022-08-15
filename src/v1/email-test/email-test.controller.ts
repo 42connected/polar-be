@@ -7,7 +7,7 @@ export class EmailTestController {
 
   @Get()
   sendMessage() {
-    const mentoringLogsId: string = 'a1001654-7247-4160-8839-acfc2d5e62ee';
+    const mentoringLogsId = 'a1001654-7247-4160-8839-acfc2d5e62ee';
     const mailType: MailType = MailType.Reservation;
     this.emailService.sendMessage(mentoringLogsId, mailType);
   }

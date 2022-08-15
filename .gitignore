@@ -45,3 +45,6 @@ lerna-debug.log*
 
 # local redis db
 dump.rdb
+
+# Seeder
+/src/v1/seeder
