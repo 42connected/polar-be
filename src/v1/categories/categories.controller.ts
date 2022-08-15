@@ -10,7 +10,7 @@ import { SearchMentorsService } from './service/search-mentors.service';
 @ApiTags('categories API')
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService,
-  private searchMentorsService:SearchMentorsService) { }
+  private searchMentorsService: SearchMentorsService) {}
 
   @Get(':category')
   @ApiOperation({
