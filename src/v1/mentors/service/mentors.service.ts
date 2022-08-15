@@ -142,6 +142,29 @@ export class MentorsService {
     return true;
   }
 
+  validateTimeOverlap(time1: AvailableTimeDto, time2: AvailableTimeDto) {
+    if (time1.startHour <= time2.startHour && time1.endHour > time2.startHour) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (
+      time1.endHour === time2.startHour &&
+      time1.endMinute === 30 &&
+      time2.endMinute === 0
+    ) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (time2.startHour <= time1.startHour && time2.endHour > time1.startHour) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (
+      time2.endHour === time1.startHour &&
+      time2.endMinute === 30 &&
+      time1.endMinute === 0
+    ) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+  }
+
   validateAvailableTime(time: AvailableTimeDto[][]): AvailableTimeDto[][] {
     time.forEach(t =>
       t.forEach(tt => {
@@ -150,6 +173,15 @@ export class MentorsService {
         }
       }),
     );
+    for (let day = 0; day < 7; day++) {
+      const length = time[day].length;
+      for (let i = 0; i < length; i++) {
+        for (let j = 0; j < length; j++) {
+          if (i == j) continue;
+          this.validateTimeOverlap(time[day][i], time[day][j]);
+        }
+      }
+    }
     return time;
   }
 }
