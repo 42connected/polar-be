@@ -6,7 +6,6 @@ import {
   Post,
   UseGuards,
   Query,
-  ConflictException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -19,8 +18,7 @@ import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
-import { SearchMentorsService } from './service/search-mentors.service';
-import { MentorsList } from '../interface/mentors/mentors-list.interface';
+import { SearchMentorsService } from '../categories/service/search-mentors.service';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -37,8 +35,6 @@ export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
-    private readonly searchMentorsService: SearchMentorsService,
-    private readonly emailService: EmailService,
   ) {}
 
   @Get('mentorings')
@@ -125,29 +121,5 @@ export class MentorsController {
   })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.findMentorByIntraId(intraId);
-  }
-
-  @Get()
-  @ApiOperation({
-    summary: 'getMentors API',
-    description: '멘토리스트 받아오는 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토리스트 받아오기 성공',
-    type: Promise<MentorsList>,
-  })
-  getMentors(
-    @Query('categoryId') categoryId?: string,
-    @Query('keywordId') keywordId?: string[],
-    @Query('searchText') searchText?: string,
-  ): Promise<MentorsList> {
-    if (typeof keywordId === 'string') keywordId = [keywordId];
-    if (typeof categoryId === 'object' || typeof searchText === 'object')
-      throw new ConflictException('잘못된 입력이 들어왔습니다.');
-    return this.searchMentorsService.getMentorList(
-      categoryId,
-      keywordId,
-      searchText,
-    );
   }
 }
