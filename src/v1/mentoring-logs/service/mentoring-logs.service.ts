@@ -15,13 +15,14 @@ export class MentoringLogsService {
     private mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
-  async findMentoringLogWithMentor(id: string): Promise<MentoringLogs> {
+  async findMentoringLogWithRelations(id: string): Promise<MentoringLogs> {
     try {
       const foundLog: MentoringLogs =
         await this.mentoringLogsRepository.findOne({
           where: { id },
           relations: {
             mentors: true,
+            cadets: true,
           },
         });
       return foundLog;
@@ -37,7 +38,7 @@ export class MentoringLogsService {
     mentoringLogId: string,
     userId: string,
   ): Promise<MentoringLogs> {
-    const foundLog: MentoringLogs = await this.findMentoringLogWithMentor(
+    const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       mentoringLogId,
     );
     if (userId !== foundLog.mentors.intraId) {
