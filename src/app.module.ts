@@ -21,6 +21,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { CalendarModule } from './v1/calendar/calendar.module';
 import { EmailTestModule } from './v1/email-test/email-test.module';
+import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 
 @Module({
   imports: [
@@ -100,6 +101,10 @@ import { EmailTestModule } from './v1/email-test/email-test.module';
           {
             path: 'email-test',
             module: EmailTestModule,
+          },
+          {
+            path: 'mentoring-logs',
+            module: MentoringLogsModule,
           },
         ],
       },
