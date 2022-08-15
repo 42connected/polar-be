@@ -14,6 +14,7 @@ import { KeywordCategories } from 'src/v1/entities/keyword-categories.entity';
 import { MentorRawSimpleInfo } from 'src/v1/interface/mentors/mentor-raw-simple-info.interface';
 import { Categories } from 'src/v1/entities/categories.entity';
 import { GetMentorsQueryDto } from 'src/v1/dto/mentors/get-mentors.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SearchMentorsService {
@@ -26,6 +27,43 @@ export class SearchMentorsService {
     @InjectRepository(Categories)
     private categoriesRepository: Repository<Categories>,
   ) {}
+
+  async getMentorsInfoByText(
+    mentorName: string,
+    mentorSimpleInfo?: MentorSimpleInfo[],
+  ): Promise<MentorSimpleInfo[]> {
+    let matchMentors: MentorSimpleInfo[] = [];
+    
+    if (mentorSimpleInfo?.length !== 0) {
+      try {
+        mentorSimpleInfo.forEach(mentor => {
+          console.log(mentor.name);
+          if (mentor.intraId.includes(mentorName) || mentor.name.includes(mentorName)) {
+            matchMentors.push(mentor);
+          }
+        });
+      }catch(error){
+        throw new ConflictException(error);
+      }
+    } else {
+      try {
+        matchMentors = await this.mentorsRepository.find({
+          select: { id: true, name: true, intraId: true },
+          where: [{ intraId: Like(`%${mentorName}%`) }, { name: Like(`%${mentorName}%`) }],
+        });
+      } catch {
+        throw new ConflictException(
+          '멘토 정보를 가져오는 도중 오류가 발생했습니다..!',
+        );
+      }
+    }
+    if (matchMentors.length === 0) {
+      throw new NotFoundException(
+        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
+      );
+    }
+    return matchMentors;
+  }
 
   async getMentorList(category ,getMentorsQueryDto:GetMentorsQueryDto): Promise<MentorsList> {
     const result: MentorsList = {
@@ -225,39 +263,7 @@ export class SearchMentorsService {
     return matchMentors;
   }
 
-  async getMentorsInfoByText(
-    mentorName: string,
-    mentorSimpleInfo?: MentorSimpleInfo[],
-  ): Promise<MentorSimpleInfo[]> {
-    let matchMentors: MentorSimpleInfo[];
-    console.log(mentorSimpleInfo);
-    if (mentorSimpleInfo && mentorSimpleInfo.length !== 0) {
-      mentorSimpleInfo.forEach(mentor => {
-        console.log(mentor)
-        if (mentor.id.includes(mentorName) || mentor.name.includes(mentorName)){
-          matchMentors.push(mentor);
-        }
-      });
-    } else {
-      try {
-        matchMentors = await this.mentorsRepository.find({
-          select: { id: true, name: true, intraId: true },
-          where: [{ intraId: Like(`%${mentorName}%`) }, { name: Like(`%${mentorName}%`) }],
-        });
-      } catch {
-        throw new ConflictException(
-          '멘토 정보를 가져오는 도중 오류가 발생했습니다..!',
-        );
-      }
-    }
-    if (matchMentors.length === 0) {
-      throw new NotFoundException(
-        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
-    return matchMentors;
-  }
-
+ 
   async getMentorListElements(
     matchMentors: MentorSimpleInfo[],
   ): Promise<MentorsListElement[]> {
