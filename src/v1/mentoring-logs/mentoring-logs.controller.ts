@@ -3,6 +3,7 @@ import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { ApproveMentoringDto } from '../dto/mentoring-logs/approve-mentoring.dto';
+import { RejectMentoringDto } from '../dto/mentoring-logs/reject-mentoring.dto';
 import { EmailService, MailType } from '../email/service/email.service';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
@@ -33,5 +34,21 @@ export class MentoringLogsController {
       user.intraId,
     );
     this.emailService.sendMessage(log.id, MailType.Approve);
+  }
+
+  @Patch('reject')
+  @Roles('mentor', 'cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Reject Mentoring Request API',
+    description: '멘토링 요청 거절 API',
+  })
+  async rejectMentoring(
+    @User() user: JwtUser,
+    @Body() body: RejectMentoringDto,
+  ) {
+    const log = await this.mentoringLogsService.cancel(body, user.intraId);
+    this.emailService.sendMessage(log.id, MailType.Cancel);
   }
 }

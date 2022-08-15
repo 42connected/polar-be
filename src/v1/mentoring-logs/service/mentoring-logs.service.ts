@@ -5,8 +5,16 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { RejectMentoringDto } from 'src/v1/dto/mentoring-logs/reject-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
+
+export enum MentoringLogStatus {
+  Wait = '대기중',
+  Approve = '확정',
+  Cancel = '취소',
+  Done = '완료',
+}
 
 @Injectable()
 export class MentoringLogsService {
@@ -50,7 +58,34 @@ export class MentoringLogsService {
         HttpStatus.FORBIDDEN,
       );
     }
-    foundLog.status = '확정';
+    foundLog.status = MentoringLogStatus.Approve;
+    try {
+      await this.mentoringLogsRepository.save(foundLog);
+    } catch (err) {
+      throw new ConflictException('멘토링 로그 저장 중 에러가 발생했습니다.');
+    }
+    return foundLog;
+  }
+
+  async cancel(rejectInfos: RejectMentoringDto, userId: string) {
+    const { mentoringLogId, rejectMessage } = rejectInfos;
+    const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
+      mentoringLogId,
+    );
+    if (
+      userId !== foundLog.mentors.intraId &&
+      userId !== foundLog.cadets.intraId
+    ) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: '멘토링 로그에 대한 처리 권한이 없습니다.',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
+    foundLog.status = MentoringLogStatus.Cancel;
+    foundLog.rejectMessage = rejectMessage;
     try {
       await this.mentoringLogsRepository.save(foundLog);
     } catch (err) {
