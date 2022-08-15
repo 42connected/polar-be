@@ -49,6 +49,12 @@ export class ApplyService {
     const startMinute: number = startDate.getMinutes();
     const endHour: number = endDate.getHours();
     const endMinute: number = endDate.getMinutes();
+    if (
+      (startMinute !== 0 && startMinute !== 30) ||
+      (endMinute !== 0 && endMinute !== 30)
+    ) {
+      throw new BadRequestException('정각 혹은 30분만 신청 가능합니다.');
+    }
     if (endHour === 0 && endMinute === 0) {
       if (startHour === 23 && startMinute === 30) {
         throw new BadRequestException(errorMessage);
