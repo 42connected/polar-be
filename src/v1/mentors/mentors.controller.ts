@@ -48,7 +48,7 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getMentoringsLists get API',
+    summary: 'getMentoringsLists API',
     description: '멘토링 리스트 가져오는 api',
   })
   @ApiCreatedResponse({
@@ -61,7 +61,11 @@ export class MentorsController {
     return await this.mentoringsService.getMentoringsLists(user);
   }
 
-  @Get('simplelogs/:mentorIntraId')
+  @Get('simplelogs/:mentorInatrId')
+  @ApiOperation({
+    summary: 'getSimpleLogs API',
+    description: '???',
+  })
   @UseGuards(JwtGuard)
   async getSimpleLogs(
     @Param('mentorIntraId') mentorIntraId: string,

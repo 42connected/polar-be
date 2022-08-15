@@ -1,19 +1,14 @@
 import { Controller, Get, Res } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 
 @Controller()
-@ApiTags('v1 login API')
+@ApiTags('login API')
 export class V1Controller {
   @Get('login')
   @ApiOperation({
     summary: 'login API',
-    description: 'login api',
+    description: 'intra 로그인',
   })
   @ApiCreatedResponse({
     description: 'login 성공',
