@@ -108,9 +108,9 @@ export class EmailService {
     messageForm: ISendMailOptions,
   ): Promise<boolean> {
     try {
-      messageForm.to = mentorEmail;
-      await this.mailService.sendMail(messageForm);
       messageForm.to = cadetEmail;
+      await this.mailService.sendMail(messageForm);
+      messageForm.to = mentorEmail;
       await this.mailService.sendMail(messageForm);
       return true;
     } catch (error) {
@@ -134,14 +134,14 @@ export class EmailService {
             messageDto.reservationTime1[1],
           ),
         );
-        let requestTime2: string = await this.reserveTimeToString(
+        const requestTime2: string = await this.reserveTimeToString(
           messageDto.reservationTime2[0],
           this.getMentoringHours(
             messageDto.reservationTime2[0],
             messageDto.reservationTime2[1],
           ),
         );
-        let requestTime3: string = await this.reserveTimeToString(
+        const requestTime3: string = await this.reserveTimeToString(
           messageDto.reservationTime3[0],
           this.getMentoringHours(
             messageDto.reservationTime3[0],
@@ -153,6 +153,7 @@ export class EmailService {
           subject: 'New mentoring request',
           template: 'ReservationMessage.hbs',
           context: {
+            mentorSlackId: messageDto.mentorSlackId,
             cadetSlackId: messageDto.cadetSlackId,
             intraProfileUrl:
               'https://profile.intra.42.fr/users/' + messageDto.cadetSlackId,
@@ -177,6 +178,7 @@ export class EmailService {
           subject: 'Mentoring Approved',
           template: 'ApproveMessage.hbs',
           context: {
+            cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
             reservationTimeToString: reservationTimeToString,
           },
@@ -187,6 +189,7 @@ export class EmailService {
           subject: 'Mentoring canceled',
           template: 'CancelMessage.hbs',
           context: {
+            cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
             rejectMessage: messageDto.rejectMessage,
           },
@@ -242,7 +245,7 @@ export class EmailService {
       case MailType.Approve: {
         const approveMessageDto: ApproveMessageDto = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
-          mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           meetingAt: mentoringsLogsInfoDb.meetingAt,
@@ -252,7 +255,7 @@ export class EmailService {
       case MailType.Cancel: {
         const cancelMessageDto: CancelMessageDto = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
-          mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           rejectMessage: mentoringsLogsInfoDb.rejectMessage,
