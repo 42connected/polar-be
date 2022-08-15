@@ -22,5 +22,6 @@ export class CreateCadetDto {
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty({ description: 'email', required: true })
   email: string;
 }

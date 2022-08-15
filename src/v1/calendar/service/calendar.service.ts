@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 
@@ -19,6 +19,7 @@ export class CalendarService {
         select: { availableTime: true },
         where: { intraId: id },
       });
+      if (!found) return '[]';
       return found.availableTime;
     } catch {
       throw new NotFoundException();
@@ -26,7 +27,7 @@ export class CalendarService {
   }
 
   async StringToJson(id: string) {
-    const found = await this.getAvailabeTimes(id);
+    const found: string = await this.getAvailabeTimes(id);
     return JSON.parse(found);
   }
 

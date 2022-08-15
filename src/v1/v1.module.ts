@@ -14,6 +14,8 @@ import { BatchModule } from './batch/batch.module';
 import { EmailModule } from './email/email.module';
 import { CategoriesModule } from './categories/categories.module';
 import { CalendarModule } from './calendar/calendar.module';
+import { EmailTestModule } from './email-test/email-test.module';
+import { MentoringLogsModule } from './mentoring-logs/mentoring-logs.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { CalendarModule } from './calendar/calendar.module';
     CommentsModule,
     BatchModule,
     CalendarModule,
+    EmailTestModule,
     JwtModule.registerAsync({
       useFactory: () => {
         return {
@@ -35,6 +38,7 @@ import { CalendarModule } from './calendar/calendar.module';
       },
     }),
     EmailModule,
+    MentoringLogsModule,
   ],
   controllers: [V1Controller],
   providers: [V1Service, JwtStrategy],

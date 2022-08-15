@@ -20,6 +20,8 @@ import { BatchModule } from './v1/batch/batch.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { CalendarModule } from './v1/calendar/calendar.module';
+import { EmailTestModule } from './v1/email-test/email-test.module';
+import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 
 @Module({
   imports: [
@@ -96,6 +98,14 @@ import { CalendarModule } from './v1/calendar/calendar.module';
             path: 'calendar',
             module: CalendarModule,
           },
+          {
+            path: 'email-test',
+            module: EmailTestModule,
+          },
+          {
+            path: 'mentoring-logs',
+            module: MentoringLogsModule,
+          },
         ],
       },
     ]),
@@ -103,6 +113,7 @@ import { CalendarModule } from './v1/calendar/calendar.module';
       ttl: 30,
       limit: 5,
     }),
+    EmailTestModule,
   ],
   controllers: [AppController],
   providers: [
