@@ -12,6 +12,7 @@ export class RejectMentoringDto {
   mentoringLogId: string;
 
   @IsString()
+  @IsNotEmpty()
   @ApiProperty({
     description: 'reject message',
     required: true,
