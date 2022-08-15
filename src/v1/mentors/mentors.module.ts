@@ -9,7 +9,7 @@ import { Mentors } from '../entities/mentors.entity';
 import { MentorsController } from './mentors.controller';
 import { MentoringsService } from './service/mentorings.service';
 import { MentorsService } from './service/mentors.service';
-import { SearchMentorsService } from './service/search-mentors.service';
+import { SearchMentorsService } from '../categories/service/search-mentors.service';
 import { KeywordCategories } from '../entities/keyword-categories.entity';
 import { Categories } from '../entities/categories.entity';
 import { EmailModule } from '../email/email.module';
