@@ -5,17 +5,20 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from 'class-validator';
 import { PaginationDto } from '../pagination.dto';
 
 export class GetDataRoomDto {
+  @IsNumber()
   @IsNotEmpty()
-  @ApiProperty({
-    description: 'Pagenation',
-    required: true,
-    type: PaginationDto,
-  })
-  pagenation: PaginationDto;
+  @Min(1)
+  take: number;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Min(1)
+  page: number;
 
   @IsOptional()
   @IsBoolean()
@@ -38,9 +41,18 @@ export class GetDataRoomDto {
   @IsOptional()
   @IsString()
   @ApiProperty({
-    description: '맨토 이름 or 인트라 조회',
+    description: '맨토 이름 조회',
     required: false,
     type: String,
   })
   mentorName: string;
+    
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: '맨토 인트라 조회',
+    required: false,
+    type: String,
+  })
+  mentorIntra: string;
 }
