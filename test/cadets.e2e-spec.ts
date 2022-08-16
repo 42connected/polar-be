@@ -131,7 +131,7 @@ describe('CadetsController (e2e)', () => {
         topic: 'test',
       },
     });
-    await mentoringLogsRepo.remove(testLogs);
+    if (testLogs) await mentoringLogsRepo.remove(testLogs);
     const apply: Partial<CreateApplyDto> = {
       topic: 'test',
       content: '테스트중',
