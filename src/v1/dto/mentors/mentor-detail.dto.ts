@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEmail,
@@ -10,6 +11,7 @@ import { AvailableTimeDto } from '../available-time.dto';
 
 export class UpdateMentorDatailDto {
   @IsNotEmpty()
+  @Type(() => AvailableTimeDto)
   @ApiProperty({
     description: 'availableTime',
     required: true,
