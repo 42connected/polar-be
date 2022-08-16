@@ -1,5 +1,6 @@
 export interface MentoringExcelData {
   mentorName: string;
+  metorIntraId: string;
   mentorCompany: string;
   mentorDuty: string;
   date: string;
@@ -10,4 +11,5 @@ export interface MentoringExcelData {
   totalHour: number;
   money: number;
   cadetName: string;
+  cadetIntraId: string;
 }
