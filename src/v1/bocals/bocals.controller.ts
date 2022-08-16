@@ -33,9 +33,13 @@ export class BocalsController {
     await this.bocalsService.createMentoringExcelFile(mentoringLogsId, res);
   }
 
+  @ApiOperation({
+    summary: 'getAllRports API',
+    description: '모든 보고서를 pagenation해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
+  })
   @Get('data-room')
-  // @Roles('bocal')
-  // @UseGuards(JwtGuard, RolesGuard)
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   async getReportPagination(
     @Query() getDataroomDto: GetDataRoomDto,

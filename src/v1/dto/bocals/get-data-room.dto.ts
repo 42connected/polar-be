@@ -13,11 +13,23 @@ export class GetDataRoomDto {
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
+  @ApiProperty({
+    description: '페이지당 데이터 수',
+    default: 1,
+    required: true,
+    type: Number,
+  })
   take: number;
 
   @IsNumber()
   @IsNotEmpty()
   @Min(1)
+  @ApiProperty({
+    description: '페이지 번호',
+    default: 1,
+    required: true,
+    type: Number,
+  })
   page: number;
 
   @IsOptional()
