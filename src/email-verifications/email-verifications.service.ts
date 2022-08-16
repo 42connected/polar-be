@@ -74,6 +74,6 @@ export class EmailVerificationService {
     } catch {
       throw new ConflictException('이메일 수정중 오류가 발생했습니다');
     }
-    return 'ok';
+    return true;
   }
 }
