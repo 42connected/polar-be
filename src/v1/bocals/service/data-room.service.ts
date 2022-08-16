@@ -42,7 +42,6 @@ export class DataroomService {
             cadets: {
               intraId: true,
               name: true,
-
             },
           },
           order: {

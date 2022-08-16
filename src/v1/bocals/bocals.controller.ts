@@ -35,7 +35,8 @@ export class BocalsController {
 
   @ApiOperation({
     summary: 'getAllRports API',
-    description: '모든 보고서를 pagenation해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
+    description:
+      '모든 보고서를 pagenation해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
   })
   @Get('data-room')
   @Roles('bocal')
