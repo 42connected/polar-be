@@ -86,7 +86,6 @@ describe('MentoringsSerivce', () => {
       ml.cadets = cadet;
       ml.topic = 'topic topic';
       ml.status = '진행중';
-      ml.reportStatus = '작성가능';
       ml.requestTime1 = [];
       ml.content = '컨텐츠';
       mentor.mentoringLogs = [ml];

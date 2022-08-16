@@ -36,15 +36,13 @@ export class MentoringLogsSeeder implements Seeder {
       ],
     };
 
-    const newUser: MentoringLogs =
-      mentoringLogsRepository.create(mentoringLogsData);
-    console.log(newUser);
+    const newUser = mentoringLogsRepository.create(mentoringLogsData);
     await mentoringLogsRepository.save(newUser);
 
-    // const mentoringLogsFactory = await factoryManager.get(MentoringLogs);
-    // const cadetsMeta = await cadetRepository.find();
-    // const mentorsMeta = await mentorRepository.find();
-    // await mentoringLogsFactory.setMeta({ cadetsMeta, mentorsMeta });
-    // await mentoringLogsFactory.saveMany(4);
+    const mentoringLogsFactory = await factoryManager.get(MentoringLogs);
+    const cadetsMeta = await cadetRepository.find();
+    const mentorsMeta = await mentorRepository.find();
+    await mentoringLogsFactory.setMeta({ cadetsMeta, mentorsMeta });
+    await mentoringLogsFactory.saveMany(4);
   }
 }
