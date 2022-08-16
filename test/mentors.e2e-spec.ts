@@ -17,6 +17,8 @@ import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 describe('MentorsController (e2e)', () => {
   let app: INestApplication;
@@ -47,6 +49,25 @@ describe('MentorsController (e2e)', () => {
         }),
         MentorsModule,
         AuthModule,
+        MailerModule.forRootAsync({
+          useFactory: () => ({
+            transport: {
+              host: 'smtp.gmail.com',
+              port: parseInt(process.env.EMAIL_PORT, 10),
+              auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+              },
+            },
+            template: {
+              dir: './templates',
+              adapter: new HandlebarsAdapter(),
+              options: {
+                strict: true,
+              },
+            },
+          }),
+        }),
       ],
       providers: [JwtStrategy],
     })
@@ -74,20 +95,22 @@ describe('MentorsController (e2e)', () => {
     await app.init();
   });
 
-  it('GET /', () => {
-    return request(app.getHttpServer()).get('/?searchText=m-dada').expect(200);
-  });
-
   it('GET /mentorings', () => {
     return request(app.getHttpServer()).get('/mentorings').expect(200);
   });
 
+  it('Get /simplelogs/:mentorIntraId', () => {
+    return request(app.getHttpServer())
+      .get('/simplelogs/m-dada?take=10&page=1')
+      .expect(200);
+  });
+
   it('POST /', () => {
     const availableTime: AvailableTimeDto = {
-      start_hour: 8,
-      start_minute: 30,
-      end_hour: 10,
-      end_minute: 0,
+      startHour: 8,
+      startMinute: 30,
+      endHour: 10,
+      endMinute: 0,
     };
     const body: Partial<UpdateMentorDatailDto> = {
       availableTime: [[availableTime], [], [], [], [availableTime], [], []],
@@ -98,13 +121,14 @@ describe('MentorsController (e2e)', () => {
 
   it('POST /join', () => {
     const availableTime: AvailableTimeDto = {
-      start_hour: 8,
-      start_minute: 30,
-      end_hour: 10,
-      end_minute: 0,
+      startHour: 10,
+      startMinute: 30,
+      endHour: 15,
+      endMinute: 0,
     };
     const body: JoinMentorDto = {
       name: '테스트',
+      email: 'test@gmail.com',
       availableTime: [[availableTime], [], [], [], [availableTime], [], []],
     };
     return request(app.getHttpServer()).post('/join').send(body).expect(201);
