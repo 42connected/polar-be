@@ -122,7 +122,7 @@ export class CadetsController {
     @Param('mentorIntraId') mentorId: string,
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     let mentoringLogs: MentoringLogs;
     try {
       mentoringLogs = await this.applyService.create(

@@ -12,7 +12,7 @@ export class CadetsSeeder implements Seeder {
     console.log('Seeding cadets...');
 
     const cadetData: CadetsInterface = {
-      id:'0569426f-8ad4-4aad-b425-76d0bdc625bf',
+      id: '0569426f-8ad4-4aad-b425-76d0bdc625bf',
       intraId: 'jojoo',
       name: '주종현',
       profileImage:

@@ -165,7 +165,9 @@ export class ApplyService {
       );
     }
     if (!findCadet) {
-      throw new ConflictException(`${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`);
+      throw new ConflictException(
+        `${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`,
+      );
     }
     this.checkAvailableTime(createApplyDto);
     try {
@@ -225,8 +227,8 @@ export class ApplyService {
       requestTime2Start = createApplyDto.requestTime2[0].getTime();
       requestTime2End = createApplyDto.requestTime2[1].getTime();
       if (createApplyDto.requestTime3) {
-       requestTime3Start = createApplyDto.requestTime3[0].getTime();
-       requestTime3End = createApplyDto.requestTime3[1].getTime();
+        requestTime3Start = createApplyDto.requestTime3[0].getTime();
+        requestTime3End = createApplyDto.requestTime3[1].getTime();
       }
     }
     console.log(originRequestTimes[1][0]);
