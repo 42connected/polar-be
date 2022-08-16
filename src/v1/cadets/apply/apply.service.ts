@@ -98,14 +98,18 @@ export class ApplyService {
       createApplyDto.requestTime1[0],
       createApplyDto.requestTime1[1],
     );
-    this.checkDate(
-      createApplyDto.requestTime2[0],
-      createApplyDto.requestTime2[1],
-    );
-    this.checkDate(
-      createApplyDto.requestTime3[0],
-      createApplyDto.requestTime3[1],
-    );
+    if (createApplyDto.requestTime2) {
+      this.checkDate(
+        createApplyDto.requestTime2[0],
+        createApplyDto.requestTime2[1],
+      );
+    }
+    if (createApplyDto.requestTime3) {
+      this.checkDate(
+        createApplyDto.requestTime3[0],
+        createApplyDto.requestTime3[1],
+      );
+    }
     try {
       createdLog = this.mentoringlogsRepository.create({
         cadets: findCadet,
