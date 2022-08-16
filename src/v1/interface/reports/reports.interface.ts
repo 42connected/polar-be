@@ -16,7 +16,7 @@ export interface ReportsInterface {
   feedback3?: number;
   mentoringLogs: MentoringLogsInterface;
   money?: number;
-  status?: string;
+  status: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
