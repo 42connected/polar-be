@@ -68,33 +68,33 @@ export class ApplyService {
     }
   }
 
-  checkStartToEnd(startDate: Date, endDate: Date): void{
+  checkStartToEnd(startDate: Date, endDate: Date): void {
     const startTime = startDate.getTime();
     const endTime = endDate.getTime();
-    const erroMessage = '시작 시간이 끝나는 시간보다 느립니다.'
+    const erroMessage = '시작 시간이 끝나는 시간보다 느립니다.';
     if (startTime >= endTime) {
       throw new BadRequestException(erroMessage);
     }
   }
 
-  checkTime1(startDate: Date, endDate: Date): void{
+  checkTime1(startDate: Date, endDate: Date): void {
     this.checkDate(startDate, endDate);
     this.checkTime(startDate, endDate);
     this.checkStartToEnd(startDate, endDate);
   }
 
-  checkTime2(startDate: Date, endDate: Date): void{
+  checkTime2(startDate: Date, endDate: Date): void {
     this.checkDate(startDate, endDate);
     this.checkTime(startDate, endDate);
     this.checkStartToEnd(startDate, endDate);
   }
-  checkTime3(startDate: Date, endDate: Date): void{
+  checkTime3(startDate: Date, endDate: Date): void {
     this.checkDate(startDate, endDate);
     this.checkTime(startDate, endDate);
     this.checkStartToEnd(startDate, endDate);
   }
 
-  checkSameTime(time1 : Date[], time2 : Date[]){
+  checkSameTime(time1: Date[], time2: Date[]) {
     const time1Start = time1[0].getTime();
     const time1End = time1[1].getTime();
     const time2Start = time2[0].getTime();
@@ -104,17 +104,34 @@ export class ApplyService {
     }
   }
 
-
   checkAvailableTime(createApplyDto: CreateApplyDto): void {
-    this.checkTime1(createApplyDto.requestTime1[0], createApplyDto.requestTime1[1]);
+    this.checkTime1(
+      createApplyDto.requestTime1[0],
+      createApplyDto.requestTime1[1],
+    );
     if (createApplyDto.requestTime2) {
-      this.checkTime2(createApplyDto.requestTime2[0], createApplyDto.requestTime2[1]);
-      this.checkSameTime(createApplyDto.requestTime1, createApplyDto.requestTime2);
+      this.checkTime2(
+        createApplyDto.requestTime2[0],
+        createApplyDto.requestTime2[1],
+      );
+      this.checkSameTime(
+        createApplyDto.requestTime1,
+        createApplyDto.requestTime2,
+      );
     }
     if (createApplyDto.requestTime2 && createApplyDto.requestTime3) {
-      this.checkTime3(createApplyDto.requestTime3[0], createApplyDto.requestTime3[1]);
-      this.checkSameTime(createApplyDto.requestTime1, createApplyDto.requestTime3);
-      this.checkSameTime(createApplyDto.requestTime2, createApplyDto.requestTime3);
+      this.checkTime3(
+        createApplyDto.requestTime3[0],
+        createApplyDto.requestTime3[1],
+      );
+      this.checkSameTime(
+        createApplyDto.requestTime1,
+        createApplyDto.requestTime3,
+      );
+      this.checkSameTime(
+        createApplyDto.requestTime2,
+        createApplyDto.requestTime3,
+      );
     }
   }
 
