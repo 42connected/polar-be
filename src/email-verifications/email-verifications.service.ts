@@ -66,8 +66,8 @@ export class EmailVerificationService {
     if (!email) {
       throw new ConflictException('유효하지 않은 요청입니다');
     }
-    await this.cacheManager.del(code);
     try {
+      await this.cacheManager.del(code);
       const mentor = await this.mentorsRepository.findOneBy({ intraId });
       mentor.email = email;
       await this.mentorsRepository.save(mentor);
