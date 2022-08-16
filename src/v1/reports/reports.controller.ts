@@ -49,16 +49,6 @@ export class ReportsController {
     return await this.reportsService.getReport(reportId);
   }
 
-  @Get()
-  @Roles('bocal')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  async getReportPagination(
-    @Query() paginationDto: PaginationDto,
-  ): Promise<[Reports[], number]> {
-    return await this.reportsService.getReportPagination(paginationDto);
-  }
-
   @Post(':mentoringLogId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
