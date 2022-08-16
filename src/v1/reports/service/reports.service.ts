@@ -219,7 +219,8 @@ export class ReportsService {
       mentoringLogs: mentoringLog,
       money: 0,
     });
-    mentoringLog.reports.status = '작성중';
+    report.status = '작성중';
+    mentoringLog.reports = report;
     try {
       await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
@@ -242,9 +243,7 @@ export class ReportsService {
     body: UpdateReportDto,
   ) {
     const report = await this.findReportWithMentoringLogsById(reportId);
-    const rs: ReportStatus = new ReportStatus(
-      report.mentoringLogs.reports.status,
-    );
+    const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
       throw new UnauthorizedException(
         '해당 레포트를 수정할 수 없는 상태입니다',

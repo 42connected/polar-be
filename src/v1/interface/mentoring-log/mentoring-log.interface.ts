@@ -1,6 +1,5 @@
 import { CadetsInterface } from '../cadets/cadets.interface';
 import { MentorsInterface } from '../mentors/mentors.interface';
-import { ReportsInterface } from '../reports/reports.interface';
 
 export interface MentoringLogsInterface {
   mentors?: MentorsInterface;
