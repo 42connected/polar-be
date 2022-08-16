@@ -15,15 +15,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { MentorsService } from 'src/v1/mentors/service/mentors.service';
 import { CreateApplyDto } from 'src/v1/dto/cadets/create-apply.dto';
+import { BatchModule } from 'src/v1/batch/batch.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { EmailModule } from 'src/v1/email/email.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { Repository } from 'typeorm';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 describe('CadetsController (e2e)', () => {
   let app: INestApplication;
   let mentorsService: MentorsService;
+  let mentoringLogsRepo: Repository<MentoringLogs>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [
         BullQueueModule,
+        ScheduleModule.forRoot(),
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: process.env.POSTGRES_HOST,
@@ -46,6 +55,27 @@ describe('CadetsController (e2e)', () => {
         }),
         CadetsModule,
         AuthModule,
+        BatchModule,
+        EmailModule,
+        MailerModule.forRootAsync({
+          useFactory: () => ({
+            transport: {
+              host: 'smtp.gmail.com',
+              port: parseInt(process.env.EMAIL_PORT, 10),
+              auth: {
+                user: process.env.EMAIL,
+                pass: process.env.EMAIL_PASSWORD,
+              },
+            },
+            template: {
+              dir: './templates',
+              adapter: new HandlebarsAdapter(),
+              options: {
+                strict: true,
+              },
+            },
+          }),
+        }),
       ],
       providers: [JwtStrategy],
     })
@@ -53,14 +83,17 @@ describe('CadetsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'jojoo', role: 'cadet' };
+          req.user = { intraId: 'nakkim', role: 'cadet' };
           return true;
         },
       })
       .compile();
 
     app = moduleFixture.createNestApplication();
-    mentorsService = moduleFixture.get(MentorsService);
+    mentorsService = moduleFixture.get<MentorsService>(MentorsService);
+    mentoringLogsRepo = moduleFixture.get<Repository<MentoringLogs>>(
+      'MentoringLogsRepository',
+    );
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -92,7 +125,13 @@ describe('CadetsController (e2e)', () => {
       .expect(201);
   });
 
-  it('/mentorings/apply/:mentorId (POST)', async () => {
+  it('/mentorings/apply/:mentorIntraId (POST)', async () => {
+    const testLogs = await mentoringLogsRepo.find({
+      where: {
+        topic: 'test',
+      },
+    });
+    await mentoringLogsRepo.remove(testLogs);
     const apply: Partial<CreateApplyDto> = {
       topic: 'test',
       content: '테스트중',
@@ -102,9 +141,8 @@ describe('CadetsController (e2e)', () => {
       ],
     };
     const mentor = await mentorsService.findByIntra('m-dada');
-
     return request(app.getHttpServer())
-      .post(`/mentorings/apply/${mentor.id}`)
+      .post(`/mentorings/apply/${mentor.intraId}`)
       .send(apply)
       .expect(201);
   });
