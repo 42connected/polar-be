@@ -14,7 +14,6 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       password: process.env.POSTGRES_PASSWORD,
       database: process.env.POSTGRES_DATABASE,
       entities: [process.env.TYPEORM_ENTITIES || ' '],
-      ssl: { rejectUnauthorized: false },
       logging: false,
       synchronize: true,
       namingStrategy: new SnakeNamingStrategy(),

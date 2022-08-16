@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
 import * as Excel from 'exceljs';
+import { Response } from 'express';
 
 @Injectable()
 export class BocalsService {
@@ -51,7 +52,10 @@ export class BocalsService {
     }
   }
 
-  async createMentoringExcelFile(mentoringLogsId: string[], res) {
+  async createMentoringExcelFile(
+    mentoringLogsId: string[],
+    response: Response,
+  ): Promise<boolean> {
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('Mentoring', {
       views: [
@@ -68,6 +72,12 @@ export class BocalsService {
       {
         header: '멘토명',
         key: 'mentorName',
+        width: 10,
+        style: { alignment: { horizontal: 'center' } },
+      },
+      {
+        header: '멘토인트라',
+        key: 'mentorIntraId',
         width: 10,
         style: { alignment: { horizontal: 'center' } },
       },
@@ -131,6 +141,12 @@ export class BocalsService {
         width: 10,
         style: { alignment: { horizontal: 'center' } },
       },
+      {
+        header: '멘티인트라',
+        key: 'cadetIntraId',
+        width: 10,
+        style: { alignment: { horizontal: 'center' } },
+      },
     ];
 
     worksheet.getRow(1).eachCell(cell => {
@@ -144,23 +160,24 @@ export class BocalsService {
       } catch (error) {
         throw new ConflictException(error);
       }
-      if (!row)
+      if (!row) {
         throw new NotFoundException('엑셀 데이터 생성중 오류가 발생했습니다.');
+      }
       await worksheet.addRow(row, 'o+');
     }
 
     const fileName: string = new Date().toISOString().split('T')[0];
     try {
-      await res.writeHead(200, {
+      await response.writeHead(200, {
         'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      await workbook.xlsx.write(res);
-      await res.end();
+      await workbook.xlsx.write(response);
     } catch {
       throw new ConflictException('response 생성 중 오류가 발생했습니다.');
     }
+    return true;
   }
 
   async getOneMentoringInfo(
@@ -179,11 +196,13 @@ export class BocalsService {
     } catch {
       throw new ConflictException('멘토링 정보를 찾는 중 오류가 발생했습니다.');
     }
-    if (!mentoringLog)
+    if (!mentoringLog) {
       throw new NotFoundException('잘못된 멘토링 아이디입니다.');
+    }
 
     const result: MentoringExcelData = {
       mentorName: mentoringLog.mentors.name,
+      metorIntraId: mentoringLog.mentors.intraId,
       mentorCompany: mentoringLog.mentors.company,
       mentorDuty: mentoringLog.mentors.duty,
       date: mentoringLog.meetingAt[0].toISOString().split('T')[0],
@@ -200,6 +219,7 @@ export class BocalsService {
       totalHour: mentoringLog.money / 100000,
       money: mentoringLog.money,
       cadetName: mentoringLog.cadets.name,
+      cadetIntraId: mentoringLog.cadets.intraId,
     };
     return result;
   }

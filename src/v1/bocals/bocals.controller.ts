@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Query, Res } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query, Res, Post, Body } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
@@ -8,6 +8,7 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
+import { Response } from 'express';
 
 @ApiTags('bocals API')
 @Controller()
@@ -21,16 +22,20 @@ export class BocalsController {
     summary: 'getMentoringExcelFile API',
     description: 'mentoringLogId를 이용해 해당 멘토링로그 엑셀 파일을 다운받음',
   })
-  @Get('data-room/excel')
+  @Post('data-room/excel')
   @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringExcelFile(
-    @Query('mentoringLogId') mentoringLogsId: string[],
-    @Res({ passthrough: true }) res,
-  ) {
-    if (typeof mentoringLogsId === 'string')
+    @Body('mentoringLogId') mentoringLogsId: string[],
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<boolean> {
+    if (typeof mentoringLogsId === 'string') {
       mentoringLogsId = [mentoringLogsId];
-    await this.bocalsService.createMentoringExcelFile(mentoringLogsId, res);
+    }
+    return await this.bocalsService.createMentoringExcelFile(
+      mentoringLogsId,
+      response,
+    );
   }
 
   @ApiOperation({
