@@ -20,7 +20,6 @@ export default setSeederFactory(
     mentoringLogs.meetingAt = [faker.date.soon(), faker.date.soon(3)];
     mentoringLogs.topic = faker.word.conjunction(50);
     mentoringLogs.content = faker.word.noun(1000);
-    mentoringLogs.money = faker.datatype.number({ min: 0, max: 10 }) * 50000;
     mentoringLogs.status = faker.helpers.arrayElement([
       '대기중',
       '예정',
@@ -28,7 +27,6 @@ export default setSeederFactory(
       '완료',
     ]);
     mentoringLogs.rejectMessage = faker.lorem.paragraph(2);
-    mentoringLogs.reportStatus = faker.helpers.arrayElement(['대기중', '완료']);
     mentoringLogs.requestTime1 = [faker.date.soon(), faker.date.soon(3)];
     mentoringLogs.requestTime2 = faker.datatype.boolean()
       ? [faker.date.soon(), faker.date.soon(3)]
