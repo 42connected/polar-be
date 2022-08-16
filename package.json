@@ -23,7 +23,8 @@
     "db:createMigration": "typeorm migration:create",
     "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
     "token": "node genToken.js",
-    "migration": "npm run typeorm migration:generate src/migrations/migration; npm run typeorm migration:run"
+    "migration": "npm run typeorm migration:generate src/migrations/migration; npm run typeorm migration:run",
+    "deploy-heroku:develop": "git push heroku develop:master"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
@@ -45,6 +46,7 @@
     "class-validator": "^0.13.2",
     "dotenv": "^16.0.1",
     "express-basic-auth": "^1.2.1",
+    "exceljs": "^4.3.0",
     "handlebars": "^4.7.7",
     "jsonwebtoken": "^8.5.1",
     "node-fetch": "^2.6.7",

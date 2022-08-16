@@ -5,12 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
+import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
 
 @Injectable()
 export class MentorsService {
@@ -19,7 +20,7 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async createUser(user: CreateMentorDto): Promise<jwtUser> {
+  async createUser(user: CreateMentorDto): Promise<JwtUser> {
     try {
       const createdUser: Mentors = this.mentorsRepository.create(user);
       createdUser.isActive = false;
@@ -37,7 +38,7 @@ export class MentorsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<jwtUser> {
+  async findByIntra(intraId: string): Promise<JwtUser> {
     try {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,
@@ -69,14 +70,6 @@ export class MentorsService {
   }
 
   /*
-   * @Get
-   */
-  async getMentorDetails(intraId: string): Promise<Mentors> {
-    const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    return mentor;
-  }
-
-  /*
    * @Post
    */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
@@ -85,8 +78,8 @@ export class MentorsService {
       this.validateAvailableTime(body.availableTime),
     );
     mentor.introduction = body.introduction;
-    mentor.isActive = body.isActive;
     mentor.markdownContent = body.markdownContent;
+    mentor.email = body.email;
     try {
       await this.mentorsRepository.save(mentor);
       return 'ok';
@@ -113,17 +106,12 @@ export class MentorsService {
     }
   }
 
-  async saveInfos(
-    user: jwtUser,
-    name: string,
-    availableTime: AvailableTimeDto[][],
-  ): Promise<void> {
-    if (name === '') {
-      throw new BadRequestException('입력된 이름이 없습니다.');
-    }
+  async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
+    const { name, email, availableTime } = infos;
     try {
-      const foundUser: Mentors = await this.findMentorByIntraId(user.intraId);
+      const foundUser: Mentors = await this.findMentorByIntraId(intraId);
       foundUser.name = name;
+      foundUser.email = email;
       foundUser.availableTime = JSON.stringify(
         this.validateAvailableTime(availableTime),
       );
@@ -136,22 +124,45 @@ export class MentorsService {
 
   isValidTime(time: AvailableTimeDto): boolean {
     if (
-      !(time.start_hour >= 0 && time.start_hour < 24) ||
-      !(time.start_minute === 0 || time.start_minute === 30) ||
-      !(time.end_hour >= 0 && time.end_hour < 24) ||
-      !(time.end_minute === 0 || time.end_minute === 30)
+      !(time.startHour >= 0 && time.startHour < 24) ||
+      !(time.startMinute === 0 || time.startMinute === 30) ||
+      !(time.endHour >= 0 && time.endHour < 24) ||
+      !(time.endMinute === 0 || time.endMinute === 30)
     ) {
       return false;
     }
-    if (time.start_hour >= time.end_hour) {
+    if (time.startHour >= time.endHour) {
       return false;
     }
-    const endTotalMinute = time.end_hour * 60 + time.end_minute;
-    const startTotalMinute = time.start_hour * 60 + time.start_minute;
+    const endTotalMinute = time.endHour * 60 + time.endMinute;
+    const startTotalMinute = time.startHour * 60 + time.startMinute;
     if (endTotalMinute - startTotalMinute < 60) {
       return false;
     }
     return true;
+  }
+
+  validateTimeOverlap(time1: AvailableTimeDto, time2: AvailableTimeDto) {
+    if (time1.startHour <= time2.startHour && time1.endHour > time2.startHour) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (
+      time1.endHour === time2.startHour &&
+      time1.endMinute === 30 &&
+      time2.endMinute === 0
+    ) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (time2.startHour <= time1.startHour && time2.endHour > time1.startHour) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
+    if (
+      time2.endHour === time1.startHour &&
+      time2.endMinute === 30 &&
+      time1.endMinute === 0
+    ) {
+      throw new BadRequestException('시간 사이에 중복이 존재합니다.');
+    }
   }
 
   validateAvailableTime(time: AvailableTimeDto[][]): AvailableTimeDto[][] {
@@ -162,6 +173,15 @@ export class MentorsService {
         }
       }),
     );
+    for (let day = 0; day < 7; day++) {
+      const length = time[day].length;
+      for (let i = 0; i < length; i++) {
+        for (let j = 0; j < length; j++) {
+          if (i == j) continue;
+          this.validateTimeOverlap(time[day][i], time[day][j]);
+        }
+      }
+    }
     return time;
   }
 }

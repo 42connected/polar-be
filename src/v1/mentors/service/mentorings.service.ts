@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { jwtUser } from 'src/v1/interface/jwt-user.interface';
+import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
 import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -12,6 +12,7 @@ import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { MentorMentoringLogs } from 'src/v1/interface/mentors/mentor-mentoring-logs.interface';
 import { PaginationDto } from 'src/v1/dto/pagination.dto';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class MentoringsService {
@@ -21,7 +22,7 @@ export class MentoringsService {
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async getMentoringsLists(user: jwtUser): Promise<MentorMentoringInfo> {
+  async getMentoringsLists(user: JwtUser): Promise<MentorMentoringInfo> {
     const mentorIntraId = user.intraId;
     let mentorDb = null;
 
@@ -53,6 +54,7 @@ export class MentoringsService {
           cadet: {
             name: mentoring.cadets.name,
             intraId: mentoring.cadets.intraId,
+            resumeUrl: mentoring.cadets.resumeUrl,
           },
           topic: mentoring.topic,
           status: mentoring.status,
@@ -73,32 +75,6 @@ export class MentoringsService {
     return { intraId: mentorIntraId, mentoringLogs };
   }
 
-  async setMeetingAt(body: UpdateMentoringDto): Promise<MentoringLogs> {
-    let mentoringsData = null;
-
-    try {
-      mentoringsData = await this.mentoringsLogsRepository.findOne({
-        where: { id: body.id },
-      });
-    } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
-
-    if (mentoringsData === null) {
-      throw new NotFoundException('데이터를 찾을 수 없습니다');
-    }
-
-    mentoringsData.status = body.status;
-    if (body.meetingAt) mentoringsData.meetingAt = body.meetingAt;
-    if (body.rejectMessage) mentoringsData.rejectMessage = body.rejectMessage;
-
-    try {
-      return await this.mentoringsLogsRepository.save(mentoringsData);
-    } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
-  }
-
   async getSimpleLogsPagination(
     mentorIntraId: string,
     paginationDto: PaginationDto,
@@ -114,7 +90,7 @@ export class MentoringsService {
         },
         where: {
           mentors: { intraId: mentorIntraId },
-          status: '완료',
+          status: MentoringLogStatus.Done,
         },
         take: paginationDto.take,
         skip: paginationDto.take * (paginationDto.page - 1),
