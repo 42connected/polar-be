@@ -1,4 +1,12 @@
-import { Controller, Get, UseGuards, Query, Res, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Query,
+  Res,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
