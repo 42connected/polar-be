@@ -53,7 +53,7 @@ export class MentorsController {
     return await this.mentoringsService.getMentoringsLists(user);
   }
 
-  @Get('simplelogs/:mentorInatrId')
+  @Get('simplelogs/:mentorIntraId')
   @ApiOperation({
     summary: 'getSimpleLogs API',
     description: '???',
