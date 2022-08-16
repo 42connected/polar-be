@@ -15,6 +15,8 @@ import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
+export const MONEY_PER_HOUR = 100000;
+
 @Injectable()
 export class ReportsService {
   constructor(
@@ -206,7 +208,7 @@ export class ReportsService {
         '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
       );
     }
-    if (mentoringLog.reportStatus !== '작성가능') {
+    if (mentoringLog.status !== '완료') {
       throw new MethodNotAllowedException(
         '해당 멘토링 로그는 레포트를 생성할 수 없습니다',
       );
@@ -215,8 +217,10 @@ export class ReportsService {
       cadets: mentoringLog.cadets,
       mentors: mentoringLog.mentors,
       mentoringLogs: mentoringLog,
+      money: 0,
     });
-    mentoringLog.reportStatus = '작성중';
+    report.status = '작성중';
+    mentoringLog.reports = report;
     try {
       await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
@@ -239,9 +243,7 @@ export class ReportsService {
     body: UpdateReportDto,
   ) {
     const report = await this.findReportWithMentoringLogsById(reportId);
-    const rs: ReportStatus = new ReportStatus(
-      report.mentoringLogs.reportStatus,
-    );
+    const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
       throw new UnauthorizedException(
         '해당 레포트를 수정할 수 없는 상태입니다',
@@ -286,12 +288,12 @@ export class ReportsService {
           report.mentors.id,
           report.mentoringLogs.meetingAt[0],
           report.mentoringLogs.meetingAt[1],
-        )) * 100000;
+        )) * MONEY_PER_HOUR;
     } catch (error) {
       throw new ConflictException(error);
     }
-    report.mentoringLogs.money = money;
-    report.mentoringLogs.reportStatus = '작성완료';
+    report.mentoringLogs.reports.money = money;
+    report.mentoringLogs.reports.status = '작성완료';
     try {
       await this.mentoringLogsRepository.save(report.mentoringLogs);
     } catch (e) {

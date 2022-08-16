@@ -22,6 +22,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { CalendarModule } from './v1/calendar/calendar.module';
 import { EmailTestModule } from './v1/email-test/email-test.module';
 import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
+import { EmailVerificationModule } from './email-verifications/email-verifications.module';
 
 @Module({
   imports: [
@@ -114,6 +115,7 @@ import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
       limit: 5,
     }),
     EmailTestModule,
+    EmailVerificationModule,
   ],
   controllers: [AppController],
   providers: [
