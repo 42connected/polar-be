@@ -17,6 +17,7 @@
     "test": "jest",
     "test:cadets": "jest ./test/cadets.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:mentors": "jest ./test/mentors.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
+    "test:bocals": "jest ./test/bocals.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:reports": "jest ./test/reports.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:comments": "jest ./test/comments.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
