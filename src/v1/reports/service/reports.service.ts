@@ -197,50 +197,6 @@ export class ReportsService {
   }
 
   /*
-   * @Get 페이지
-   */
-  async getReportPagination(
-    paginationDto: PaginationDto,
-  ): Promise<[Reports[], number]> {
-    try {
-      const reports: [Reports[], number] =
-        await this.reportsRepository.findAndCount({
-          relations: {
-            mentoringLogs: true,
-            cadets: true,
-            mentors: true,
-          },
-          select: {
-            id: true,
-            place: true,
-            mentoringLogs: {
-              id: true,
-              createdAt: true,
-              meetingAt: true,
-              money: true,
-              reportStatus: true,
-            },
-            mentors: {
-              intraId: true,
-            },
-            cadets: {
-              intraId: true,
-            },
-          },
-          take: paginationDto.take,
-          skip: paginationDto.take * (paginationDto.page - 1),
-          order: {
-            createdAt: 'DESC',
-          },
-        });
-      return reports;
-    } catch (e) {
-      console.log(e);
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
-  }
-
-  /*
    * @Post
    */
   async createReport(mentoringLogId: string) {
