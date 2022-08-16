@@ -58,7 +58,6 @@ export class MentoringsService {
           },
           topic: mentoring.topic,
           status: mentoring.status,
-          reportStatus: mentoring.reportStatus,
           meta: {
             requestTime: [
               mentoring.requestTime1,
