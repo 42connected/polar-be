@@ -77,12 +77,13 @@ describe('BocalsController (e2e)', () => {
     await app.init();
   });
 
-  it('GET /data-room/excel', async () => {
+  it('POST /data-room/excel', async () => {
     const log = await mentoringLogsRepo.findOneBy({
       topic: '테스트용멘토링로그',
     });
     return request(app.getHttpServer())
-      .get(`/data-room/excel?mentoringLogId=${log.id}`)
+      .post('/data-room/excel')
+      .send({ mentoringLogId: log.id })
       .expect(200);
   });
 
