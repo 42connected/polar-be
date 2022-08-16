@@ -3,11 +3,9 @@ import {
   Controller,
   Get,
   Param,
-  Patch,
   Post,
   UseGuards,
   Query,
-  ConflictException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -18,10 +16,8 @@ import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
-import { UpdateMentoringDto } from '../dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
-import { SearchMentorsService } from '../categories/service/search-mentors.service';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -30,8 +26,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
-import { EmailService, MailType } from '../email/service/email.service';
-import { GetMentorsQueryDto } from '../dto/mentors/get-mentors.dto';
 
 @Controller()
 @ApiTags('mentors API')
@@ -39,8 +33,6 @@ export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
-    private readonly searchMentorsService: SearchMentorsService,
-    private readonly emailService: EmailService,
   ) {}
 
   @Get('mentorings')
@@ -77,36 +69,6 @@ export class MentorsController {
     );
   }
 
-  @Patch('mentorings')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'setMeetingAt patch API',
-    description: '멘토링 미팅일정 확정 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링로그 수정 성공',
-    type: Promise<MentoringLogs>,
-  })
-  async setMeetingAt(@Body() body: UpdateMentoringDto): Promise<MentoringLogs> {
-    try {
-      const mentoringLoginfo = await this.mentoringsService.setMeetingAt(body);
-
-      if (mentoringLoginfo) {
-        if (mentoringLoginfo.status === '예정') {
-          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Approve);
-        } else if (mentoringLoginfo.status === '취소') {
-          this.emailService.sendMessage(mentoringLoginfo.id, MailType.Cancel);
-        }
-      }
-
-      return mentoringLoginfo;
-    } catch (err) {
-      throw err;
-    }
-  }
-
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
@@ -140,6 +102,7 @@ export class MentorsController {
     type: Promise<void>,
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+    this.mentorsService.validateAvailableTime(body.availableTime);
     this.mentorsService.saveInfos(user.intraId, body);
   }
 

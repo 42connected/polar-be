@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmailService, MailType } from '../email/service/email.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
+import { MentoringLogStatus } from '../mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class BatchService {
@@ -54,7 +55,7 @@ export class BatchService {
       this.logger.log('DB에서 정보를 읽어오는데 실패했습니다');
       return false;
     }
-    if (mentoringLogsData.status !== '대기중') {
+    if (mentoringLogsData.status !== MentoringLogStatus.Wait) {
       this.logger.log(
         '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
       );
@@ -74,7 +75,7 @@ export class BatchService {
   ): Promise<void> {
     const { id: mentoringId } = mentoringLogsData;
     const callback = () => {
-      mentoringLogsData.status = '취소';
+      mentoringLogsData.status = MentoringLogStatus.Cancel;
       mentoringLogsData.rejectMessage =
         '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
       this.mentoringsLogsRepository

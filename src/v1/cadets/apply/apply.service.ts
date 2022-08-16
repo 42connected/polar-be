@@ -12,6 +12,7 @@ import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class ApplyService {
@@ -25,41 +26,46 @@ export class ApplyService {
     private calendarService: CalendarService,
   ) {}
 
-  async checkDate(startDate: Date, endDate: Date): Promise<boolean> {
+  checkDate(startDate: Date, endDate: Date): void {
+    const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
     if (startDate.getFullYear() !== endDate.getFullYear()) {
-      return false;
+      throw new BadRequestException(errorMessage);
     }
     if (startDate.getMonth() !== endDate.getMonth()) {
-      return false;
+      throw new BadRequestException(errorMessage);
     }
     if (startDate.getDate() !== endDate.getDate()) {
-      return false;
+      throw new BadRequestException(errorMessage);
     }
-    return true;
+    this.checkTime(startDate, endDate);
   }
 
-  async checkTime(startDate: Date, endDate: Date): Promise<boolean> {
+  checkTime(startDate: Date, endDate: Date): void {
+    const errorMessage = `멘토링 진행 시간은 한시간 이상이어야 합니다.`;
     if (startDate > endDate) {
-      return false;
+      throw new BadRequestException(errorMessage);
     }
     const startHour: number = startDate.getHours();
     const startMinute: number = startDate.getMinutes();
     const endHour: number = endDate.getHours();
     const endMinute: number = endDate.getMinutes();
-    if (!(await this.checkDate(startDate, endDate))) {
-      if (endHour === 0 && endMinute === 0) {
-        if (startHour === 23 && startMinute === 30) {
-          return false;
-        }
+    if (
+      (startMinute !== 0 && startMinute !== 30) ||
+      (endMinute !== 0 && endMinute !== 30)
+    ) {
+      throw new BadRequestException('정각 혹은 30분만 신청 가능합니다.');
+    }
+    if (endHour === 0 && endMinute === 0) {
+      if (startHour === 23 && startMinute === 30) {
+        throw new BadRequestException(errorMessage);
       }
     } else {
       const endTotalMinute = endHour * 60 + endMinute;
       const startTotalMinute = startHour * 60 + startMinute;
       if (endTotalMinute - startTotalMinute < 60) {
-        return false;
+        throw new BadRequestException(errorMessage);
       }
     }
-    return true;
   }
 
   async create(
@@ -86,36 +92,18 @@ export class ApplyService {
       throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
     }
     if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
-    if (
-      !(await this.checkTime(
-        createApplyDto.requestTime1[0],
-        createApplyDto.requestTime1[1],
-      ))
-    )
-      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
-    if (
-      createApplyDto.requestTime2 &&
-      !(await this.checkTime(
-        createApplyDto.requestTime2[0],
-        createApplyDto.requestTime2[1],
-      ))
-    )
-      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
-    if (
-      createApplyDto.requestTime3 &&
-      !(await this.checkTime(
-        createApplyDto.requestTime3[0],
-        createApplyDto.requestTime3[1],
-      ))
-    )
-      throw new BadRequestException(`time은 한시간 이상이어야 합니다.`);
-    if (
-      createApplyDto.requestTime1.length != 2 ||
-      (createApplyDto.requestTime2 &&
-        createApplyDto.requestTime2.length != 2) ||
-      (createApplyDto.requestTime3 && createApplyDto.requestTime3.length != 2)
-    )
-      throw new BadRequestException();
+    this.checkDate(
+      createApplyDto.requestTime1[0],
+      createApplyDto.requestTime1[1],
+    );
+    this.checkDate(
+      createApplyDto.requestTime2[0],
+      createApplyDto.requestTime2[1],
+    );
+    this.checkDate(
+      createApplyDto.requestTime3[0],
+      createApplyDto.requestTime3[1],
+    );
     try {
       createdLog = this.mentoringlogsRepository.create({
         cadets: findcadet,
@@ -124,7 +112,7 @@ export class ApplyService {
         meetingAt: null,
         topic: createApplyDto.topic,
         content: createApplyDto.content,
-        status: '대기중',
+        status: MentoringLogStatus.Wait,
         rejectMessage: null,
         reportStatus: '대기중',
         requestTime1: createApplyDto.requestTime1,

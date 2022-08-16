@@ -28,6 +28,6 @@ import { CadetsService } from './service/cadets.service';
     BatchService,
     EmailService,
   ],
-  exports: [CadetsService],
+  exports: [CadetsService, ApplyService],
 })
 export class CadetsModule {}

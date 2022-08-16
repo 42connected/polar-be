@@ -11,6 +11,7 @@ import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
@@ -146,7 +147,7 @@ export class ReportsService {
     try {
       finishedMentorings = await this.mentoringLogsRepository.find({
         select: { meetingAt: true },
-        where: { status: '완료', mentors: { id: mentorId } },
+        where: { status: MentoringLogStatus.Done, mentors: { id: mentorId } },
         relations: { mentors: true },
       });
     } catch {
@@ -303,5 +304,6 @@ export class ReportsService {
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 }
