@@ -11,7 +11,7 @@ import { Cadets } from 'src/v1/entities/cadets.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 
-const EMAIL_TIME_LIMIT_TTL = 180;
+const EMAIL_TIME_LIMIT = 180;
 
 @Injectable()
 export class EmailVerificationService {
@@ -49,10 +49,10 @@ export class EmailVerificationService {
     const code: string = Math.random().toString(36).substring(2, 10);
     try {
       await this.cacheManager.set(code, req.email, {
-        ttl: EMAIL_TIME_LIMIT_TTL,
+        ttl: EMAIL_TIME_LIMIT,
       });
       await this.cacheManager.set(intraId, code, {
-        ttl: EMAIL_TIME_LIMIT_TTL,
+        ttl: EMAIL_TIME_LIMIT,
       });
       await this.emailService.sendVerificationMail(intraId, code);
     } catch {
