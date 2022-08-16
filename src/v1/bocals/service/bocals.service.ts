@@ -55,8 +55,8 @@ export class BocalsService {
 
   async createMentoringExcelFile(
     mentoringLogsId: string[],
-    response: Response,
-  ): Promise<boolean> {
+    response,
+  ): Promise<void> {
     const workbook = new Excel.Workbook();
     const worksheet = workbook.addWorksheet('Mentoring', {
       views: [
@@ -169,16 +169,16 @@ export class BocalsService {
 
     const fileName: string = new Date().toISOString().split('T')[0];
     try {
-      await response.writeHead(200, {
+      await response.writeHead(201, {
         'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
       await workbook.xlsx.write(response);
+      response.end();
     } catch {
       throw new ConflictException('response 생성 중 오류가 발생했습니다.');
     }
-    return true;
   }
 
   async getOneMentoringInfo(
