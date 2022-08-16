@@ -6,6 +6,7 @@ import { EmailVerificationController } from './email-verification.controllers';
 import { EmailVerificationService } from './email-verifications.service';
 import * as redisStore from 'cache-manager-ioredis';
 import { EmailModule } from 'src/v1/email/email.module';
+import { AuthModule } from 'src/v1/auth/auth.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { EmailModule } from 'src/v1/email/email.module';
       host: process.env.REDIS_HOST,
       port: +process.env.REDIS_PORT,
     }),
+    AuthModule,
     EmailModule,
   ],
   controllers: [EmailVerificationController],

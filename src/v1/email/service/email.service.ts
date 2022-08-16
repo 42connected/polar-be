@@ -423,7 +423,7 @@ export class EmailService {
       subject: '42POLAR 이메일 인증 요청 메일입니다',
       template: 'email-verification.hbs',
       context: {
-        verifyURL: `http://localhost:3000/email-verifications/${intraId}?code=${code}`,
+        verifyCode: `${code}`,
       },
     });
     return true;

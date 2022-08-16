@@ -42,12 +42,19 @@ export class EmailVerificationService {
     if (await this.isDulicatedEmail(req.email)) {
       throw new ConflictException('사용중인 이메일입니다');
     }
+    const data = await this.cacheManager.get(intraId);
+    if (data) {
+      await this.cacheManager.del([data, intraId]);
+    }
     const code: string = Math.random().toString(36).substring(2, 10);
     try {
-      await this.emailService.sendVerificationMail(intraId, code);
       await this.cacheManager.set(code, req.email, {
         ttl: EMAIL_TIME_LIMIT_TTL,
       });
+      await this.cacheManager.set(intraId, code, {
+        ttl: EMAIL_TIME_LIMIT_TTL,
+      });
+      await this.emailService.sendVerificationMail(intraId, code);
     } catch {
       throw new ConflictException('이메일 요청중 오류가 발생했습니다');
     }
@@ -59,14 +66,7 @@ export class EmailVerificationService {
     if (!email) {
       throw new ConflictException('유효하지 않은 요청입니다');
     }
-    // FIXME: for test
-    //try {
-    //  const cadet = await this.cadetsRepository.findOneBy({ intraId });
-    //  cadet.email = email;
-    //  await this.cadetsRepository.save(cadet);
-    //} catch {
-    //  throw new ConflictException('이메일 수정중 오류가 발생했습니다');
-    //}
+    await this.cacheManager.del(code);
     try {
       const mentor = await this.mentorsRepository.findOneBy({ intraId });
       mentor.email = email;
