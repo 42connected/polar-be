@@ -68,6 +68,56 @@ export class ApplyService {
     }
   }
 
+  checkStartToEnd(startDate: Date, endDate: Date): void{
+    const startTime = startDate.getTime();
+    const endTime = endDate.getTime();
+    const erroMessage = '시작 시간이 끝나는 시간보다 느립니다.'
+    if (startTime >= endTime) {
+      throw new BadRequestException(erroMessage);
+    }
+  }
+
+  checkTime1(startDate: Date, endDate: Date): void{
+    this.checkDate(startDate, endDate);
+    this.checkTime(startDate, endDate);
+    this.checkStartToEnd(startDate, endDate);
+  }
+
+  checkTime2(startDate: Date, endDate: Date): void{
+    this.checkDate(startDate, endDate);
+    this.checkTime(startDate, endDate);
+    this.checkStartToEnd(startDate, endDate);
+  }
+  checkTime3(startDate: Date, endDate: Date): void{
+    this.checkDate(startDate, endDate);
+    this.checkTime(startDate, endDate);
+    this.checkStartToEnd(startDate, endDate);
+  }
+
+  checkSameTime(time1 : Date[], time2 : Date[]){
+    const time1Start = time1[0].getTime();
+    const time1End = time1[1].getTime();
+    const time2Start = time2[0].getTime();
+    const time2End = time2[1].getTime();
+    if (time1Start === time2Start && time1End === time2End) {
+      throw new BadRequestException('시간이 겹칩니다.');
+    }
+  }
+
+
+  checkAvailableTime(createApplyDto: CreateApplyDto): void {
+    this.checkTime1(createApplyDto.requestTime1[0], createApplyDto.requestTime1[1]);
+    if (createApplyDto.requestTime2) {
+      this.checkTime2(createApplyDto.requestTime2[0], createApplyDto.requestTime2[1]);
+      this.checkSameTime(createApplyDto.requestTime1, createApplyDto.requestTime2);
+    }
+    if (createApplyDto.requestTime2 && createApplyDto.requestTime3) {
+      this.checkTime3(createApplyDto.requestTime3[0], createApplyDto.requestTime3[1]);
+      this.checkSameTime(createApplyDto.requestTime1, createApplyDto.requestTime3);
+      this.checkSameTime(createApplyDto.requestTime2, createApplyDto.requestTime3);
+    }
+  }
+
   async create(
     cadet: JwtUser,
     mentorId: string,
@@ -94,22 +144,7 @@ export class ApplyService {
         `${cadet.id}값을 가져오는 도중 오류가 발생했습니다.`,
       );
     }
-    this.checkDate(
-      createApplyDto.requestTime1[0],
-      createApplyDto.requestTime1[1],
-    );
-    if (createApplyDto.requestTime2) {
-      this.checkDate(
-        createApplyDto.requestTime2[0],
-        createApplyDto.requestTime2[1],
-      );
-    }
-    if (createApplyDto.requestTime3) {
-      this.checkDate(
-        createApplyDto.requestTime3[0],
-        createApplyDto.requestTime3[1],
-      );
-    }
+    this.checkAvailableTime(createApplyDto);
     try {
       createdLog = this.mentoringlogsRepository.create({
         cadets: findCadet,
