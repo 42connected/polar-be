@@ -81,14 +81,18 @@ export class ApplyService {
         where: { intraId: mentorId },
       });
     } catch {
-      throw new ConflictException(`${mentorId}값을 가져오는 도중 오류가 발생했습니다.`);
+      throw new ConflictException(
+        `${mentorId}값을 가져오는 도중 오류가 발생했습니다.`,
+      );
     }
     try {
       findCadet = await this.cadetsRepository.findOne({
         where: { id: cadet.id },
       });
     } catch {
-      throw new ConflictException(`${cadet.id}값을 가져오는 도중 오류가 발생했습니다.`);
+      throw new ConflictException(
+        `${cadet.id}값을 가져오는 도중 오류가 발생했습니다.`,
+      );
     }
     this.checkDate(
       createApplyDto.requestTime1[0],
