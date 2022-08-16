@@ -73,25 +73,23 @@ export class ApplyService {
     mentorId: string,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    let findmentor: Mentors;
-    let findcadet: Cadets;
+    let findMentor: Mentors;
+    let findCadet: Cadets;
     let createdLog: MentoringLogs;
     try {
-      findmentor = await this.mentorsRepository.findOne({
+      findMentor = await this.mentorsRepository.findOne({
         where: { intraId: mentorId },
       });
     } catch {
-      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+      throw new ConflictException(`${mentorId}값을 가져오는 도중 오류가 발생했습니다.`);
     }
-    if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
     try {
-      findcadet = await this.cadetsRepository.findOne({
+      findCadet = await this.cadetsRepository.findOne({
         where: { id: cadet.id },
       });
     } catch {
-      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+      throw new ConflictException(`${cadet.id}값을 가져오는 도중 오류가 발생했습니다.`);
     }
-    if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
     this.checkDate(
       createApplyDto.requestTime1[0],
       createApplyDto.requestTime1[1],
@@ -106,8 +104,8 @@ export class ApplyService {
     );
     try {
       createdLog = this.mentoringlogsRepository.create({
-        cadets: findcadet,
-        mentors: findmentor,
+        cadets: findCadet,
+        mentors: findMentor,
         createdAt: new Date(),
         meetingAt: null,
         topic: createApplyDto.topic,
