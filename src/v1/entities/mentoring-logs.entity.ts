@@ -33,17 +33,11 @@ export class MentoringLogs {
   @Column({ type: 'varchar', length: 1000 })
   content: string;
 
-  @Column({ type: 'int', nullable: true })
-  money: number;
-
   @Column({ type: 'varchar', length: 10 })
   status: string;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
   rejectMessage: string;
-
-  @Column({ length: 10 })
-  reportStatus: string;
 
   @Column({ type: 'timestamp', array: true })
   requestTime1: Date[];

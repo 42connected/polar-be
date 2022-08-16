@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
 import * as Excel from 'exceljs';
+import { MONEY_PER_HOUR } from 'src/v1/reports/service/reports.service';
 import { Response } from 'express';
 
 @Injectable()
@@ -216,8 +217,8 @@ export class BocalsService {
         .toISOString()
         .split('T')[1]
         .substr(0, 5),
-      totalHour: mentoringLog.money / 100000,
-      money: mentoringLog.money,
+      totalHour: mentoringLog.reports.money / MONEY_PER_HOUR,
+      money: mentoringLog.reports.money,
       cadetName: mentoringLog.cadets.name,
       cadetIntraId: mentoringLog.cadets.intraId,
     };
