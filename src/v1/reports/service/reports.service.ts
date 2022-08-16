@@ -211,11 +211,6 @@ export class ReportsService {
         '해당 멘토링 로그는 레포트를 생성할 수 없습니다',
       );
     }
-    if (mentoringLog.reports) {
-      throw new MethodNotAllowedException(
-        '해당 멘토링 로그는 이미 레포트를 가지고 있습니다',
-      );
-    }
     const report: Reports = this.reportsRepository.create({
       cadets: mentoringLog.cadets,
       mentors: mentoringLog.mentors,

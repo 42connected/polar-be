@@ -15,7 +15,8 @@ export class MentorsSeeder implements Seeder {
       name: '맥밀러',
       profileImage:
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-      availableTime: '오전 10시 ~ 오후 6시',
+      availableTime:
+        '[[],[{"startHour":19,"startMinute":30,"endHour":20,"endMinute":0}],[],[{"startHour":19,"startMinute":30,"endHour":20,"endMinute":0}],[],[],[{"startHour":19,"startMinute":30,"endHour":20,"endMinute":0}]]',
       isActive: true,
       email: 'm-dada@student.42seoul.kr',
     };
