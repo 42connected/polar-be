@@ -11,6 +11,7 @@ import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
@@ -148,7 +149,7 @@ export class ReportsService {
     try {
       finishedMentorings = await this.mentoringLogsRepository.find({
         select: { meetingAt: true },
-        where: { status: '완료', mentors: { id: mentorId } },
+        where: { status: MentoringLogStatus.Done, mentors: { id: mentorId } },
         relations: { mentors: true },
       });
     } catch {
@@ -195,50 +196,6 @@ export class ReportsService {
    */
   async getReport(reportId: string): Promise<Reports> {
     return await this.findReportById(reportId);
-  }
-
-  /*
-   * @Get 페이지
-   */
-  async getReportPagination(
-    paginationDto: PaginationDto,
-  ): Promise<[Reports[], number]> {
-    try {
-      const reports: [Reports[], number] =
-        await this.reportsRepository.findAndCount({
-          relations: {
-            mentoringLogs: true,
-            cadets: true,
-            mentors: true,
-          },
-          select: {
-            id: true,
-            place: true,
-            money: true,
-            status: true,
-            mentoringLogs: {
-              id: true,
-              createdAt: true,
-              meetingAt: true,
-            },
-            mentors: {
-              intraId: true,
-            },
-            cadets: {
-              intraId: true,
-            },
-          },
-          take: paginationDto.take,
-          skip: paginationDto.take * (paginationDto.page - 1),
-          order: {
-            createdAt: 'DESC',
-          },
-        });
-      return reports;
-    } catch (e) {
-      console.log(e);
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
-    }
   }
 
   /*
@@ -345,5 +302,6 @@ export class ReportsService {
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 }

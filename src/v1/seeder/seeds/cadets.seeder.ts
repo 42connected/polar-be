@@ -12,12 +12,12 @@ export class CadetsSeeder implements Seeder {
     console.log('Seeding cadets...');
 
     const cadetData: CadetsInterface = {
-      intraId: 'jojoo',
+      intraId: 'nakkim',
       name: '주종현',
       profileImage:
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       isCommon: true,
-      email: 'jojoo@student.42seoul.kr',
+      email: 'nakkim@student.42seoul.kr',
     };
 
     const isExists = await cadetRepository.findOneBy({

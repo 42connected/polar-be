@@ -12,14 +12,18 @@ import 'dotenv/config';
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD,
+        username: 'default',
       },
       defaultJobOptions: {
         removeOnComplete: true,
-        removeOnFail: 100,
+        removeOnFail: true,
       },
       limiter: {
         max: 2,
         duration: 1000,
+      },
+      settings: {
+        maxStalledCount: 1,
       },
     }),
     BullModule.registerQueue({ name: 'login-queue' }),
