@@ -348,5 +348,6 @@ export class ReportsService {
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 }
