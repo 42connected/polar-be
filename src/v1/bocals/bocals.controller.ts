@@ -35,8 +35,8 @@ export class BocalsController {
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringExcelFile(
     @Body('mentoringLogId') mentoringLogsId: string[],
-    @Res({ passthrough: true }) response: Response,
-  ): Promise<boolean> {
+    @Res({ passthrough: true }) response,
+  ): Promise<void> {
     if (typeof mentoringLogsId === 'string') {
       mentoringLogsId = [mentoringLogsId];
     }

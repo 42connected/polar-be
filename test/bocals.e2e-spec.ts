@@ -84,7 +84,7 @@ describe('BocalsController (e2e)', () => {
     return request(app.getHttpServer())
       .post('/data-room/excel')
       .send({ mentoringLogId: log.id })
-      .expect(200);
+      .expect(201);
   });
 
   it('GET /data-room', () => {
