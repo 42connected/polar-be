@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsNotEmpty, IsString } from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
 
@@ -22,6 +23,7 @@ export class JoinMentorDto {
   email: string;
 
   @IsNotEmpty()
+  @Type(() => AvailableTimeDto)
   @ApiProperty({
     description: 'availableTime',
     required: true,

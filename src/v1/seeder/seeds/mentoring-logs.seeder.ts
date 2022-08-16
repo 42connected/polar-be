@@ -1,11 +1,7 @@
 import { Cadets } from '../../entities/cadets.entity';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 import { Mentors } from '../../entities/mentors.entity';
-import { Reports } from '../../entities/reports.entity';
-import { CadetsInterface } from 'src/v1/interface/cadets/cadets.interface';
 import { MentoringLogsInterface } from 'src/v1/interface/mentoring-log/mentoring-log.interface';
-import { MentorsInterface } from 'src/v1/interface/mentors/mentors.interface';
-import { ReportsInterface } from 'src/v1/interface/reports/reports.interface';
 import { DataSource } from 'typeorm';
 import { Seeder, SeederFactoryManager } from 'typeorm-extension';
 
@@ -18,7 +14,6 @@ export class MentoringLogsSeeder implements Seeder {
     const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
     const mentorRepository = dataSource.getRepository(Mentors);
     const cadetRepository = dataSource.getRepository(Cadets);
-    const reportsRepository = dataSource.getRepository(Reports);
 
     const mentors = await mentorRepository.findOneBy({
       intraId: 'm-dada',
@@ -28,13 +23,19 @@ export class MentoringLogsSeeder implements Seeder {
     const mentoringLogsData: MentoringLogsInterface = {
       mentors,
       cadets,
-      topic: 'What is making you feel good?',
+      topic: '테스트용멘토링로그',
       content: 'Very good morning',
       status: '대기중',
-      reportStatus: '필요',
-      requestTime1: [],
+      reportStatus: '작성불가',
+      requestTime1: [
+        new Date('2022-08-18T10:00:00Z'),
+        new Date('2022-08-18T11:30:00Z'),
+      ],
+      meetingAt: [
+        new Date('2022-08-18T10:00:00Z'),
+        new Date('2022-08-18T11:30:00Z'),
+      ],
     };
-    mentoringLogsData.requestTime1.push(new Date());
 
     const newUser = mentoringLogsRepository.create(mentoringLogsData);
     await mentoringLogsRepository.save(newUser);
