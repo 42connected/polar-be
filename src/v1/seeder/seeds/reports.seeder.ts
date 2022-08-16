@@ -19,7 +19,7 @@ export class ReportsSeeder implements Seeder {
     console.log('Seeding reports...');
     const mentors = await mentorRepository.findOneBy({ intraId: 'm-dada' });
     const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
-    const mentoringLogs = await mentoringLogsRepository.find({
+    const mentoringLogs: MentoringLogs[] = await mentoringLogsRepository.find({
       relations: {
         mentors: true,
         cadets: true,
@@ -33,7 +33,8 @@ export class ReportsSeeder implements Seeder {
     const reportData: ReportsInterface = {
       mentors,
       cadets,
-      content: '안녕하세요',
+      status: '작성중',
+      content: '테스트',
       place: 'on-line',
       imageUrl: [
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',

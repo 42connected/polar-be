@@ -31,8 +31,6 @@ export class DataRoomService {
               id: true,
               createdAt: true,
               meetingAt: true,
-              money: true,
-              reportStatus: true,
             },
             mentors: {
               intraId: true,

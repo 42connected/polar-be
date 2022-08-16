@@ -92,15 +92,13 @@ describe('MentorsController (e2e)', () => {
         mentors: { intraId: mentorIntraId },
       },
     });
-    const report: Reports = await reportRepo.findOneBy({
-      mentoringLogs: {
-        id: log.id,
-      },
-    });
-    if (report) {
-      await reportRepo.remove(report);
-      log.reportStatus = '작성가능';
-      await logRepo.save(log);
+    if (log) {
+      const report: Reports = await reportRepo.findOneBy({
+        mentoringLogs: {
+          id: log.id,
+        },
+      });
+      if (report) await reportRepo.remove(report);
     }
     const body: Partial<UpdateReportDto> = {
       place: '강남역',
