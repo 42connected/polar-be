@@ -5,13 +5,13 @@ import { Reports } from 'src/v1/entities/reports.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
-export class DataroomService {
+export class DataRoomService {
   constructor(
     @InjectRepository(Reports)
     private readonly reportsRepository: Repository<Reports>,
   ) {}
   async getReportPagination(
-    getDataroomDto: GetDataRoomDto,
+    getDataRoomDto: GetDataRoomDto,
   ): Promise<[Reports[], number]> {
     try {
       const reports: [Reports[], number] =
@@ -45,20 +45,20 @@ export class DataroomService {
             },
           },
           order: {
-            createdAt: getDataroomDto.isAscending ? 'ASC' : 'DESC',
+            createdAt: getDataRoomDto.isAscending ? 'ASC' : 'DESC',
           },
-          skip: getDataroomDto.take * (getDataroomDto.page - 1),
-          take: getDataroomDto.take,
+          skip: getDataRoomDto.take * (getDataRoomDto.page - 1),
+          take: getDataRoomDto.take,
         });
 
-      if (getDataroomDto.mentorIntra) {
+      if (getDataRoomDto.mentorIntra) {
         reports[0] = reports[0].filter(
-          report => report.mentors.intraId === getDataroomDto.mentorIntra,
+          report => report.mentors.intraId === getDataRoomDto.mentorIntra,
         );
       }
-      if (getDataroomDto.mentorName) {
+      if (getDataRoomDto.mentorName) {
         reports[0] = reports[0].filter(
-          report => report.mentors.name === getDataroomDto.mentorName,
+          report => report.mentors.name === getDataRoomDto.mentorName,
         );
       }
       return reports;

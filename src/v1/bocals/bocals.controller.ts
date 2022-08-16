@@ -7,14 +7,14 @@ import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
-import { DataroomService } from './service/data-room.service';
+import { DataRoomService } from './service/data-room.service';
 
 @ApiTags('bocals API')
 @Controller()
 export class BocalsController {
   constructor(
     private readonly bocalsService: BocalsService,
-    private readonly dataroomService: DataroomService,
+    private readonly dataRoomService: DataRoomService,
   ) {}
 
   @ApiOperation({
@@ -43,8 +43,8 @@ export class BocalsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   async getReportPagination(
-    @Query() getDataroomDto: GetDataRoomDto,
+    @Query() getDataRoomDto: GetDataRoomDto,
   ): Promise<[Reports[], number]> {
-    return await this.dataroomService.getReportPagination(getDataroomDto);
+    return await this.dataRoomService.getReportPagination(getDataRoomDto);
   }
 }

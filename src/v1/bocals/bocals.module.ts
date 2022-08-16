@@ -6,7 +6,7 @@ import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { Reports } from '../entities/reports.entity';
 import { BocalsController } from './bocals.controller';
 import { BocalsService } from './service/bocals.service';
-import { DataroomService } from './service/data-room.service';
+import { DataRoomService } from './service/data-room.service';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { DataroomService } from './service/data-room.service';
     AuthModule,
   ],
   controllers: [BocalsController],
-  providers: [BocalsService, DataroomService],
+  providers: [BocalsService, DataRoomService],
   exports: [BocalsService],
 })
 export class BocalsModule {}
