@@ -15,6 +15,6 @@ export const appDataSource = new DataSource({
   seeds: [MainSeeder],
   factories: ['src/v1/seeder/factories/**/*.ts'],
   synchronize: false,
-  ssl: { rejectUnauthorized: true },
+  // ssl: { rejectUnauthorized: true },
   namingStrategy: new SnakeNamingStrategy(),
 } as DataSourceOptions);
