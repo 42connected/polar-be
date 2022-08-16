@@ -11,7 +11,6 @@ export interface MentoringLogsInterface {
   content: string;
   status: string;
   rejectMessage?: string;
-  reportStatus: string;
   requestTime1: Date[];
   requestTime2?: Date[];
   requestTime3?: Date[];

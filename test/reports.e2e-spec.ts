@@ -99,7 +99,6 @@ describe('MentorsController (e2e)', () => {
     });
     if (report) {
       await reportRepo.remove(report);
-      log.reportStatus = '작성가능';
       await logRepo.save(log);
     }
     const body: Partial<UpdateReportDto> = {

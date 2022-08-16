@@ -47,4 +47,4 @@ lerna-debug.log*
 dump.rdb
 
 # Seeder
-/src/v1/seeder
+# /src/v1/seeder

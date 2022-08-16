@@ -13,6 +13,8 @@ export interface ReportsInterface {
   content?: string;
   imageUrl?: string[];
   feedbackMessage?: string;
+  money?: number;
+  status: string;
   feedback1?: number;
   feedback2?: number;
   feedback3?: number;

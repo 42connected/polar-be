@@ -27,12 +27,12 @@ export class DataRoomService {
             createdAt: true,
             signatureUrl: true,
             imageUrl: true,
+            money: true,
+            status: true,
             mentoringLogs: {
               id: true,
               createdAt: true,
               meetingAt: true,
-              money: true,
-              reportStatus: true,
             },
             mentors: {
               intraId: true,
