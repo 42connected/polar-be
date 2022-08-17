@@ -415,12 +415,14 @@ export class EmailService {
     }
   }
 
-  async sendVerificationMail(intraId: string, code: string) {
-    // TODO: URL
+  async sendVerificationMail(code: string, email: string) {
     await this.mailService.sendMail({
-      to: 'tnehshr@naver.com',
+      to: email,
+      /*
+       * Not works
+       */
       from: 'noreply@42polar.com',
-      subject: '42POLAR 이메일 인증 요청 메일입니다',
+      subject: '42POLAR 이메일 인증 요청 메일입니다.',
       template: 'email-verification.hbs',
       context: {
         verifyCode: `${code}`,

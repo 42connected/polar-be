@@ -13,17 +13,20 @@ export class EmailVerificationController {
   @Get(':code')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  async verifyEmail(@User() user: JwtUser, @Param('code') code: string) {
-    return await this.emailVerificationService.verifyMentorEmail(
-      user.intraId,
-      code,
-    );
+  verifyEmail(
+    @User() user: JwtUser,
+    @Param('code') code: string,
+  ): Promise<boolean> {
+    return this.emailVerificationService.verifyMentorEmail(user.intraId, code);
   }
 
   @Post()
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  requestChangingEmail(@User() user: JwtUser, @Body() req: RequestEmailDto) {
+  requestChangingEmail(
+    @User() user: JwtUser,
+    @Body() req: RequestEmailDto,
+  ): Promise<boolean> {
     return this.emailVerificationService.requestChangingEmail(
       user.intraId,
       req,

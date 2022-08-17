@@ -3,6 +3,7 @@ import {
   ConflictException,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RequestEmailDto } from 'src/v1/dto/email-verifications/email.dto';
@@ -22,7 +23,7 @@ export class EmailVerificationService {
     private emailService: EmailService,
   ) {}
 
-  async isDulicatedEmail(email: string) {
+  async isDulicatedEmail(email: string): Promise<boolean> {
     const c = await this.cadetsRepository.findOne({
       where: { email: email },
     });
@@ -38,41 +39,56 @@ export class EmailVerificationService {
     return false;
   }
 
-  async requestChangingEmail(intraId: string, req: RequestEmailDto) {
+  async requestChangingEmail(
+    intraId: string,
+    req: RequestEmailDto,
+  ): Promise<boolean> {
     if (await this.isDulicatedEmail(req.email)) {
       throw new ConflictException('사용중인 이메일입니다');
     }
-    const data = await this.cacheManager.get(intraId);
-    if (data) {
-      await this.cacheManager.del([data, intraId]);
-    }
+    /*
+     * Random code generator
+     */
     const code: string = Math.random().toString(36).substring(2, 10);
     try {
+      /*
+       * 동일한 Intra ID의 요청 제거 on Redis 후, 새 요청 Set
+       */
+      const oldValue = await this.cacheManager.get(intraId);
+      if (oldValue) {
+        await this.cacheManager.del([oldValue, intraId]);
+      }
       await this.cacheManager.set(code, req.email, {
         ttl: EMAIL_TIME_LIMIT,
       });
       await this.cacheManager.set(intraId, code, {
         ttl: EMAIL_TIME_LIMIT,
       });
-      await this.emailService.sendVerificationMail(intraId, code);
     } catch {
-      throw new ConflictException('이메일 요청중 오류가 발생했습니다');
+      throw new ConflictException(`이메일 요청중 오류가 발생했습니다`);
     }
-    return 'ok';
+    await this.emailService.sendVerificationMail(code, req.email);
+    return true;
   }
 
-  async verifyMentorEmail(intraId: string, code: string) {
+  async verifyMentorEmail(intraId: string, code: string): Promise<boolean> {
     const email = await this.cacheManager.get(code);
     if (!email) {
       throw new ConflictException('유효하지 않은 요청입니다');
     }
     try {
-      await this.cacheManager.del(code);
+      /*
+       * 요청 삭제 on Redis
+       */
+      await this.cacheManager.del([code, intraId]);
       const mentor = await this.mentorsRepository.findOneBy({ intraId });
+      if (!mentor) {
+        throw new NotFoundException('해당 멘토를 찾을 수 없습니다');
+      }
       mentor.email = email;
       await this.mentorsRepository.save(mentor);
     } catch {
-      throw new ConflictException('이메일 수정중 오류가 발생했습니다');
+      throw new ConflictException(`이메일 수정중 오류가 발생했습니다`);
     }
     return true;
   }
