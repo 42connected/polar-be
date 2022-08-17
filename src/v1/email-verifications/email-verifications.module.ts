@@ -7,14 +7,21 @@ import { EmailVerificationService } from './email-verifications.service';
 import * as redisStore from 'cache-manager-ioredis';
 import { EmailModule } from 'src/v1/email/email.module';
 import { AuthModule } from 'src/v1/auth/auth.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Mentors, Cadets]),
-    CacheModule.register({
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: +process.env.REDIS_PORT,
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          store: redisStore,
+          host: configService.get('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+        };
+      },
     }),
     AuthModule,
     EmailModule,

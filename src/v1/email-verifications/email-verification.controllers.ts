@@ -7,7 +7,7 @@ import { RolesGuard } from 'src/v1/guards/role.guard';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { EmailVerificationService } from './email-verifications.service';
 
-@Controller('email-verifications')
+@Controller()
 export class EmailVerificationController {
   constructor(private emailVerificationService: EmailVerificationService) {}
   @Get(':code')
