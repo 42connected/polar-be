@@ -12,7 +12,6 @@ import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
 import * as Excel from 'exceljs';
 import { MONEY_PER_HOUR } from 'src/v1/reports/service/reports.service';
-import { Response } from 'express';
 
 @Injectable()
 export class BocalsService {
