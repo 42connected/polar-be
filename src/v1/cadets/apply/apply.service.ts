@@ -1,6 +1,5 @@
 import {
   Injectable,
-  NotFoundException,
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
@@ -119,7 +118,7 @@ export class ApplyService {
           createApplyDto.requestTime2,
           createApplyDto.requestTime3,
         );
-    }
+      }
     }
   }
 

@@ -10,13 +10,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
-import { PaginationDto } from '../dto/pagination.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
-import { Response } from 'express';
 
 @ApiTags('bocals API')
 @Controller()
@@ -32,6 +30,7 @@ export class BocalsController {
   })
   @Post('data-room/excel')
   @Roles('bocal')
+  @ApiBearerAuth('access-token')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringExcelFile(
     @Body('mentoringLogId') mentoringLogsId: string[],

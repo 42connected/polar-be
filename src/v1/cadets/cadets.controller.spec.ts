@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MockFunctionMetadata, ModuleMocker } from 'jest-mock';
 import { CadetsController } from './cadets.controller';
-import { CadetsService } from './service/cadets.service';
 
 const moduleMocker = new ModuleMocker(global);
 

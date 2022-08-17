@@ -56,7 +56,7 @@ export class MentorsController {
   @Get('simplelogs/:mentorIntraId')
   @ApiOperation({
     summary: 'getSimpleLogs API',
-    description: '???',
+    description: '멘토링 로그 pagination',
   })
   async getSimpleLogs(
     @Param('mentorIntraId') mentorIntraId: string,
