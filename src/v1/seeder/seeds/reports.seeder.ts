@@ -75,7 +75,7 @@ export class ReportsSeeder implements Seeder {
       console.log('No mentoring logs found');
       return;
     }
-    await reportsFactory.setMeta({ mentoringLogsMeta });
-    await reportsFactory.saveMany(4);
+    // await reportsFactory.setMeta({ mentoringLogsMeta });
+    // await reportsFactory.saveMany(4);
   }
 }
