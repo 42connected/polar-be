@@ -162,7 +162,6 @@ export class EmailService {
         };
       }
       case MailType.Approve: {
-        console.log(messageDto.meetingAt.length);
         const reservationTimeToString = await this.reserveTimeToString(
           messageDto.meetingAt[0],
           this.getMentoringHours(
