@@ -28,6 +28,7 @@ describe('MentoringLogsController (e2e)', () => {
   let mentoringLogsRepo: Repository<MentoringLogs>;
   let mentorsRepo: Repository<Mentors>;
   let cadetsRepo: Repository<Cadets>;
+
   const createMentoringLog = async (
     mentorIntraId: string,
     cadetIntraId: string,
@@ -130,13 +131,16 @@ describe('MentoringLogsController (e2e)', () => {
     await app.init();
   });
 
-  it('PATCH /approve', async () => {
+  afterEach(async () => {
     const found = await mentoringLogsRepo.findOneBy({
       topic: '멘토링로그테스트용',
     });
     if (found) {
       await mentoringLogsRepo.remove(found);
     }
+  });
+
+  it('PATCH /approve', async () => {
     const log = await createMentoringLog('m-dada', 'nakkim', '대기중');
     const body: ApproveMentoringDto = {
       mentoringLogId: log.id,
@@ -152,12 +156,6 @@ describe('MentoringLogsController (e2e)', () => {
   });
 
   it('PATCH /reject', async () => {
-    const found = await mentoringLogsRepo.findOneBy({
-      topic: '멘토링로그테스트용',
-    });
-    if (found) {
-      await mentoringLogsRepo.remove(found);
-    }
     const log = await createMentoringLog('m-dada', 'nakkim', '대기중');
     const body: RejectMentoringDto = {
       mentoringLogId: log.id,
@@ -167,12 +165,6 @@ describe('MentoringLogsController (e2e)', () => {
   });
 
   it('PATCH /done', async () => {
-    const found = await mentoringLogsRepo.findOneBy({
-      topic: '멘토링로그테스트용',
-    });
-    if (found) {
-      await mentoringLogsRepo.remove(found);
-    }
     const log = await createMentoringLog('m-dada', 'nakkim', '확정');
     const body: CompleteMentoringDto = {
       mentoringLogId: log.id,
