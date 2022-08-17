@@ -21,6 +21,7 @@
     "test:reports": "jest ./test/reports.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:calendar": "jest ./test/calendar.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:comments": "jest ./test/comments.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
+    "test:categories": "jest ./test/categories.e2e-spec.ts --config ./test/jest-e2e.json --detectOpenHandles --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",

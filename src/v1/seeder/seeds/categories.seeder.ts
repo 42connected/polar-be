@@ -12,7 +12,7 @@ export class CategoriesSeeder implements Seeder {
     console.log('Seeding categories...');
 
     const categoryData: CategoriesInterface = {
-      name: '전체',
+      name: 'test',
     };
 
     const isExists = await categoryRepository.findOneBy({
