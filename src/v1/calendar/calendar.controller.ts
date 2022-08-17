@@ -30,8 +30,8 @@ export class CalendarController {
   })
   @Roles('cadet', 'mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  @Get('/availabe-times/:mentorIntraId')
-  getAvailabeTimes(
+  @Get('/available-times/:mentorIntraId')
+  getAvailableTimes(
     @Param('mentorIntraId') mentorIntraId: string,
   ): Promise<Date[][]> {
     return this.calendarService.StringToJson(mentorIntraId);

@@ -6,7 +6,6 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { info } from 'console';
 import { ApplyService } from 'src/v1/cadets/apply/apply.service';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { ChangeStatus } from 'src/v1/interface/mentoring-log/change-status.interface';
