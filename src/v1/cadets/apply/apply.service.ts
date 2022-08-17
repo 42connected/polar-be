@@ -37,10 +37,9 @@ export class ApplyService {
     if (startDate.getDate() !== endDate.getDate()) {
       throw new BadRequestException(errorMessage);
     }
-    this.checkTime(startDate, endDate);
   }
 
-  checkTime(startDate: Date, endDate: Date): void {
+  checkUnitTime(startDate: Date, endDate: Date): void {
     const errorMessage = `멘토링 진행 시간은 한시간 이상이어야 합니다.`;
     if (startDate > endDate) {
       throw new BadRequestException(errorMessage);
@@ -79,7 +78,7 @@ export class ApplyService {
 
   checkTime(startDate: Date, endDate: Date): void {
     this.checkDate(startDate, endDate);
-    this.checkTime(startDate, endDate);
+    this.checkUnitTime(startDate, endDate);
     this.checkStartToEnd(startDate, endDate);
   }
 
