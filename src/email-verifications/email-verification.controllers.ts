@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from 'src/v1/decorators/user.decorator';
 import { RequestEmailDto } from 'src/v1/dto/email-verifications/email.dto';
