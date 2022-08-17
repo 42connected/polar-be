@@ -30,6 +30,6 @@ export class KeywordCategoriesSeeder implements Seeder {
     const keywordsMeta = await keywordRepository.find();
     const categoriesMeta = await categoryRepository.find();
     await keywordCategoriesFactory.setMeta({ keywordsMeta, categoriesMeta });
-    await keywordCategoriesFactory.saveMany(5);
+    await keywordCategoriesFactory.saveMany(1);
   }
 }

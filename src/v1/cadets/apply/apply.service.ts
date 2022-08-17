@@ -217,7 +217,6 @@ export class ApplyService {
         requestTime3End = createApplyDto.requestTime3[1].getTime();
       }
     }
-    console.log(originRequestTimes[1][0]);
     for (let i = 0; i < len; i++) {
       if (
         requestTime1Start >= originRequestTimes[i][0].getTime() &&

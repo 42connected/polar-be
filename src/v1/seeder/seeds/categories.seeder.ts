@@ -23,7 +23,7 @@ export class CategoriesSeeder implements Seeder {
       await categoryRepository.save(newUser);
     }
 
-    const categoriesFactory = await factoryManager.get(Categories);
-    await categoriesFactory.saveMany(5);
+    // const categoriesFactory = await factoryManager.get(Categories);
+    // await categoriesFactory.saveMany(5);
   }
 }

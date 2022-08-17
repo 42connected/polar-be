@@ -101,7 +101,6 @@ export class SearchMentorsService {
           throw new NotFoundException('잘못된 키워드가 포함되었습니다.');
       });
     }
-
     result.category = category;
 
     let mentorsInfo: MentorSimpleInfo[];
@@ -112,11 +111,7 @@ export class SearchMentorsService {
         throw new ConflictException(error);
       }
     } else if (categoryId) {
-      try {
-        mentorsInfo = await this.getMentorsInfoByCategory(categoryId);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
+      mentorsInfo = await this.getMentorsInfoByCategory(categoryId);
     }
     if (mentorName) {
       try {
@@ -139,12 +134,12 @@ export class SearchMentorsService {
     return result;
   }
 
-  async getCategoryInfo(CategoryId: string): Promise<Categories> {
+  async getCategoryInfo(categoryId: string): Promise<Categories> {
     let category: Categories;
 
     try {
       category = await this.categoriesRepository.findOneBy({
-        id: CategoryId,
+        id: categoryId,
       });
     } catch {
       throw new ConflictException(
@@ -179,21 +174,10 @@ export class SearchMentorsService {
   async getMentorsInfoByCategory(
     categoryId: string,
   ): Promise<MentorSimpleInfo[]> {
-    let keywordsId: string[];
-    let rawMentorInfos: MentorRawSimpleInfo[];
     const matchMentors: MentorSimpleInfo[] = [];
-    try {
-      keywordsId = await this.getKeywordsIdByCategory(categoryId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
-
-    try {
-      rawMentorInfos = await this.getRawMentorsInfoByKeywords(keywordsId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
-
+    const keywordsId: string[] = await this.getKeywordsIdByCategory(categoryId);
+    const rawMentorInfos: MentorRawSimpleInfo[] =
+      await this.getRawMentorsInfoByKeywords(keywordsId);
     rawMentorInfos.forEach(rawInfo => {
       matchMentors.push({
         id: rawInfo.id,
@@ -209,6 +193,11 @@ export class SearchMentorsService {
   async getRawMentorsInfoByKeywords(
     keywordsId: string[],
   ): Promise<MentorRawSimpleInfo[]> {
+    if (keywordsId.length === 0) {
+      throw new NotFoundException(
+        '키워드와 일치하는 멘토가 존재하지 않습니다.',
+      );
+    }
     let rawMentorInfos: MentorRawSimpleInfo[];
     try {
       rawMentorInfos = await this.mentorKeywordsRepository
@@ -248,12 +237,8 @@ export class SearchMentorsService {
     keywordId: string[],
   ): Promise<MentorSimpleInfo[]> {
     const matchMentors: MentorSimpleInfo[] = [];
-    let rawMentorInfos: MentorRawSimpleInfo[];
-    try {
-      rawMentorInfos = await this.getRawMentorsInfoByKeywords(keywordId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
+    const rawMentorInfos: MentorRawSimpleInfo[] =
+      await this.getRawMentorsInfoByKeywords(keywordId);
 
     rawMentorInfos.forEach(rawInfo => {
       if (+rawInfo.count === keywordId.length)
