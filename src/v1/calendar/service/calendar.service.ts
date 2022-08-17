@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { IsNull, Not, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
 
@@ -13,7 +13,7 @@ export class CalendarService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async getAvailabeTimes(id: string): Promise<string> {
+  async getAvailableTimes(id: string): Promise<string> {
     try {
       const found: Mentors = await this.mentorsRepository.findOne({
         select: { availableTime: true },
@@ -27,7 +27,7 @@ export class CalendarService {
   }
 
   async StringToJson(id: string) {
-    const found: string = await this.getAvailabeTimes(id);
+    const found: string = await this.getAvailableTimes(id);
     return JSON.parse(found);
   }
 
