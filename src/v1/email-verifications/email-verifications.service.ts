@@ -24,16 +24,16 @@ export class EmailVerificationService {
   ) {}
 
   async isDulicatedEmail(email: string): Promise<boolean> {
-    const c = await this.cadetsRepository.findOne({
+    const cadet = await this.cadetsRepository.findOne({
       where: { email: email },
     });
-    if (c) {
+    if (cadet) {
       return true;
     }
-    const m = await this.mentorsRepository.findOne({
+    const mentor = await this.mentorsRepository.findOne({
       where: { email: email },
     });
-    if (m) {
+    if (mentor) {
       return true;
     }
     return false;
