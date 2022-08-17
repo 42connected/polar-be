@@ -122,7 +122,7 @@ export class CadetsController {
     @Param('mentorIntraId') mentorId: string,
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
-  ): Promise<MentoringLogs> {
+  ): Promise<boolean> {
     let mentoringLogs: MentoringLogs;
     try {
       mentoringLogs = await this.applyService.create(
@@ -144,7 +144,7 @@ export class CadetsController {
         this.logger.warn('자동 취소 등록 실패: autoCancel after 48hours');
       }
 
-      return mentoringLogs;
+      return true;
     } catch (err) {
       throw err;
     }

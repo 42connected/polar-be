@@ -37,10 +37,9 @@ export class ApplyService {
     if (startDate.getDate() !== endDate.getDate()) {
       throw new BadRequestException(errorMessage);
     }
-    this.checkTime(startDate, endDate);
   }
 
-  checkTime(startDate: Date, endDate: Date): void {
+  checkUnitTime(startDate: Date, endDate: Date): void {
     const errorMessage = `멘토링 진행 시간은 한시간 이상이어야 합니다.`;
     if (startDate > endDate) {
       throw new BadRequestException(errorMessage);
@@ -68,50 +67,101 @@ export class ApplyService {
     }
   }
 
+  checkStartToEnd(startDate: Date, endDate: Date): void {
+    const startTime = startDate.getTime();
+    const endTime = endDate.getTime();
+    const erroMessage = '시작 시간이 끝나는 시간보다 느립니다.';
+    if (startTime >= endTime) {
+      throw new BadRequestException(erroMessage);
+    }
+  }
+
+  checkTime(startDate: Date, endDate: Date): void {
+    this.checkDate(startDate, endDate);
+    this.checkUnitTime(startDate, endDate);
+    this.checkStartToEnd(startDate, endDate);
+  }
+
+  checkSameTime(time1: Date[], time2: Date[]) {
+    const time1Start = time1[0].getTime();
+    const time1End = time1[1].getTime();
+    const time2Start = time2[0].getTime();
+    const time2End = time2[1].getTime();
+    if (time1Start === time2Start && time1End === time2End) {
+      throw new BadRequestException('시간이 겹칩니다.');
+    }
+  }
+
+  checkAvailableTime(createApplyDto: CreateApplyDto): void {
+    this.checkTime(
+      createApplyDto.requestTime1[0],
+      createApplyDto.requestTime1[1],
+    );
+    if (createApplyDto.requestTime2) {
+      this.checkTime(
+        createApplyDto.requestTime2[0],
+        createApplyDto.requestTime2[1],
+      );
+      this.checkSameTime(
+        createApplyDto.requestTime1,
+        createApplyDto.requestTime2,
+      );
+      if (createApplyDto.requestTime3) {
+        this.checkTime(
+          createApplyDto.requestTime3[0],
+          createApplyDto.requestTime3[1],
+        );
+        this.checkSameTime(
+          createApplyDto.requestTime1,
+          createApplyDto.requestTime3,
+        );
+        this.checkSameTime(
+          createApplyDto.requestTime2,
+          createApplyDto.requestTime3,
+        );
+    }
+    }
+  }
+
   async create(
     cadet: JwtUser,
     mentorId: string,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    let findmentor: Mentors;
-    let findcadet: Cadets;
+    let findMentor: Mentors;
+    let findCadet: Cadets;
     let createdLog: MentoringLogs;
     try {
-      findmentor = await this.mentorsRepository.findOne({
+      findMentor = await this.mentorsRepository.findOne({
         where: { intraId: mentorId },
       });
     } catch {
-      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
+      throw new ConflictException(
+        `${mentorId}값을 가져오는 도중 오류가 발생했습니다.`,
+      );
     }
-    if (!findmentor) throw new NotFoundException(`${mentorId} not found.`);
+    if (!findMentor) {
+      throw new ConflictException(`${mentorId}의 멘토링을 찾을 수 없습니다.`);
+    }
     try {
-      findcadet = await this.cadetsRepository.findOne({
-        where: { intraId: cadet.intraId },
+      findCadet = await this.cadetsRepository.findOne({
+        where: { id: cadet.id },
       });
     } catch {
-      throw new ConflictException('값을 가져오는 도중 오류가 발생했습니다.');
-    }
-    if (!findcadet) throw new NotFoundException(`${cadet.id} here not found.`);
-    this.checkDate(
-      createApplyDto.requestTime1[0],
-      createApplyDto.requestTime1[1],
-    );
-    if (createApplyDto.requestTime2) {
-      this.checkDate(
-        createApplyDto.requestTime2[0],
-        createApplyDto.requestTime2[1],
+      throw new ConflictException(
+        `${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`,
       );
     }
-    if (createApplyDto.requestTime3) {
-      this.checkDate(
-        createApplyDto.requestTime3[0],
-        createApplyDto.requestTime3[1],
+    if (!findCadet) {
+      throw new ConflictException(
+        `${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`,
       );
     }
+    this.checkAvailableTime(createApplyDto);
     try {
       createdLog = this.mentoringlogsRepository.create({
-        cadets: findcadet,
-        mentors: findmentor,
+        cadets: findCadet,
+        mentors: findMentor,
         createdAt: new Date(),
         meetingAt: null,
         topic: createApplyDto.topic,
@@ -130,14 +180,14 @@ export class ApplyService {
     const originRequestTimes = await this.calendarService.getRequestTimes(
       mentorId,
     );
-    const result = await this.checkDuplicatedTime(
-      originRequestTimes,
-      createApplyDto.requestTime1,
-      createApplyDto.requestTime2,
-      createApplyDto.requestTime3,
-    );
-    if (!result) {
-      throw new ConflictException('이미 예약된 시간을 선택했습니다.');
+    if (originRequestTimes) {
+      const result = await this.checkDuplicatedTime(
+        originRequestTimes,
+        createApplyDto,
+      );
+      if (!result) {
+        throw new ConflictException('이미 예약된 시간을 선택했습니다.');
+      }
     }
     try {
       await this.mentoringlogsRepository.save(createdLog);
@@ -151,27 +201,42 @@ export class ApplyService {
 
   async checkDuplicatedTime(
     originRequestTimes: Date[],
-    requestTime1: Date[],
-    requestTime2: Date[],
-    requestTime3: Date[],
+    createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
     const len: number = originRequestTimes.length;
+    const requestTime1Start = createApplyDto.requestTime1[0].getTime();
+    const requestTime1End = createApplyDto.requestTime1[1].getTime();
+    let requestTime2Start = 0;
+    let requestTime2End = 0;
+    let requestTime3Start = 0;
+    let requestTime3End = 0;
+    if (createApplyDto.requestTime2) {
+      requestTime2Start = createApplyDto.requestTime2[0].getTime();
+      requestTime2End = createApplyDto.requestTime2[1].getTime();
+      if (createApplyDto.requestTime3) {
+        requestTime3Start = createApplyDto.requestTime3[0].getTime();
+        requestTime3End = createApplyDto.requestTime3[1].getTime();
+      }
+    }
+    console.log(originRequestTimes[1][0]);
     for (let i = 0; i < len; i++) {
       if (
-        requestTime1[0].getTime() >= originRequestTimes[i][0].getTime() &&
-        requestTime1[0].getTime() <= originRequestTimes[i][1].getTime()
+        requestTime1Start >= originRequestTimes[i][0].getTime() &&
+        requestTime1End <= originRequestTimes[i][1].getTime()
+      ) {
+        return false;
+      }
+      if (
+        createApplyDto.requestTime2 &&
+        requestTime2Start >= originRequestTimes[i][0].getTime() &&
+        requestTime2End <= originRequestTimes[i][1].getTime()
       )
         return false;
       if (
-        requestTime2 &&
-        requestTime2[0].getTime() >= originRequestTimes[i][0].getTime() &&
-        requestTime2[0].getTime() <= originRequestTimes[i][1].getTime()
-      )
-        return false;
-      if (
-        requestTime3 &&
-        requestTime3[0].getTime() >= originRequestTimes[i][0].getTime() &&
-        requestTime3[0].getTime() <= originRequestTimes[i][1].getTime()
+        createApplyDto.requestTime3 &&
+        createApplyDto.requestTime2 &&
+        requestTime3Start >= originRequestTimes[i][0].getTime() &&
+        requestTime3End <= originRequestTimes[i][1].getTime()
       )
         return false;
     }

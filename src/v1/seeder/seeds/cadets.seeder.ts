@@ -12,7 +12,8 @@ export class CadetsSeeder implements Seeder {
     console.log('Seeding cadets...');
 
     const cadetData: CadetsInterface = {
-      intraId: 'nakkim',
+      id: '0569426f-8ad4-4aad-b425-76d0bdc625bf',
+      intraId: 'jojoo',
       name: '주종현',
       profileImage:
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',

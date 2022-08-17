@@ -5,12 +5,12 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 export class CreateApplyDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'topic', required: true })
+  @ApiProperty({ description: 'topic', required: true, type: String })
   topic: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty({ description: 'content', required: true })
+  @ApiProperty({ description: 'content', required: true, type: String })
   content: string;
 
   @Type(() => Date)
