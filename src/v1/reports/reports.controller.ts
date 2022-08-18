@@ -25,6 +25,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import * as multerS3 from 'multer-s3';
+import * as AWS from 'aws-sdk';
+import { config } from 'dotenv';
+config();
 
 @Controller()
 @ApiTags('reports API')
@@ -81,9 +85,25 @@ export class ReportsController {
         { name: 'signature', maxCount: 1 },
       ],
       {
-        storage: diskStorage({
-          destination: './uploads',
+        storage: multerS3({
+          s3: new AWS.S3({
+            accessKeyId: process.env.AWS_S3_ID,
+            secretAccessKey: process.env.AWS_S3_SECRET,
+            signatureVersion: 'v4',
+            region: 'ap-northeast-2',
+          }),
+          bucket: process.env.AWS_BUCKET_NAME,
+          key: (req, file, cb) => {
+            if (!file.mimetype.startsWith('image/')) {
+              cb(new Error('이미지만 업로드 가능합니다.'));
+            } else {
+              cb(null, `${Date.now()}_${file.originalname}`);
+            }
+          },
         }),
+        limits: {
+          fileSize: 3000000,
+        },
       },
     ),
   )
