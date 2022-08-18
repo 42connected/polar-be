@@ -248,12 +248,11 @@ export class ReportsService {
         '해당 레포트를 수정할 수 없는 상태입니다',
       );
     }
-    // if (report.mentors.intraId !== mentorIntraId) {
-    //   throw new UnauthorizedException(
-    //     `해당 레포트를 수정할 수 있는 권한이 없습니다`,
-    //   );
-    // }
-    console.log(filePaths, signature);
+    if (report.mentors.intraId !== mentorIntraId) {
+      throw new UnauthorizedException(
+        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
+      );
+    }
     try {
       this.reportsRepository.save({
         id: reportId,
