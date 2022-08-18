@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -99,7 +98,7 @@ export class ReportsService {
     const filePaths: string[] = [];
     if (files?.image) {
       files.image.map(img => {
-        filePaths.push(img.path);
+        filePaths.push(img.location);
       });
       return filePaths;
     } else {
@@ -109,7 +108,7 @@ export class ReportsService {
 
   getSignaturePath(files) {
     if (files?.signature) {
-      return files.signature[0]?.path;
+      return files.signature[0]?.location;
     } else {
       return undefined;
     }
@@ -249,11 +248,12 @@ export class ReportsService {
         '해당 레포트를 수정할 수 없는 상태입니다',
       );
     }
-    if (report.mentors.intraId !== mentorIntraId) {
-      throw new UnauthorizedException(
-        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
-      );
-    }
+    // if (report.mentors.intraId !== mentorIntraId) {
+    //   throw new UnauthorizedException(
+    //     `해당 레포트를 수정할 수 있는 권한이 없습니다`,
+    //   );
+    // }
+    console.log(filePaths, signature);
     try {
       this.reportsRepository.save({
         id: reportId,
