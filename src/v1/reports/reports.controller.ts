@@ -94,7 +94,11 @@ export class ReportsController {
           }),
           bucket: process.env.AWS_BUCKET_NAME,
           key: (req, file, cb) => {
-            cb(null, `${Date.now()}_${file.originalname}`);
+            if (!file.mimetype.startsWith('image/')) {
+              cb(new Error('이미지만 업로드 가능합니다.'));
+            } else {
+              cb(null, `${Date.now()}_${file.originalname}`);
+            }
           },
         }),
         limits: {
