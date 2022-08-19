@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -201,7 +200,7 @@ export class ReportsService {
   /*
    * @Post
    */
-  async createReport(mentoringLogId: string) {
+  async createReport(mentoringLogId: string): Promise<boolean> {
     const mentoringLog = await this.findMentoringLogById(mentoringLogId);
     if (mentoringLog.reports) {
       throw new MethodNotAllowedException(
@@ -224,12 +223,12 @@ export class ReportsService {
     try {
       await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
-      return 'ok';
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 
   /*
@@ -241,7 +240,7 @@ export class ReportsService {
     filePaths: string[],
     signature: string,
     body: UpdateReportDto,
-  ) {
+  ): Promise<boolean> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
@@ -273,10 +272,10 @@ export class ReportsService {
     if (body.isDone) {
       await this.reportDone(reportId);
     }
-    return 'ok';
+    return true;
   }
 
-  async reportDone(reportId: string) {
+  async reportDone(reportId: string): Promise<void> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
@@ -301,6 +300,5 @@ export class ReportsService {
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
-    return true;
   }
 }

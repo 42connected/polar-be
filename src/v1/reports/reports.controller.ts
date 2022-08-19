@@ -66,7 +66,9 @@ export class ReportsController {
     description: 'Report 생성 성공',
     type: Promise<string>,
   })
-  async createReport(@Param('mentoringLogId') mentoringLogId: string) {
+  async createReport(
+    @Param('mentoringLogId') mentoringLogId: string,
+  ): Promise<boolean> {
     return await this.reportsService.createReport(mentoringLogId);
   }
 
@@ -104,7 +106,7 @@ export class ReportsController {
       image: Express.Multer.File[];
       signature: Express.Multer.File;
     },
-  ) {
+  ): Promise<boolean> {
     const filePaths: string[] = this.reportsService.getImagesPath(files);
     const signaturePaths: string = this.reportsService.getSignaturePath(files);
     return await this.reportsService.updateReport(
