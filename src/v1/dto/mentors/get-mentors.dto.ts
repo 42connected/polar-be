@@ -5,11 +5,11 @@ export class GetMentorsQueryDto {
   @IsOptional()
   @IsArray()
   @ApiProperty({
-    description: 'keywordId',
+    description: 'keywords',
     required: false,
     type: Array,
   })
-  keywordsId?: string[];
+  keywords?: string[];
 
   @IsOptional()
   @IsString()
