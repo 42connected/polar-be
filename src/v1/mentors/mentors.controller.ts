@@ -7,6 +7,7 @@ import {
   UseGuards,
   Query,
   Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -135,9 +136,13 @@ export class MentorsController {
     type: Promise<boolean>,
   })
   async updateIntroduction(
+    @User() user: JwtUser,
     @Param('intraId') intraId: string,
     @Body('introduction') introduction: string,
   ): Promise<boolean> {
+    if (user.intraId !== intraId) {
+      throw new BadRequestException('수정 권한이 없습니다.');
+    }
     await this.mentorsService.updateIntroduction(intraId, introduction);
     return true;
   }
