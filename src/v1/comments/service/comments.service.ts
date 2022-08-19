@@ -110,15 +110,23 @@ export class CommentsService {
     paginationDto: PaginationDto,
   ): Promise<[Comments[], number]> {
     try {
-      const comment = await this.commentsRepository.findAndCount({
-        where: {
-          isDeleted: false,
-          mentors: { intraId: intraId },
-        },
-        take: paginationDto.take,
-        skip: paginationDto.take * (paginationDto.page - 1),
-        order: { createdAt: 'DESC' },
-      });
+      const comment: [Comments[], number] =
+        await this.commentsRepository.findAndCount({
+          relations: { cadets: true },
+          select: {
+            id: true,
+            content: true,
+            cadets: { intraId: true },
+            createdAt: true,
+          },
+          where: {
+            isDeleted: false,
+            mentors: { intraId: intraId },
+          },
+          take: paginationDto.take,
+          skip: paginationDto.take * (paginationDto.page - 1),
+          order: { createdAt: 'DESC' },
+        });
       return comment;
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
