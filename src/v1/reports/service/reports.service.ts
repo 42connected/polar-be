@@ -7,6 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import * as AWS from 'aws-sdk';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -69,6 +70,28 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_S3_ID,
+      secretAccessKey: process.env.AWS_S3_SECRET,
+      signatureVersion: 'v4',
+      region: 'ap-northeast-2',
+    });
+    if (report.imageUrl.length) {
+      report.imageUrl = report.imageUrl.map(key => {
+        return s3.getSignedUrl('getObject', {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: key,
+          Expires: 60 * 60,
+        });
+      });
+    }
+    if (report.signatureUrl) {
+      report.signatureUrl = s3.getSignedUrl('getObject', {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: report.signatureUrl,
+        Expires: 60 * 60,
+      });
+    }
     return report;
   }
 
@@ -98,7 +121,7 @@ export class ReportsService {
     const filePaths: string[] = [];
     if (files?.image) {
       files.image.map(img => {
-        filePaths.push(img.path);
+        filePaths.push(img.key);
       });
       return filePaths;
     } else {
@@ -108,7 +131,7 @@ export class ReportsService {
 
   getSignaturePath(files) {
     if (files?.signature) {
-      return files.signature[0]?.path;
+      return files.signature[0]?.key;
     } else {
       return undefined;
     }
