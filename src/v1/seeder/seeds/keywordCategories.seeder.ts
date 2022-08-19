@@ -14,7 +14,7 @@ export class KeywordCategoriesSeeder implements Seeder {
     const keywordRepository = dataSource.getRepository(Keywords);
     const keywordCategoriesRepository =
       dataSource.getRepository(KeywordCategories);
-    console.log('Seeding ketword-categories...');
+    console.log('Seeding keyword-categories...');
 
     const categoriesList: CategoriesInterface[] = [
       { name: '취업' },
@@ -46,7 +46,7 @@ export class KeywordCategoriesSeeder implements Seeder {
     const keywordList5: string[] = [
       '프론트엔드',
       '백엔드',
-      'ios',
+      'iOS',
       '안드로이드',
       'SW아키텍쳐',
       '클라우드',

@@ -27,7 +27,7 @@ export class KeywordsSeeder implements Seeder {
       '디자인',
       '프론트엔드',
       '백엔드',
-      'ios',
+      'iOS',
       '안드로이드',
       'SW아키텍쳐',
       '클라우드',
