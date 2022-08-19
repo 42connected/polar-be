@@ -122,6 +122,19 @@ export class MentorsService {
     }
   }
 
+  async updateIntroduction(intraId: string, introduction: string) {
+    const mentor = await this.findMentorByIntraId(intraId);
+    mentor.introduction = introduction;
+    try {
+      await this.mentorsRepository.save(mentor);
+    } catch (err) {
+      throw new ConflictException(
+        err,
+        '멘토 정보 저장 중 에러가 발생했습니다.',
+      );
+    }
+  }
+
   isValidTime(time: AvailableTimeDto): boolean {
     if (
       !(time.startHour >= 0 && time.startHour < 24) ||

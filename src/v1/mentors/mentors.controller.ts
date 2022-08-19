@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -119,5 +120,25 @@ export class MentorsController {
   })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.findMentorByIntraId(intraId);
+  }
+
+  @Patch(':intraId/introduction')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'updateMentorIntroduction API',
+    description: '멘토 소개 수정하는 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 세부정보 받아오기 성공',
+    type: Promise<boolean>,
+  })
+  async updateIntroduction(
+    @Param('intraId') intraId: string,
+    @Body('introduction') introduction: string,
+  ): Promise<boolean> {
+    await this.mentorsService.updateIntroduction(intraId, introduction);
+    return true;
   }
 }
