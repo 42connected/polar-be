@@ -120,6 +120,7 @@ export class ReportsService {
       !report.cadets ||
       !report.mentors ||
       report.imageUrl.length === 0 ||
+      !report.signatureUrl ||
       !report.mentoringLogs ||
       !report.topic ||
       !report.place ||
