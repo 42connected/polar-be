@@ -219,10 +219,11 @@ export class ReportsService {
       mentoringLogs: mentoringLog,
       money: 0,
     });
-    mentoringLog.reports.status = '작성중';
+    report.status = '작성중';
+    mentoringLog.reports = report;
     try {
-      await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
+      await this.reportsRepository.save(report);
       return 'ok';
     } catch (e) {
       throw new ConflictException(
@@ -242,9 +243,7 @@ export class ReportsService {
     body: UpdateReportDto,
   ) {
     const report = await this.findReportWithMentoringLogsById(reportId);
-    const rs: ReportStatus = new ReportStatus(
-      report.mentoringLogs.reports.status,
-    );
+    const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
       throw new UnauthorizedException(
         '해당 레포트를 수정할 수 없는 상태입니다',
@@ -293,10 +292,10 @@ export class ReportsService {
     } catch (error) {
       throw new ConflictException(error);
     }
-    report.mentoringLogs.reports.money = money;
-    report.mentoringLogs.reports.status = '작성완료';
+    report.money = money;
+    report.status = '작성완료';
     try {
-      await this.mentoringLogsRepository.save(report.mentoringLogs);
+      await this.reportsRepository.save(report);
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
