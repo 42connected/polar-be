@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -88,7 +89,7 @@ export class MentorsController {
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
-  @Post('join')
+  @Patch('join')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')

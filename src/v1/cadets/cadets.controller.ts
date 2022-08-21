@@ -4,6 +4,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -89,7 +90,7 @@ export class CadetsController {
     return await this.cadetsService.getMentoringLogs(user.id);
   }
 
-  @Post('join')
+  @Patch('join')
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
@@ -103,7 +104,7 @@ export class CadetsController {
   })
   join(@Body() body: JoinCadetDto, @User() user: JwtUser) {
     const { name } = body;
-    this.cadetsService.saveName(user, name);
+    this.cadetsService.saveName(user.intraId, name);
   }
 
   @Post('mentorings/apply/:mentorIntraId')
