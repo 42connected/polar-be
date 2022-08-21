@@ -27,6 +27,31 @@ export class MentorKeywordsSeeder implements Seeder {
       '금융',
     ];
     mentorKeywordsList.push(mentorKeywords01);
+    const mentorKeywords02: string[] = [
+      'AI',
+      'IoT',
+      'SW아키텍쳐',
+      '데이터 분석',
+    ];
+    mentorKeywordsList.push(mentorKeywords02);
+    const mentorKeywords03: string[] = [
+      'AI',
+      'IoT',
+      'SW아키텍쳐',
+      '창업',
+      '협업',
+      '프로젝트관리',
+    ];
+    mentorKeywordsList.push(mentorKeywords03);
+    const mentorKeywords04: string[] = [
+      '서버',
+      '협업',
+      '프로젝트관리',
+      '진로상담',
+      '대기업',
+      '스타트업',
+    ];
+    mentorKeywordsList.push(mentorKeywords04);
     // ----------------------------------------------
     for (const mentorIntraId of mentorList) {
       const mentorId = await mentorRepository.findOne({
