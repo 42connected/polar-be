@@ -17,40 +17,33 @@ export class ReportsSeeder implements Seeder {
     const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
 
     console.log('Seeding reports...');
-    // const mentors = await mentorRepository.findOneBy({ intraId: 'm-engeng' });
-    // const cadets = await cadetRepository.findOneBy({ intraId: 'jojoo' });
-    // const mentoringLogs = await mentoringLogsRepository.find({
-    //   relations: {
-    //     mentors: true,
-    //     cadets: true,
-    //   },
-    //   where: {
-    //     // topic: 'What is making you feel good?',
-    //     mentors: {
-    //       id: mentors.id,
-    //     },
-    //     cadets: {
-    //       id: cadets.id,
-    //     },
-    //   },
-    // });
-    // if (mentoringLogs.length === 0) {
-    //   console.log('No mentoring logs found');
-    //   return;
-    // }
-    // const reportData: ReportsInterface = {
-    //   mentors,
-    //   cadets,
-    //   content: '안녕하세요',
-    //   place: 'on-line',
-    //   imageUrl: [
-    //     'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
-    //   ],
-    //   mentoringLogs: mentoringLogs[0],
-    // };
+    const mentors = await mentorRepository.findOneBy({ intraId: 'm-dada' });
+    const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
+    const mentoringLogs: MentoringLogs[] = await mentoringLogsRepository.find({
+      relations: {
+        mentors: true,
+        cadets: true,
+      },
+      where: { topic: '테스트용멘토링로그' },
+    });
+    if (mentoringLogs.length === 0) {
+      console.log('No mentoring logs found');
+      return;
+    }
+    const reportData: ReportsInterface = {
+      mentors,
+      cadets,
+      status: '작성중',
+      content: '테스트',
+      place: 'on-line',
+      imageUrl: [
+        'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
+      ],
+      mentoringLogs: mentoringLogs[0],
+    };
 
-    // const newUser = reportRepository.create(reportData);
-    // await reportRepository.save(newUser);
+    const newUser = reportRepository.create(reportData);
+    await reportRepository.save(newUser);
 
     const reportsFactory = await factoryManager.get(Reports);
     const reportsMentoingLogs = await reportRepository.find({
@@ -82,7 +75,7 @@ export class ReportsSeeder implements Seeder {
       console.log('No mentoring logs found');
       return;
     }
-    await reportsFactory.setMeta({ mentoringLogsMeta });
-    await reportsFactory.saveMany(4);
+    // await reportsFactory.setMeta({ mentoringLogsMeta });
+    // await reportsFactory.saveMany(4);
   }
 }

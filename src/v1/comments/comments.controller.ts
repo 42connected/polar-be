@@ -59,7 +59,7 @@ export class CommentsController {
     @User() user: JwtUser,
     @Param('mentorIntraId') mentorIntraId: string,
     @Body() createCommentDto: CreateCommentDto,
-  ) {
+  ): Promise<boolean> {
     return this.commentService.createComment(
       user.intraId,
       mentorIntraId,
@@ -83,7 +83,7 @@ export class CommentsController {
     @User() user: JwtUser,
     @Param('commentId') commentId: string,
     @Body() updateCommentDto: UpdateCommentDto,
-  ) {
+  ): Promise<boolean> {
     return this.commentService.updateComment(
       user.intraId,
       commentId,
@@ -103,7 +103,10 @@ export class CommentsController {
     description: '멘토링 후기 삭제 성공',
     type: String,
   })
-  async delete(@User() user: JwtUser, @Param('commentId') commentId: string) {
+  async delete(
+    @User() user: JwtUser,
+    @Param('commentId') commentId: string,
+  ): Promise<boolean> {
     return this.commentService.deleteComment(user.intraId, commentId);
   }
 }

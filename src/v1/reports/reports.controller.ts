@@ -5,7 +5,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -26,7 +25,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { PaginationDto } from '../dto/pagination.dto';
+import * as multerS3 from 'multer-s3';
+import * as AWS from 'aws-sdk';
+import { config } from 'dotenv';
+config();
 
 @Controller()
 @ApiTags('reports API')
@@ -68,7 +70,9 @@ export class ReportsController {
     description: 'Report 생성 성공',
     type: Promise<string>,
   })
-  async createReport(@Param('mentoringLogId') mentoringLogId: string) {
+  async createReport(
+    @Param('mentoringLogId') mentoringLogId: string,
+  ): Promise<boolean> {
     return await this.reportsService.createReport(mentoringLogId);
   }
 
@@ -83,9 +87,25 @@ export class ReportsController {
         { name: 'signature', maxCount: 1 },
       ],
       {
-        storage: diskStorage({
-          destination: './uploads',
+        storage: multerS3({
+          s3: new AWS.S3({
+            accessKeyId: process.env.AWS_S3_ID,
+            secretAccessKey: process.env.AWS_S3_SECRET,
+            signatureVersion: 'v4',
+            region: 'ap-northeast-2',
+          }),
+          bucket: process.env.AWS_BUCKET_NAME,
+          key: (req, file, cb) => {
+            if (!file.mimetype.startsWith('image/')) {
+              cb(new Error('이미지만 업로드 가능합니다.'));
+            } else {
+              cb(null, `${Date.now()}_${file.originalname}`);
+            }
+          },
         }),
+        limits: {
+          fileSize: 3000000,
+        },
       },
     ),
   )
@@ -106,7 +126,7 @@ export class ReportsController {
       image: Express.Multer.File[];
       signature: Express.Multer.File;
     },
-  ) {
+  ): Promise<boolean> {
     const filePaths: string[] = this.reportsService.getImagesPath(files);
     const signaturePaths: string = this.reportsService.getSignaturePath(files);
     return await this.reportsService.updateReport(

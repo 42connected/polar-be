@@ -40,7 +40,6 @@ export class AuthService {
   async getProfile(accessToken: string) {
     try {
       const profileUrl = 'https://api.intra.42.fr/v2/me';
-      console.log(profileUrl, accessToken);
       return await this.loginProducer.addJob(profileUrl, accessToken);
     } catch (err) {
       throw new ConflictException(err, '42 api 호출 중 에러가 발생했습니다.');

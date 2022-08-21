@@ -106,7 +106,6 @@ describe('ReportsService', () => {
 
     it('멘토링 상태가 작성 가능이 아닌 경우', async () => {
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성불가';
       jest
         .spyOn(service, 'findMentoringLogById')
         .mockImplementationOnce(async () => ml);
@@ -117,7 +116,6 @@ describe('ReportsService', () => {
 
     it('일반적인 경우', async () => {
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성가능';
       jest
         .spyOn(service, 'findMentoringLogById')
         .mockImplementationOnce(async () => ml);
@@ -129,7 +127,6 @@ describe('ReportsService', () => {
     it('레포트 상태: 작성불가', async () => {
       const rp: Reports = new Reports();
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성불가';
       rp.mentoringLogs = ml;
       jest
         .spyOn(service, 'findReportWithMentoringLogsById')
@@ -145,7 +142,6 @@ describe('ReportsService', () => {
     it('레포트 상태: 작성완료', async () => {
       const rp: Reports = new Reports();
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성완료';
       rp.mentoringLogs = ml;
       jest
         .spyOn(service, 'findReportWithMentoringLogsById')
@@ -161,7 +157,6 @@ describe('ReportsService', () => {
     it('레포트 상태: ??', async () => {
       const rp: Reports = new Reports();
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '??';
       rp.mentoringLogs = ml;
       jest
         .spyOn(service, 'findReportWithMentoringLogsById')
@@ -178,7 +173,6 @@ describe('ReportsService', () => {
       const rp: Reports = new Reports();
       const mt: Mentors = new Mentors();
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성가능';
       mt.intraId = 'm-engeng';
       rp.mentoringLogs = ml;
       rp.mentors = mt;
@@ -198,7 +192,6 @@ describe('ReportsService', () => {
       const rp: Reports = new Reports();
       const mt: Mentors = new Mentors();
       const ml: MentoringLogs = new MentoringLogs();
-      ml.reportStatus = '작성가능';
       mt.intraId = 'm-engeng';
       rp.mentoringLogs = ml;
       rp.mentors = mt;

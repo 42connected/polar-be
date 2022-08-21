@@ -11,19 +11,24 @@ export class CategoriesSeeder implements Seeder {
     const categoryRepository = dataSource.getRepository(Categories);
     console.log('Seeding categories...');
 
-    const categoryData: CategoriesInterface = {
-      name: '전체',
-    };
-
-    const isExists = await categoryRepository.findOneBy({
-      name: categoryData.name,
-    });
-    if (!isExists) {
-      const newUser = categoryRepository.create(categoryData);
-      await categoryRepository.save(newUser);
+    const categoriesList: CategoriesInterface[] = [
+      { name: '취업' },
+      { name: '창업' },
+      { name: '협업' },
+      { name: '기획' },
+      { name: '개발' },
+      { name: '전문분야' },
+      { name: 'Tech' },
+      { name: 'CS' },
+    ];
+    for (const categoryData of categoriesList) {
+      const isExists = await categoryRepository.findOneBy({
+        name: categoryData.name,
+      });
+      if (!isExists) {
+        const newUser = categoryRepository.create(categoryData);
+        await categoryRepository.save(newUser);
+      }
     }
-
-    const categoriesFactory = await factoryManager.get(Categories);
-    await categoriesFactory.saveMany(5);
   }
 }

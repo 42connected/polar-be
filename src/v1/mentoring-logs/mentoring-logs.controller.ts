@@ -1,5 +1,5 @@
 import { Body, Controller, Patch, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { ApproveMentoringDto } from '../dto/mentoring-logs/approve-mentoring.dto';
@@ -14,6 +14,7 @@ import {
   MentoringLogStatus,
 } from './service/mentoring-logs.service';
 
+@ApiTags('mentoring-logs API')
 @Controller()
 export class MentoringLogsController {
   constructor(

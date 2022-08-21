@@ -1,6 +1,4 @@
 import { CadetsInterface } from '../cadets/cadets.interface';
-import { CommentsInterface } from '../comments/comments.interface';
-import { MentorKeywordsInterface } from '../mentor-keywords/mentor-keywords.interface';
 import { MentoringLogsInterface } from '../mentoring-log/mentoring-log.interface';
 import { MentorsInterface } from '../mentors/mentors.interface';
 
@@ -13,6 +11,8 @@ export interface ReportsInterface {
   content?: string;
   imageUrl?: string[];
   feedbackMessage?: string;
+  money?: number;
+  status: string;
   feedback1?: number;
   feedback2?: number;
   feedback3?: number;

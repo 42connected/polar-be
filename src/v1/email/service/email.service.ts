@@ -162,7 +162,6 @@ export class EmailService {
         };
       }
       case MailType.Approve: {
-        console.log(messageDto.meetingAt.length);
         const reservationTimeToString = await this.reserveTimeToString(
           messageDto.meetingAt[0],
           this.getMentoringHours(
@@ -413,5 +412,21 @@ export class EmailService {
         break;
       }
     }
+  }
+
+  async sendVerificationMail(code: string, email: string) {
+    await this.mailService.sendMail({
+      to: email,
+      /*
+       * Not works
+       */
+      from: 'noreply@42polar.com',
+      subject: '42POLAR 이메일 인증 요청 메일입니다.',
+      template: 'email-verification.hbs',
+      context: {
+        verifyCode: `${code}`,
+      },
+    });
+    return true;
   }
 }

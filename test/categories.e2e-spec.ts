@@ -12,14 +12,11 @@ import { JwtStrategy } from 'src/v1/strategies/jwt.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { ScheduleModule } from '@nestjs/schedule';
-import { Repository } from 'typeorm';
-import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
-import { BocalsModule } from 'src/v1/bocals/bocals.module';
-import { GetDataRoomDto } from 'src/v1/dto/bocals/get-data-room.dto';
+import { CategoriesModule } from 'src/v1/categories/categories.module';
 
-describe('BocalsController (e2e)', () => {
+describe('CategoriesController (e2e)', () => {
   let app: INestApplication;
-  let mentoringLogsRepo: Repository<MentoringLogs>;
+  const mentorIntraId = 'm-dada';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -46,7 +43,7 @@ describe('BocalsController (e2e)', () => {
             };
           },
         }),
-        BocalsModule,
+        CategoriesModule,
       ],
       providers: [JwtStrategy],
     })
@@ -54,16 +51,13 @@ describe('BocalsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'nakkim', role: 'bocal' };
+          req.user = { intraId: 'nakkim', role: 'cadet' };
           return true;
         },
       })
       .compile();
 
     app = moduleFixture.createNestApplication();
-    mentoringLogsRepo = moduleFixture.get<Repository<MentoringLogs>>(
-      'MentoringLogsRepository',
-    );
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -77,24 +71,12 @@ describe('BocalsController (e2e)', () => {
     await app.init();
   });
 
-  it('POST /data-room/excel', async () => {
-    const log = await mentoringLogsRepo.findOneBy({
-      topic: '테스트용멘토링로그',
-    });
-    return request(app.getHttpServer())
-      .post('/data-room/excel')
-      .send({ mentoringLogId: log.id })
-      .expect(201);
+  it('GET /', () => {
+    return request(app.getHttpServer()).get('/').expect(200);
   });
 
-  it('GET /data-room', () => {
-    const body: Partial<GetDataRoomDto> = {
-      take: 10,
-      page: 1,
-    };
-    return request(app.getHttpServer())
-      .get(`/data-room?take=${body.take}&page=${body.page}`)
-      .expect(200);
+  it('GET /:category', () => {
+    return request(app.getHttpServer()).get('/test').expect(200);
   });
 
   afterAll(async () => {

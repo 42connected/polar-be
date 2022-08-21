@@ -20,13 +20,12 @@ export class MentoringLogsSeeder implements Seeder {
     });
     const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
 
-    const mentoringLogsData: MentoringLogsInterface = {
+    const mentoringLogsData: Partial<MentoringLogs> = {
       mentors,
       cadets,
       topic: '테스트용멘토링로그',
       content: 'Very good morning',
-      status: '대기중',
-      reportStatus: '작성불가',
+      status: '완료',
       requestTime1: [
         new Date('2022-08-18T10:00:00Z'),
         new Date('2022-08-18T11:30:00Z'),

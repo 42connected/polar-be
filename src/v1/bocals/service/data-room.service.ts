@@ -27,12 +27,12 @@ export class DataRoomService {
             createdAt: true,
             signatureUrl: true,
             imageUrl: true,
+            money: true,
+            status: true,
             mentoringLogs: {
               id: true,
               createdAt: true,
               meetingAt: true,
-              money: true,
-              reportStatus: true,
             },
             mentors: {
               intraId: true,
@@ -63,7 +63,6 @@ export class DataRoomService {
       }
       return reports;
     } catch (e) {
-      console.log(e);
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
   }

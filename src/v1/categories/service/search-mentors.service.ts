@@ -13,8 +13,6 @@ import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
 import { KeywordCategories } from 'src/v1/entities/keyword-categories.entity';
 import { MentorRawSimpleInfo } from 'src/v1/interface/mentors/mentor-raw-simple-info.interface';
 import { Categories } from 'src/v1/entities/categories.entity';
-import { GetMentorsQueryDto } from 'src/v1/dto/mentors/get-mentors.dto';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SearchMentorsService {
@@ -24,8 +22,6 @@ export class SearchMentorsService {
     private mentorKeywordsRepository: Repository<MentorKeywords>,
     @InjectRepository(KeywordCategories)
     private keywordCategoriesRepository: Repository<KeywordCategories>,
-    @InjectRepository(Categories)
-    private categoriesRepository: Repository<Categories>,
   ) {}
 
   async getMentorsInfoByText(
@@ -70,90 +66,60 @@ export class SearchMentorsService {
     return matchMentors;
   }
 
+  async getKeywordsByCategoryId(categoryId: string): Promise<string[]> {
+    const objs: KeywordCategories[] =
+      await this.keywordCategoriesRepository.find({
+        where: { categoryId },
+        relations: {
+          keywords: true,
+        },
+      });
+    const keywords: string[] = objs.map(obj => obj.keywords.name);
+    return keywords;
+  }
+
+  async validateKeywords(
+    categoryId: string,
+    keywords: string[],
+  ): Promise<boolean> {
+    if (!keywords) {
+      return true;
+    }
+    const categoriesKeywords: string[] = await this.getKeywordsByCategoryId(
+      categoryId,
+    );
+    const result: boolean[] = keywords.map(keyword => {
+      return categoriesKeywords.includes(keyword);
+    });
+    return result.every(val => val === true);
+  }
+
   async getMentorList(
-    category,
-    getMentorsQueryDto: GetMentorsQueryDto,
+    category: Categories,
+    keywordIds?: string[],
+    mentorName?: string,
   ): Promise<MentorsList> {
     const result: MentorsList = {
       mentorCount: 0,
       mentors: [],
     };
-    const { keywordsId, mentorName } = getMentorsQueryDto;
-    let categoryId: string;
-    try {
-      categoryId = await (
-        await this.categoriesRepository.findOneBy({
-          name: category,
-        })
-      ).id;
-    } catch (error) {
-      throw new ConflictException(error);
-    }
-    if (keywordsId) {
-      let keywords: string[];
-      try {
-        keywords = await this.getKeywordsIdByCategory(categoryId);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
-      keywordsId.forEach(keywordId => {
-        if (!keywords.includes(keywordId))
-          throw new NotFoundException('잘못된 키워드가 포함되었습니다.');
-      });
-    }
-
     result.category = category;
 
     let mentorsInfo: MentorSimpleInfo[];
-    if (keywordsId) {
-      try {
-        mentorsInfo = await this.getMentorsInfoByKeywords(keywordsId);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
-    } else if (categoryId) {
-      try {
-        mentorsInfo = await this.getMentorsInfoByCategory(categoryId);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
+    if (keywordIds) {
+      mentorsInfo = await this.getMentorsInfoByKeywords(keywordIds);
+    } else if (category) {
+      mentorsInfo = await this.getMentorsInfoByCategory(category.id);
     }
     if (mentorName) {
-      try {
-        mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
+      mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
     }
-    try {
-      const mentorList: MentorsListElement[] = await this.getMentorListElements(
-        mentorsInfo,
-      );
-      result.mentors = mentorList;
-      result.mentorCount = mentorList?.length;
-    } catch {
-      throw new ConflictException(
-        '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
-      );
-    }
+    const mentorList: MentorsListElement[] = await this.getMentorListElements(
+      mentorsInfo,
+    );
+    result.mentors = mentorList;
+    result.mentorCount = mentorList?.length;
     return result;
-  }
-
-  async getCategoryInfo(CategoryId: string): Promise<Categories> {
-    let category: Categories;
-
-    try {
-      category = await this.categoriesRepository.findOneBy({
-        id: CategoryId,
-      });
-    } catch {
-      throw new ConflictException(
-        '키워드 그룹 값을 가져오는 도중 오류가 발생했습니다.',
-      );
-    }
-    if (!category)
-      throw new NotFoundException('키워드 그룹이 존재하지 않습니다.');
-    return category;
   }
 
   async getKeywordsIdByCategory(categoryId: string): Promise<string[]> {
@@ -179,21 +145,10 @@ export class SearchMentorsService {
   async getMentorsInfoByCategory(
     categoryId: string,
   ): Promise<MentorSimpleInfo[]> {
-    let keywordsId: string[];
-    let rawMentorInfos: MentorRawSimpleInfo[];
     const matchMentors: MentorSimpleInfo[] = [];
-    try {
-      keywordsId = await this.getKeywordsIdByCategory(categoryId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
-
-    try {
-      rawMentorInfos = await this.getRawMentorsInfoByKeywords(keywordsId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
-
+    const keywordsId: string[] = await this.getKeywordsIdByCategory(categoryId);
+    const rawMentorInfos: MentorRawSimpleInfo[] =
+      await this.getRawMentorsInfoByKeywords(keywordsId);
     rawMentorInfos.forEach(rawInfo => {
       matchMentors.push({
         id: rawInfo.id,
@@ -209,6 +164,11 @@ export class SearchMentorsService {
   async getRawMentorsInfoByKeywords(
     keywordsId: string[],
   ): Promise<MentorRawSimpleInfo[]> {
+    if (keywordsId.length === 0) {
+      throw new NotFoundException(
+        '키워드와 일치하는 멘토가 존재하지 않습니다.',
+      );
+    }
     let rawMentorInfos: MentorRawSimpleInfo[];
     try {
       rawMentorInfos = await this.mentorKeywordsRepository
@@ -248,12 +208,8 @@ export class SearchMentorsService {
     keywordId: string[],
   ): Promise<MentorSimpleInfo[]> {
     const matchMentors: MentorSimpleInfo[] = [];
-    let rawMentorInfos: MentorRawSimpleInfo[];
-    try {
-      rawMentorInfos = await this.getRawMentorsInfoByKeywords(keywordId);
-    } catch (error) {
-      throw new ConflictException(error);
-    }
+    const rawMentorInfos: MentorRawSimpleInfo[] =
+      await this.getRawMentorsInfoByKeywords(keywordId);
 
     rawMentorInfos.forEach(rawInfo => {
       if (+rawInfo.count === keywordId.length)

@@ -58,7 +58,6 @@ export class MentoringsService {
           },
           topic: mentoring.topic,
           status: mentoring.status,
-          reportStatus: mentoring.reportStatus,
           meta: {
             requestTime: [
               mentoring.requestTime1,
@@ -98,7 +97,6 @@ export class MentoringsService {
       });
       return simpleLogs;
     } catch (e) {
-      console.log(e);
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
   }
