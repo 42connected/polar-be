@@ -133,12 +133,12 @@ export class CadetsService {
     }
   }
 
-  async saveName(user: JwtUser, name: string): Promise<void> {
+  async saveName(intraId: string, name: string): Promise<void> {
     if (name === '') {
       throw new BadRequestException('입력된 이름이 없습니다.');
     }
     try {
-      const foundUser: Cadets = await this.findCadetByIntraId(user.intraId);
+      const foundUser: Cadets = await this.findCadetByIntraId(intraId);
       foundUser.name = name;
       await this.cadetsRepository.save(foundUser);
     } catch (err) {
