@@ -116,7 +116,7 @@ export class CommentsService {
           select: {
             id: true,
             content: true,
-            cadets: { intraId: true },
+            cadets: { intraId: true, profileImage: true },
             createdAt: true,
           },
           where: {
