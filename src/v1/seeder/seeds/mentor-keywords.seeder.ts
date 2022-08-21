@@ -52,14 +52,35 @@ export class MentorKeywordsSeeder implements Seeder {
       '스타트업',
     ];
     mentorKeywordsList.push(mentorKeywords04);
+    // const mentorKeywords05: string[] = ['프론트엔드', '스타트업', '취업상담'];
+    // mentorKeywordsList.push(mentorKeywords05);
     // ----------------------------------------------
+
     for (const mentorIntraId of mentorList) {
       const mentorId = await mentorRepository.findOne({
         select: { id: true },
         where: { intraId: mentorIntraId },
       });
       mentorIdList.push(mentorId.id);
-      console.log(mentorId);
+    }
+
+    let i = 0;
+    for (const mentorId of mentorIdList) {
+      while (i < mentorKeywordsList.length) {
+        for (const keyword of mentorKeywordsList[i]) {
+          const keywordId = await keywordRepository.findOne({
+            select: { id: true },
+            where: { name: keyword },
+          });
+          const newData = mentorKeywordRepository.create({
+            keywordId: keywordId.id,
+            mentorId: mentorId,
+          });
+          await mentorKeywordRepository.save(newData);
+        }
+        i++;
+        break;
+      }
     }
   }
 }
