@@ -94,7 +94,7 @@ export class MentorsController {
     return true;
   }
 
-  @Post('join')
+  @Patch('join')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')

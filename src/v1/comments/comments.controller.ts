@@ -31,8 +31,6 @@ export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
 
   @Get(':mentorIntraId')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
   async get(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
