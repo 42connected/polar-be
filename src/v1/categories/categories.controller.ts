@@ -14,6 +14,37 @@ export class CategoriesController {
     private searchMentorsService: SearchMentorsService,
   ) {}
 
+  @Get()
+  @ApiOperation({
+    summary: 'getcategories API',
+    description: '카테고리 가져오기 api',
+  })
+  @ApiCreatedResponse({
+    description: '카테고리 받아오기 성공',
+    type: Promise<Categories[]>,
+  })
+  getCategories(): Promise<Categories[]> {
+    return this.categoriesService.getCategories();
+  }
+
+  @Get('/:category/keywords')
+  @ApiOperation({
+    summary: 'getKeywords API',
+    description: '카테고리의 키워드 가져오기 api',
+  })
+  @ApiCreatedResponse({
+    description: '키워드 받아오기 성공',
+    type: Promise<string[]>,
+  })
+  async getKeywords(
+    @Param('category') categoryName: string,
+  ): Promise<string[]> {
+    const category = await this.categoriesService.getCategoryByName(
+      categoryName,
+    );
+    return this.searchMentorsService.getKeywordsByCategoryId(category.id);
+  }
+
   @Get(':category')
   @ApiOperation({
     summary: 'getMentors API',
@@ -31,18 +62,5 @@ export class CategoriesController {
       category,
       getMentorsQueryDto,
     );
-  }
-
-  @Get()
-  @ApiOperation({
-    summary: 'getcategories API',
-    description: '카테고리 가져오기 api',
-  })
-  @ApiCreatedResponse({
-    description: '카테고리 받아오기 성공',
-    type: Promise<Categories[]>,
-  })
-  getCategories(): Promise<Categories[]> {
-    return this.categoriesService.getCategories();
   }
 }
