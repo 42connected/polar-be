@@ -14,39 +14,27 @@ export class MentorKeywordsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const mentorKeywordRepository = dataSource.getRepository(MentorKeywords);
     const keywordRepository = dataSource.getRepository(Keywords);
-    // const keywordId = await (
-    //   await keywordRepository.findOneBy({
-    //     name: 'web',
-    //   })
-    // ).id;
-    // const mentorId = await (
-    //   await mentorRepository.findOneBy({ intraId: 'm-engeng' })
-    // ).id;
-    // if (!keywordId || !mentorId) {
-    //   console.log('Not found fk');
-    //   return;
-    // }
-    // const keywordData: MentorKeywordsInterface = {
-    //   mentorId,
-    //   keywordId,
-    // };
-
-    // const isExists = await mentorKeywordRepository.findOneBy({
-    //   mentorId,
-    //   keywordId,
-    // });
-    // if (!isExists) {
-    //   const newKeyword = mentorKeywordRepository.create(keywordData);
-    //   await mentorKeywordRepository.save(newKeyword);
-    // }
-
-    const mentorKeywordsFactory = await factoryManager.get(MentorKeywords);
-    const keywordIdMeta = await keywordRepository.find({
-      select: { id: true },
-    });
-    const mentorIdMeta = await mentorRepository.find({ select: { id: true } });
-
-    mentorKeywordsFactory.setMeta({ mentorIdMeta, keywordIdMeta });
-    await mentorKeywordsFactory.saveMany(3);
+    const mentorList: string[] = ['m-nkang', 'm-jbkang', 'm-???', 'm-tedkim'];
+    const mentorKeywordsList = [];
+    const mentorIdList: string[] = [];
+    // ----------------------------------------------
+    const mentorKeywords01: string[] = [
+      '취업상담',
+      '대기업',
+      '스타트업',
+      '창업',
+      '특허',
+      '금융',
+    ];
+    mentorKeywordsList.push(mentorKeywords01);
+    // ----------------------------------------------
+    for (const mentorIntraId of mentorList) {
+      const mentorId = await mentorRepository.findOne({
+        select: { id: true },
+        where: { intraId: mentorIntraId },
+      });
+      mentorIdList.push(mentorId.id);
+      console.log(mentorId);
+    }
   }
 }
