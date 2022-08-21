@@ -142,6 +142,7 @@ export class ReportsService {
       !report.cadets ||
       !report.mentors ||
       report.imageUrl.length === 0 ||
+      !report.signatureUrl ||
       !report.mentoringLogs ||
       !report.topic ||
       !report.place ||
@@ -223,7 +224,7 @@ export class ReportsService {
   /*
    * @Post
    */
-  async createReport(mentoringLogId: string) {
+  async createReport(mentoringLogId: string): Promise<boolean> {
     const mentoringLog = await this.findMentoringLogById(mentoringLogId);
     if (mentoringLog.reports) {
       throw new MethodNotAllowedException(
@@ -244,14 +245,14 @@ export class ReportsService {
     report.status = '작성중';
     mentoringLog.reports = report;
     try {
-      await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
-      return 'ok';
+      await this.reportsRepository.save(report);
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 
   /*
@@ -263,7 +264,7 @@ export class ReportsService {
     filePaths: string[],
     signature: string,
     body: UpdateReportDto,
-  ) {
+  ): Promise<boolean> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
@@ -295,10 +296,10 @@ export class ReportsService {
     if (body.isDone) {
       await this.reportDone(reportId);
     }
-    return 'ok';
+    return true;
   }
 
-  async reportDone(reportId: string) {
+  async reportDone(reportId: string): Promise<void> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
@@ -314,15 +315,14 @@ export class ReportsService {
     } catch (error) {
       throw new ConflictException(error);
     }
-    report.mentoringLogs.reports.money = money;
-    report.mentoringLogs.reports.status = '작성완료';
+    report.money = money;
+    report.status = '작성완료';
     try {
-      await this.mentoringLogsRepository.save(report.mentoringLogs);
+      await this.reportsRepository.save(report);
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
-    return true;
   }
 }
