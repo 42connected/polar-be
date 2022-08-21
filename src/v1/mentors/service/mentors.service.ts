@@ -69,22 +69,22 @@ export class MentorsService {
     return mentor;
   }
 
-  /*
-   * @Post
-   */
   async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
     const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    mentor.availableTime = JSON.stringify(
-      this.validateAvailableTime(body.availableTime),
-    );
+    if (body.availableTime) {
+      mentor.availableTime = JSON.stringify(
+        this.validateAvailableTime(body.availableTime),
+      );
+    }
     mentor.introduction = body.introduction;
     mentor.markdownContent = body.markdownContent;
     mentor.email = body.email;
+    mentor.isActive = body.isActive;
     try {
       await this.mentorsRepository.save(mentor);
-      return 'ok';
+      return true;
     } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+      throw new ConflictException('데이터 저장 중 에러가 발생하였습니다');
     }
   }
 
@@ -119,19 +119,6 @@ export class MentorsService {
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
-    }
-  }
-
-  async updateIntroduction(intraId: string, introduction: string) {
-    const mentor = await this.findMentorByIntraId(intraId);
-    mentor.introduction = introduction;
-    try {
-      await this.mentorsRepository.save(mentor);
-    } catch (err) {
-      throw new ConflictException(
-        err,
-        '멘토 정보 저장 중 에러가 발생했습니다.',
-      );
     }
   }
 

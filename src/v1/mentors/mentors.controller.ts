@@ -70,24 +70,28 @@ export class MentorsController {
     );
   }
 
-  @Post()
+  @Patch(':intraId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'updateMentorDetails post API',
-    description: '멘토 상세정보입력 api',
+    summary: 'updateMentorDetails API',
+    description: '멘토 정보 수정 api',
   })
   @ApiCreatedResponse({
-    description:
-      '멘토 상세정보(introduction, isActive, markdownContent) 생성 성공',
-    type: Promise<string>,
+    description: '멘토 정보 수정 성공',
+    type: Promise<boolean>,
   })
   async updateMentorDetails(
     @User() user: JwtUser,
+    @Param('intraId') intraId: string,
     @Body() body: UpdateMentorDatailDto,
-  ) {
-    return await this.mentorsService.updateMentorDetails(user.intraId, body);
+  ): Promise<boolean> {
+    if (user.intraId !== intraId) {
+      throw new BadRequestException('수정 권한이 없습니다.');
+    }
+    await this.mentorsService.updateMentorDetails(user.intraId, body);
+    return true;
   }
 
   @Post('join')
@@ -121,29 +125,5 @@ export class MentorsController {
   })
   async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
     return await this.mentorsService.findMentorByIntraId(intraId);
-  }
-
-  @Patch(':intraId/introduction')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'updateMentorIntroduction API',
-    description: '멘토 소개 수정하는 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토 세부정보 받아오기 성공',
-    type: Promise<boolean>,
-  })
-  async updateIntroduction(
-    @User() user: JwtUser,
-    @Param('intraId') intraId: string,
-    @Body('introduction') introduction: string,
-  ): Promise<boolean> {
-    if (user.intraId !== intraId) {
-      throw new BadRequestException('수정 권한이 없습니다.');
-    }
-    await this.mentorsService.updateIntroduction(intraId, introduction);
-    return true;
   }
 }
