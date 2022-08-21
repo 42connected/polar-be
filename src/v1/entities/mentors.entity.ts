@@ -16,7 +16,7 @@ export class Mentors {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', length: 15 })
+  @Column({ type: 'varchar', length: 50 })
   intraId: string;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
