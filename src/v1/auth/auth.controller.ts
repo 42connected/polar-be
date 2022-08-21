@@ -6,6 +6,7 @@ import { CadetsService } from '../cadets/service/cadets.service';
 import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
+import { LoginResponse } from '../interface/auth-response.interface';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthService } from './auth.service';
@@ -30,7 +31,7 @@ export class AuthController {
     description: 'oauth 프로파일 정보 수정 성공',
     type: String,
   })
-  async getProfile(@Query('code') code: string) {
+  async getProfile(@Query('code') code: string): Promise<LoginResponse> {
     const accessToken = await this.authService.getAccessToken(code);
     const profile = await this.authService.getProfile(accessToken);
     const {
@@ -73,10 +74,11 @@ export class AuthController {
         result = await this.cadetsService.createUser(user);
       }
     }
-    return this.jwtService.sign({
+    const jwt = await this.jwtService.sign({
       sub: result.id,
       username: result.intraId,
       role: result.role,
     });
+    return { jwt, user: { intraId: result.intraId, role: result.role } };
   }
 }
