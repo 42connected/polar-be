@@ -17,6 +17,7 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({ credentials: true });
   app.use(
     ['/api-docs'],
     expressBasicAuth({
