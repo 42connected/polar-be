@@ -13,8 +13,6 @@ import { MentorsList } from 'src/v1/interface/mentors/mentors-list.interface';
 import { KeywordCategories } from 'src/v1/entities/keyword-categories.entity';
 import { MentorRawSimpleInfo } from 'src/v1/interface/mentors/mentor-raw-simple-info.interface';
 import { Categories } from 'src/v1/entities/categories.entity';
-import { GetMentorsQueryDto } from 'src/v1/dto/mentors/get-mentors.dto';
-import { Keywords } from 'src/v1/entities/keywords.entity';
 
 @Injectable()
 export class SearchMentorsService {
@@ -24,10 +22,6 @@ export class SearchMentorsService {
     private mentorKeywordsRepository: Repository<MentorKeywords>,
     @InjectRepository(KeywordCategories)
     private keywordCategoriesRepository: Repository<KeywordCategories>,
-    @InjectRepository(Categories)
-    private categoriesRepository: Repository<Categories>,
-    @InjectRepository(Keywords)
-    private keywordsRepository: Repository<Keywords>,
   ) {}
 
   async getMentorsInfoByText(
@@ -72,105 +66,60 @@ export class SearchMentorsService {
     return matchMentors;
   }
 
-  async getKeywordsByCategoryId(categoryId: string) {
-    const objs = await this.keywordCategoriesRepository.find({
-      where: { categoryId },
+  async getKeywordsByCategoryId(categoryId: string): Promise<string[]> {
+    const objs: KeywordCategories[] =
+      await this.keywordCategoriesRepository.find({
+        where: { categoryId },
+        relations: {
+          keywords: true,
+        },
+      });
+    const keywords: string[] = objs.map(obj => obj.keywords.name);
+    return keywords;
+  }
+
+  async validateKeywords(
+    categoryId: string,
+    keywords: string[],
+  ): Promise<boolean> {
+    if (!keywords) {
+      return true;
+    }
+    const categoriesKeywords: string[] = await this.getKeywordsByCategoryId(
+      categoryId,
+    );
+    const result: boolean[] = keywords.map(keyword => {
+      return categoriesKeywords.includes(keyword);
     });
-    const keywordObjs = objs.map(async obj => {
-      const keyword = (
-        await this.keywordsRepository.findOneBy({
-          id: obj.keywordId,
-        })
-      ).name;
-      return keyword;
-    });
-    return keywordObjs;
+    return result.every(val => val === true);
   }
 
   async getMentorList(
-    category,
-    getMentorsQueryDto: GetMentorsQueryDto,
+    category: Categories,
+    keywordIds?: string[],
+    mentorName?: string,
   ): Promise<MentorsList> {
     const result: MentorsList = {
       mentorCount: 0,
       mentors: [],
     };
-    const { keywords, mentorName } = getMentorsQueryDto;
-    let categoryId: string;
-    try {
-      categoryId = await (
-        await this.categoriesRepository.findOneBy({
-          name: category,
-        })
-      ).id;
-    } catch (error) {
-      throw new ConflictException(error);
-    }
     result.category = category;
 
     let mentorsInfo: MentorSimpleInfo[];
-    if (keywords) {
-      const categoriesKeywords = await this.getKeywordsByCategoryId(categoryId);
-      // Promise.all(categoriesKeywords).then(categoriesKeyword => {
-      //   keywords.forEach(keyword => {
-      //     if (!categoriesKeyword.includes(keyword)) {
-      //       throw new ConflictException('잘못된 키워드가 포함되어 있습니다.');
-      //     }
-      //   });
-      // });
-      Promise.all(categoriesKeywords)
-        .then(categoriesKeyword => {
-          keywords.forEach(keyword => {
-            if (!categoriesKeyword.includes(keyword)) {
-              throw new NotFoundException('잘못된 키워드가 포함되어 있습니다.');
-            }
-          });
-        })
-        .catch(err => {
-          console.log(err);
-          // throw new NotFoundException('잘못된 키워드가 포함되어 있습니다.');
-        });
-      const keywordIds: string[] = (
-        await this.keywordsRepository
-          .createQueryBuilder('keywords')
-          .where('keywords.name IN (:...keywords)', { keywords })
-          .getMany()
-      ).map(obj => obj.id);
-      try {
-        mentorsInfo = await this.getMentorsInfoByKeywords(keywordIds);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
-    } else if (categoryId) {
-      mentorsInfo = await this.getMentorsInfoByCategory(categoryId);
+    if (keywordIds) {
+      mentorsInfo = await this.getMentorsInfoByKeywords(keywordIds);
+    } else if (category) {
+      mentorsInfo = await this.getMentorsInfoByCategory(category.id);
     }
     if (mentorName) {
-      try {
-        mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
-      } catch (error) {
-        throw new ConflictException(error);
-      }
+      mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
     }
-    try {
-      const mentorList: MentorsListElement[] = await this.getMentorListElements(
-        mentorsInfo,
-      );
-      result.mentors = mentorList;
-      result.mentorCount = mentorList?.length;
-    } catch {
-      throw new ConflictException(
-        '멘토 정보를 가져오는 도중 오류가 발생했습니다.',
-      );
-    }
+    const mentorList: MentorsListElement[] = await this.getMentorListElements(
+      mentorsInfo,
+    );
+    result.mentors = mentorList;
+    result.mentorCount = mentorList?.length;
     return result;
-  }
-
-  async getCategoryInfo(categoryId: string): Promise<Categories> {
-    let category: Categories;
-
-    if (!category)
-      throw new NotFoundException('키워드 그룹이 존재하지 않습니다.');
-    return category;
   }
 
   async getKeywordsIdByCategory(categoryId: string): Promise<string[]> {
