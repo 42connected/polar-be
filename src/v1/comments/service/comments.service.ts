@@ -86,7 +86,7 @@ export class CommentsService {
     intraId: string,
     mentorIntaId: string,
     createCommentDto: CreateCommentDto,
-  ) {
+  ): Promise<boolean> {
     const cadet = await this.findCadetByIntraId(intraId);
     const mentor = await this.findMentorByIntraId(mentorIntaId);
     const comment = this.commentsRepository.create({
@@ -96,10 +96,10 @@ export class CommentsService {
     });
     try {
       await this.commentsRepository.save(comment);
-      return 'ok';
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
+    return true;
   }
 
   /*
@@ -132,7 +132,7 @@ export class CommentsService {
     intraId: string,
     commentId: string,
     updateCommentDto: UpdateCommentDto,
-  ) {
+  ): Promise<boolean> {
     const comment = await this.findCommentById(commentId);
     if (intraId !== comment.cadets?.intraId) {
       throw new UnauthorizedException(
@@ -142,16 +142,16 @@ export class CommentsService {
     comment.content = updateCommentDto.content;
     try {
       await this.commentsRepository.save(comment);
-      return 'ok';
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
+    return true;
   }
 
   /*
    * @Delete
    */
-  async deleteComment(intraId: string, commentId: string) {
+  async deleteComment(intraId: string, commentId: string): Promise<boolean> {
     const comment = await this.findCommentById(commentId);
     if (intraId !== comment.cadets?.intraId) {
       throw new UnauthorizedException(
@@ -162,9 +162,9 @@ export class CommentsService {
     comment.deletedAt = new Date();
     try {
       await this.commentsRepository.save(comment);
-      return 'ok';
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
+    return true;
   }
 }
