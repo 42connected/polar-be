@@ -450,6 +450,77 @@ export class MentorKeywordsSeeder implements Seeder {
     mentorKeywordsList.push(mentorKeywords48);
     const mentorKeywords49: string[] = ['SW아키텍쳐', 'IoT', '대기업'];
     mentorKeywordsList.push(mentorKeywords49);
+    const mentorKeywords50: string[] = ['AI', 'iOS', '스타트업', '대기업'];
+    mentorKeywordsList.push(mentorKeywords50);
+    const mentorKeywords51: string[] = [
+      '백엔드',
+      '서버',
+      '창업',
+      '대기업',
+      '스타트업',
+    ];
+    mentorKeywordsList.push(mentorKeywords51);
+    const mentorKeywords52: string[] = ['iOS', '서버', '오픈소스', '대기업'];
+    mentorKeywordsList.push(mentorKeywords52);
+    const mentorKeywords53: string[] = [
+      '백엔드',
+      '협업',
+      '해외',
+      '창업',
+      '스타트업',
+    ];
+    mentorKeywordsList.push(mentorKeywords53);
+    const mentorKeywords54: string[] = [
+      'AI',
+      '백엔드',
+      '디자인',
+      '데이터 분석',
+      '기획',
+      '창업',
+      '취업상담',
+      '진로상담',
+    ];
+    mentorKeywordsList.push(mentorKeywords54);
+    const mentorKeywords55: string[] = [
+      'SW아키텍쳐',
+      '블록체인',
+      '보안',
+      '알고리즘',
+      '프론트엔드',
+      '백엔드',
+      '안드로이드',
+      '대기업',
+    ];
+    mentorKeywordsList.push(mentorKeywords55);
+    const mentorKeywords56: string[] = [
+      '프론트엔드',
+      '백엔드',
+      '서버',
+      '데이터 분석',
+      '스타트업',
+    ];
+    mentorKeywordsList.push(mentorKeywords56);
+    const mentorKeywords57: string[] = [
+      '백엔드',
+      '블록체인',
+      '창업',
+      '프론트엔드',
+      '협업',
+      '대기업',
+    ];
+    mentorKeywordsList.push(mentorKeywords57);
+    const mentorKeywords58: string[] = [
+      '백엔드',
+      '프론트엔드',
+      '창업',
+      '대기업',
+      '스타트업',
+    ];
+    mentorKeywordsList.push(mentorKeywords58);
+    const mentorKeywords59: string[] = ['게임', '서버', '대기업'];
+    mentorKeywordsList.push(mentorKeywords59);
+    const mentorKeywords60: string[] = ['DB설계', '데이터 분석', '대기업'];
+    mentorKeywordsList.push(mentorKeywords60);
     // ----------------------------------------------
 
     for (const mentorIntraId of mentorList) {
