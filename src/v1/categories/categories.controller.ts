@@ -1,9 +1,16 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetMentorsQueryDto } from '../dto/mentors/get-mentors.dto';
 import { Categories } from '../entities/categories.entity';
 import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { CategoriesService } from './service/categories.service';
+import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 
 @Controller()
@@ -12,6 +19,7 @@ export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
     private searchMentorsService: SearchMentorsService,
+    private keywordsService: KeywordsService,
   ) {}
 
   @Get(':category')
@@ -23,13 +31,25 @@ export class CategoriesController {
     description: '멘토리스트 받아오기 성공',
     type: Promise<MentorsList>,
   })
-  getMentors(
+  async getMentors(
     @Query() getMentorsQueryDto: GetMentorsQueryDto,
-    @Param('category') category: string,
+    @Param('category') categoryName: string,
   ): Promise<MentorsList> {
+    const { keywords, mentorName } = getMentorsQueryDto;
+    const category: Categories = await this.categoriesService.getCategoryByName(
+      categoryName,
+    );
+    if (
+      !(await this.searchMentorsService.validateKeywords(category.id, keywords))
+    ) {
+      throw new BadRequestException('잘못된 키워드가 포함되어 있습니다.');
+    }
+    const keywordIds: string[] | null =
+      await this.keywordsService.getKeywordIds(keywords);
     return this.searchMentorsService.getMentorList(
       category,
-      getMentorsQueryDto,
+      keywordIds,
+      mentorName,
     );
   }
 

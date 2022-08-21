@@ -138,6 +138,13 @@ describe('MentorsController (e2e)', () => {
     return request(app.getHttpServer()).get('/m-dada').expect(200);
   });
 
+  it('PATCH /:intraId/introduction', () => {
+    return request(app.getHttpServer())
+      .patch('/m-dada/introduction')
+      .send({ introduction: 'update testing...' })
+      .expect(200);
+  });
+
   afterAll(async () => {
     await app.close();
   });

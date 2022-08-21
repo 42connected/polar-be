@@ -6,6 +6,8 @@ import {
   Post,
   UseGuards,
   Query,
+  Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -68,24 +70,28 @@ export class MentorsController {
     );
   }
 
-  @Post()
+  @Patch(':intraId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'updateMentorDetails post API',
-    description: '멘토 상세정보입력 api',
+    summary: 'updateMentorDetails API',
+    description: '멘토 정보 수정 api',
   })
   @ApiCreatedResponse({
-    description:
-      '멘토 상세정보(introduction, isActive, markdownContent) 생성 성공',
-    type: Promise<string>,
+    description: '멘토 정보 수정 성공',
+    type: Promise<boolean>,
   })
   async updateMentorDetails(
     @User() user: JwtUser,
+    @Param('intraId') intraId: string,
     @Body() body: UpdateMentorDatailDto,
-  ) {
-    return await this.mentorsService.updateMentorDetails(user.intraId, body);
+  ): Promise<boolean> {
+    if (user.intraId !== intraId) {
+      throw new BadRequestException('수정 권한이 없습니다.');
+    }
+    await this.mentorsService.updateMentorDetails(user.intraId, body);
+    return true;
   }
 
   @Post('join')

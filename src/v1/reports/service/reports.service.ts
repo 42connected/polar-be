@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationDto } from 'src/v1/dto/pagination.dto';
+import * as AWS from 'aws-sdk';
 import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -70,6 +70,28 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_S3_ID,
+      secretAccessKey: process.env.AWS_S3_SECRET,
+      signatureVersion: 'v4',
+      region: 'ap-northeast-2',
+    });
+    if (report.imageUrl.length) {
+      report.imageUrl = report.imageUrl.map(key => {
+        return s3.getSignedUrl('getObject', {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: key,
+          Expires: 60 * 60,
+        });
+      });
+    }
+    if (report.signatureUrl) {
+      report.signatureUrl = s3.getSignedUrl('getObject', {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: report.signatureUrl,
+        Expires: 60 * 60,
+      });
+    }
     return report;
   }
 
@@ -99,7 +121,7 @@ export class ReportsService {
     const filePaths: string[] = [];
     if (files?.image) {
       files.image.map(img => {
-        filePaths.push(img.path);
+        filePaths.push(img.key);
       });
       return filePaths;
     } else {
@@ -109,7 +131,7 @@ export class ReportsService {
 
   getSignaturePath(files) {
     if (files?.signature) {
-      return files.signature[0]?.path;
+      return files.signature[0]?.key;
     } else {
       return undefined;
     }
@@ -120,6 +142,7 @@ export class ReportsService {
       !report.cadets ||
       !report.mentors ||
       report.imageUrl.length === 0 ||
+      !report.signatureUrl ||
       !report.mentoringLogs ||
       !report.topic ||
       !report.place ||
@@ -201,7 +224,7 @@ export class ReportsService {
   /*
    * @Post
    */
-  async createReport(mentoringLogId: string) {
+  async createReport(mentoringLogId: string): Promise<boolean> {
     const mentoringLog = await this.findMentoringLogById(mentoringLogId);
     if (mentoringLog.reports) {
       throw new MethodNotAllowedException(
@@ -222,14 +245,14 @@ export class ReportsService {
     report.status = '작성중';
     mentoringLog.reports = report;
     try {
-      await this.reportsRepository.save(report);
       await this.mentoringLogsRepository.save(mentoringLog);
-      return 'ok';
+      await this.reportsRepository.save(report);
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
+    return true;
   }
 
   /*
@@ -241,7 +264,7 @@ export class ReportsService {
     filePaths: string[],
     signature: string,
     body: UpdateReportDto,
-  ) {
+  ): Promise<boolean> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
@@ -273,10 +296,10 @@ export class ReportsService {
     if (body.isDone) {
       await this.reportDone(reportId);
     }
-    return 'ok';
+    return true;
   }
 
-  async reportDone(reportId: string) {
+  async reportDone(reportId: string): Promise<void> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
@@ -292,15 +315,14 @@ export class ReportsService {
     } catch (error) {
       throw new ConflictException(error);
     }
-    report.mentoringLogs.reports.money = money;
-    report.mentoringLogs.reports.status = '작성완료';
+    report.money = money;
+    report.status = '작성완료';
     try {
-      await this.mentoringLogsRepository.save(report.mentoringLogs);
+      await this.reportsRepository.save(report);
     } catch (e) {
       throw new ConflictException(
         `${e} 저장중 예기치 못한 에러가 발생하였습니다'`,
       );
     }
-    return true;
   }
 }

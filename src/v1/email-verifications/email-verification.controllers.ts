@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from 'src/v1/decorators/user.decorator';
@@ -12,7 +12,7 @@ import { EmailVerificationService } from './email-verifications.service';
 @Controller()
 export class EmailVerificationController {
   constructor(private emailVerificationService: EmailVerificationService) {}
-  @Get(':code')
+  @Post(':code')
   @ApiOperation({
     summary: 'verifyMentorEmail API',
     description: '멘토님에게 전송된 이메일 코드로 사용자 인증하는 api',
