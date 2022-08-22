@@ -82,7 +82,7 @@ export class MentorsController {
     type: Promise<void>,
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
-    return this.mentorsService.saveInfos(user.intraId, body);
+    return this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
   @Patch(':intraId')
@@ -101,7 +101,7 @@ export class MentorsController {
     @User() user: JwtUser,
     @Param('intraId') intraId: string,
     @Body() body: UpdateMentorDatailDto,
-  ): Promise<boolean> {
+  ): Promise<void> {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
