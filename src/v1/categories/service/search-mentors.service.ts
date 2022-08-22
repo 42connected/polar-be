@@ -155,7 +155,7 @@ export class SearchMentorsService {
         name: rawInfo.name,
         intraId: rawInfo.intraid,
         tags: rawInfo.tags,
-        profileImage: rawInfo.profileImage || null,
+        profileImage: rawInfo.profileimage || null,
         introduction: rawInfo.introduction,
       });
     });
@@ -182,8 +182,8 @@ export class SearchMentorsService {
         .select([
           'mentors.id AS id',
           'mentors.name AS name',
-          'mentors.intraId AS intraId',
-          'mentors.profileImage AS profileImage',
+          'mentors.intraId AS intraid',
+          'mentors.profileImage AS profileimage',
           'mentors.tags AS tags',
           'mentors.introduction AS introduction',
         ])
@@ -220,7 +220,7 @@ export class SearchMentorsService {
           name: rawInfo.name,
           intraId: rawInfo.intraid,
           tags: rawInfo.tags,
-          profileImage: rawInfo.profileImage || null,
+          profileImage: rawInfo.profileimage || null,
           introduction: rawInfo.introduction,
         });
     });

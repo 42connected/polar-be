@@ -4,6 +4,6 @@ export interface MentorRawSimpleInfo {
   intraid: string;
   count: number;
   tags: string[];
-  profileImage: string;
+  profileimage: string;
   introduction: string;
 }
