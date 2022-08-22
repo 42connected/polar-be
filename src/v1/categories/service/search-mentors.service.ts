@@ -58,11 +58,6 @@ export class SearchMentorsService {
         );
       }
     }
-    if (matchMentors.length === 0) {
-      throw new NotFoundException(
-        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     return matchMentors;
   }
 
@@ -165,11 +160,6 @@ export class SearchMentorsService {
   async getRawMentorsInfoByKeywords(
     keywordsId: string[],
   ): Promise<MentorRawSimpleInfo[]> {
-    if (keywordsId.length === 0) {
-      throw new NotFoundException(
-        '키워드와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     let rawMentorInfos: MentorRawSimpleInfo[];
     try {
       rawMentorInfos = await this.mentorKeywordsRepository
@@ -198,11 +188,6 @@ export class SearchMentorsService {
         '멘토 정보를 가져오는 도중 오류가 발생했습니다!',
       );
     }
-    if (!rawMentorInfos) {
-      throw new NotFoundException(
-        '키워드와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     return rawMentorInfos;
   }
 
@@ -224,11 +209,6 @@ export class SearchMentorsService {
           introduction: rawInfo.introduction,
         });
     });
-    if (matchMentors.length === 0) {
-      throw new NotFoundException(
-        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     return matchMentors;
   }
 
