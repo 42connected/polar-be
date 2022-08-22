@@ -6,26 +6,12 @@ import { Keywords } from '../../entities/keywords.entity';
 import { KeywordCategories } from '../../entities/keyword-categories.entity';
 
 export class KeywordCategoriesSeeder implements Seeder {
-  async run(
-    dataSource: DataSource,
-    factoryManager: SeederFactoryManager,
-  ): Promise<void> {
+  async run(dataSource: DataSource): Promise<void> {
     const categoryRepository = dataSource.getRepository(Categories);
     const keywordRepository = dataSource.getRepository(Keywords);
     const keywordCategoriesRepository =
       dataSource.getRepository(KeywordCategories);
     console.log('Seeding keyword-categories...');
-
-    const categoriesList: CategoriesInterface[] = [
-      { name: '취업' },
-      { name: '창업' },
-      { name: '협업' },
-      { name: '기획' },
-      { name: '개발' },
-      { name: '전문분야' },
-      { name: 'Tech' },
-      { name: 'Cs' },
-    ];
 
     const keywordList1: string[] = [
       '진로상담',
@@ -35,10 +21,10 @@ export class KeywordCategoriesSeeder implements Seeder {
       '취업상담',
     ];
     const keywordList2: string[] = ['창업', '특허'];
-    const keywordList3: string[] = ['협업', '프로젝트관리', '코드 최적화'];
+    const keywordList3: string[] = ['협업', '프로젝트관리', '코드최적화'];
     const keywordList4: string[] = [
       '기획',
-      '데이터 분석',
+      '데이터분석',
       'DB설계',
       'SW아키텍쳐',
       '디자인',
@@ -56,13 +42,12 @@ export class KeywordCategoriesSeeder implements Seeder {
       'IoT',
       '그래픽스',
       '컴퓨터비전',
-      'AR / VR',
+      'AR/VR',
       'DB설계',
       'AI',
-      '코드 최적화',
+      '코드최적화',
     ];
-    const keywordList6: string[] = ['금융', '의료', '이커머스'];
-    const keywordList7: string[] = [
+    const keywordList6: string[] = [
       '블록체인',
       '네트워크',
       'AI',
@@ -71,22 +56,23 @@ export class KeywordCategoriesSeeder implements Seeder {
       '클라우드',
       '그래픽스',
       '컴퓨터비전',
-      'AR / VR',
+      'AR/VR',
       '이커머스',
       '보안',
       '서버',
       '컨테이너',
-      '데이터 분석',
+      '데이터분석',
     ];
-    const keywordList8: string[] = [
+    const keywordList7: string[] = [
       '알고리즘',
       '네트워크',
       'SW아키텍쳐',
-      'OS',
+      '운영체제',
       '서버',
       '보안',
       'DB설계',
     ];
+    const keywordList8: string[] = ['금융', '의료', '이커머스', '로봇'];
 
     const categoryId1 = await categoryRepository.findOne({
       select: { id: true },
@@ -165,9 +151,10 @@ export class KeywordCategoriesSeeder implements Seeder {
       });
       await keywordCategoriesRepository.save(newData);
     }
+
     const categoryId6 = await categoryRepository.findOne({
       select: { id: true },
-      where: { name: '전문분야' },
+      where: { name: 'Tech' },
     });
     for (const keywordData of keywordList6) {
       const keywordId = await keywordRepository.findOne({
@@ -180,9 +167,10 @@ export class KeywordCategoriesSeeder implements Seeder {
       });
       await keywordCategoriesRepository.save(newData);
     }
+
     const categoryId7 = await categoryRepository.findOne({
       select: { id: true },
-      where: { name: 'Tech' },
+      where: { name: 'CS' },
     });
     for (const keywordData of keywordList7) {
       const keywordId = await keywordRepository.findOne({
@@ -195,9 +183,10 @@ export class KeywordCategoriesSeeder implements Seeder {
       });
       await keywordCategoriesRepository.save(newData);
     }
+
     const categoryId8 = await categoryRepository.findOne({
       select: { id: true },
-      where: { name: 'CS' },
+      where: { name: '전문분야' },
     });
     for (const keywordData of keywordList8) {
       const keywordId = await keywordRepository.findOne({
