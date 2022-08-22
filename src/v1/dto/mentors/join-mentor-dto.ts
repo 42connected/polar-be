@@ -1,6 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
 
 export class JoinMentorDto {
@@ -22,12 +22,31 @@ export class JoinMentorDto {
   })
   email: string;
 
+  @IsString()
   @IsNotEmpty()
-  @Type(() => AvailableTimeDto)
   @ApiProperty({
+    description: 'slackId',
+    required: true,
+    type: String,
+  })
+  slackId: string;
+
+  @IsOptional()
+  @Type(() => AvailableTimeDto)
+  @Transform(data => JSON.parse(JSON.stringify(data.value)))
+  @ApiPropertyOptional({
     description: 'availableTime',
     required: true,
     type: [[AvailableTimeDto]],
   })
-  availableTime: AvailableTimeDto[][];
+  availableTime?: AvailableTimeDto[][];
+
+  @IsBoolean()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'isActive',
+    required: false,
+    type: Boolean,
+  })
+  isActive: boolean;
 }
