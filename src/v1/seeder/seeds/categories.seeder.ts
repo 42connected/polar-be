@@ -17,9 +17,9 @@ export class CategoriesSeeder implements Seeder {
       { name: '협업' },
       { name: '기획' },
       { name: '개발' },
-      { name: '전문분야' },
       { name: 'Tech' },
       { name: 'CS' },
+      { name: '전문분야' },
     ];
     for (const categoryData of categoriesList) {
       const isExists = await categoryRepository.findOneBy({
