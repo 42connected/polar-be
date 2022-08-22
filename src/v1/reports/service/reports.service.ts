@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
-import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
+import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
@@ -93,7 +93,6 @@ export class ReportsService {
         Expires: 60 * 60,
       });
     }
-    console.log(report);
     return report;
   }
 

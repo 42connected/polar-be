@@ -14,7 +14,7 @@ import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
-import { UpdateReportDto } from '../dto/reports/report.dto';
+import { UpdateReportDto } from '../dto/reports/update-report.dto';
 import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
