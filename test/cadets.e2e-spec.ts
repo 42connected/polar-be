@@ -107,25 +107,25 @@ describe('CadetsController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (POST)', () => {
+  it('POST /', () => {
     return request(app.getHttpServer())
       .post('/')
       .send({ resumeUrl: 'test.com' })
       .expect(201);
   });
 
-  it('/mentorings (GET)', () => {
+  it('GET /mentorings', () => {
     return request(app.getHttpServer()).get('/mentorings').expect(200);
   });
 
-  it('/join (POST)', () => {
+  it('PATCH /join', () => {
     return request(app.getHttpServer())
-      .post('/join')
-      .send({ name: 'test' })
-      .expect(201);
+      .patch('/join')
+      .send({ name: '김나경' })
+      .expect(200);
   });
 
-  it('/mentorings/apply/:mentorIntraId (POST)', async () => {
+  it('POST /mentorings/apply/:mentorIntraId', async () => {
     const testLogs = await mentoringLogsRepo.find({
       where: {
         topic: 'test',
