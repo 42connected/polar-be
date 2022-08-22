@@ -16,6 +16,12 @@ export class DataRoomService {
     try {
       const reports: [Reports[], number] =
         await this.reportsRepository.findAndCount({
+          where: {
+            mentors: {
+              intraId: getDataRoomDto.mentorIntra,
+              name: getDataRoomDto.mentorName,
+            },
+          },
           relations: {
             mentoringLogs: true,
             cadets: true,
@@ -50,17 +56,6 @@ export class DataRoomService {
           skip: getDataRoomDto.take * (getDataRoomDto.page - 1),
           take: getDataRoomDto.take,
         });
-
-      if (getDataRoomDto.mentorIntra) {
-        reports[0] = reports[0].filter(
-          report => report.mentors.intraId === getDataRoomDto.mentorIntra,
-        );
-      }
-      if (getDataRoomDto.mentorName) {
-        reports[0] = reports[0].filter(
-          report => report.mentors.name === getDataRoomDto.mentorName,
-        );
-      }
       return reports;
     } catch (e) {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
