@@ -4,4 +4,5 @@ export interface MentorSimpleInfo {
   intraId: string;
   tags: string[];
   profileImage: string;
+  introduction: string;
 }
