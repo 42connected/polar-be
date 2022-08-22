@@ -5,4 +5,5 @@ export interface MentorRawSimpleInfo {
   count: number;
   tags: string[];
   profileImage: string;
+  introduction: string;
 }

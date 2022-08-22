@@ -155,7 +155,8 @@ export class SearchMentorsService {
         name: rawInfo.name,
         intraId: rawInfo.intraid,
         tags: rawInfo.tags,
-        profileImage: rawInfo.profileImage,
+        profileImage: rawInfo.profileImage || null,
+        introduction: rawInfo.introduction,
       });
     });
     return matchMentors;
@@ -184,6 +185,7 @@ export class SearchMentorsService {
           'mentors.intraId AS intraId',
           'mentors.profileImage AS profileImage',
           'mentors.tags AS tags',
+          'mentors.introduction AS introduction',
         ])
         .where('mentorKeywords.keywordId IN (:...keywordsId)', {
           keywordsId: keywordsId,
@@ -218,7 +220,8 @@ export class SearchMentorsService {
           name: rawInfo.name,
           intraId: rawInfo.intraid,
           tags: rawInfo.tags,
-          profileImage: rawInfo.profileImage,
+          profileImage: rawInfo.profileImage || null,
+          introduction: rawInfo.introduction,
         });
     });
     if (matchMentors.length === 0) {
