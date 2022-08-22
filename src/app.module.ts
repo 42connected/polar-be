@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmConfigService } from './v1/config/typeorm.config';
 import { V1Module } from './v1/v1.module';
-import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, RouterModule } from '@nestjs/core';
 import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
 import { CategoriesModule } from './v1/categories/categories.module';
@@ -22,6 +22,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { CalendarModule } from './v1/calendar/calendar.module';
 import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 import { EmailVerificationModule } from './v1/email-verifications/email-verifications.module';
+import { AllExceptionsFilter } from './http-exception.filter';
 
 @Module({
   imports: [
@@ -120,6 +121,10 @@ import { EmailVerificationModule } from './v1/email-verifications/email-verifica
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
     },
   ],
 })
