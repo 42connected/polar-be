@@ -17,6 +17,7 @@ export class ReportsSeeder implements Seeder {
     const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
 
     console.log('Seeding reports...');
+    // --- 테스트용 ---
     const mentors = await mentorRepository.findOneBy({ intraId: 'm-dada' });
     const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
     const mentoringLogs: MentoringLogs[] = await mentoringLogsRepository.find({
@@ -30,6 +31,7 @@ export class ReportsSeeder implements Seeder {
       console.log('No mentoring logs found');
       return;
     }
+    // ------------
     const reportData: ReportsInterface = {
       mentors,
       cadets,

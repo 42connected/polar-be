@@ -9,6 +9,18 @@ export class MentorsSeeder implements Seeder {
     console.log('Seeding mentors...');
     const mentorDataList: MentorsInterface[] = [];
 
+    // --- 테스트용 ---
+    const testMentor: MentorsInterface = {
+      intraId: 'm-dada',
+      name: 'ㅁㄴㅇㄹ',
+      availableTime:
+        '[[{"startHour": 2,"startMinute": 30,"endHour": 5,"endMinute": 0},{"startHour": 8,"startMinute": 30,"endHour": 12,"endMinute": 0}],[],[],[],[],[],[]]',
+      isActive: true,
+    };
+    const newUser = mentorRepository.create(testMentor);
+    await mentorRepository.save(newUser);
+    // ------------
+
     const mentorData01: MentorsInterface = {
       intraId: 'm-nkang',
       name: '강남석',
@@ -467,205 +479,205 @@ Cadet에게
     };
     mentorDataList.push(mentorData10);
 
-    const mentorData11: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData11);
+    // const mentorData11: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData11);
 
-    const mentorData12: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData12);
+    // const mentorData12: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData12);
 
-    const mentorData13: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData13);
+    // const mentorData13: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData13);
 
-    const mentorData14: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData14);
+    // const mentorData14: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData14);
 
-    const mentorData15: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData15);
+    // const mentorData15: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData15);
 
-    const mentorData16: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData16);
+    // const mentorData16: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData16);
 
-    const mentorData17: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData17);
+    // const mentorData17: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData17);
 
-    const mentorData18: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData18);
+    // const mentorData18: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData18);
 
-    const mentorData19: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData19);
+    // const mentorData19: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData19);
 
-    const mentorData20: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData20);
+    // const mentorData20: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData20);
 
-    const mentorData21: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData21);
+    // const mentorData21: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData21);
 
-    const mentorData22: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData22);
+    // const mentorData22: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData22);
 
-    const mentorData23: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData23);
+    // const mentorData23: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData23);
 
-    const mentorData24: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData24);
+    // const mentorData24: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData24);
 
-    const mentorData25: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData25);
+    // const mentorData25: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData25);
 
-    const mentorData26: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData26);
+    // const mentorData26: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData26);
 
-    const mentorData27: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData27);
+    // const mentorData27: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData27);
 
-    const mentorData28: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData28);
+    // const mentorData28: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData28);
 
-    const mentorData29: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData29);
+    // const mentorData29: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData29);
 
-    const mentorData30: MentorsInterface = {
-      intraId: '',
-      name: '',
-      profileImage: '',
-      availableTime: null,
-      isActive: false,
-      markdownContent: ``,
-    };
-    mentorDataList.push(mentorData30);
+    // const mentorData30: MentorsInterface = {
+    //   intraId: '',
+    //   name: '',
+    //   profileImage: '',
+    //   availableTime: null,
+    //   isActive: false,
+    //   markdownContent: ``,
+    // };
+    // mentorDataList.push(mentorData30);
 
     const mentorData52: MentorsInterface = {
       intraId: 'm-engeng',
