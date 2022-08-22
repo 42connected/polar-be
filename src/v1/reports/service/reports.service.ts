@@ -58,6 +58,7 @@ export class ReportsService {
         relations: {
           cadets: true,
           mentors: true,
+          mentoringLogs: true,
         },
         select: {
           cadets: { name: true },
@@ -92,6 +93,7 @@ export class ReportsService {
         Expires: 60 * 60,
       });
     }
+    console.log(report);
     return report;
   }
 
