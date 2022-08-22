@@ -90,8 +90,7 @@ export class MentorsController {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
-    await this.mentorsService.updateMentorDetails(user.intraId, body);
-    return true;
+    return await this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
   @Patch('join')
@@ -108,7 +107,7 @@ export class MentorsController {
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
     this.mentorsService.validateAvailableTime(body.availableTime);
-    this.mentorsService.saveInfos(user.intraId, body);
+    return this.mentorsService.saveInfos(user.intraId, body);
   }
 
   @Get(':intraId')
