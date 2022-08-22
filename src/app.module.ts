@@ -112,7 +112,7 @@ import { AllExceptionsFilter } from './http-exception.filter';
     ]),
     ThrottlerModule.forRoot({
       ttl: 30,
-      limit: 5,
+      limit: 300,
     }),
   ],
   controllers: [AppController],
