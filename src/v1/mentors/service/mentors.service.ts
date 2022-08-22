@@ -107,15 +107,18 @@ export class MentorsService {
   }
 
   async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
-    const { name, email, availableTime } = infos;
+    const { name, email, availableTime, slackId, isActive } = infos;
     try {
       const foundUser: Mentors = await this.findMentorByIntraId(intraId);
       foundUser.name = name;
       foundUser.email = email;
-      foundUser.availableTime = JSON.stringify(
-        this.validateAvailableTime(availableTime),
-      );
-      foundUser.isActive = true;
+      foundUser.slackId = slackId;
+      if (availableTime) {
+        foundUser.availableTime = JSON.stringify(
+          this.validateAvailableTime(availableTime),
+        );
+      }
+      foundUser.isActive = isActive;
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
