@@ -41,23 +41,6 @@ export class CadetsController {
     private emailService: EmailService,
   ) {}
 
-  @Get('test')
-  @Roles('cadet')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'cadet login test API',
-    description: '카뎃 로그인 정보 가져오기 test페이지',
-  })
-  @ApiCreatedResponse({
-    description: '카뎃 로그인 정보 받아오기 성공',
-    type: String,
-  })
-  hello(@User() user: JwtUser) {
-    console.log('guard test', user);
-    return 'hi';
-  }
-
   @Post()
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
