@@ -140,7 +140,7 @@ describe('CadetsController (e2e)', () => {
         new Date('2022-08-12T10:00:00Z'),
       ],
     };
-    const mentor = await mentorsService.findByIntra('m-dada');
+    const mentor = await mentorsService.findByIntra('m-engeng');
     return request(app.getHttpServer())
       .post(`/mentorings/apply/${mentor.intraId}`)
       .send(apply)

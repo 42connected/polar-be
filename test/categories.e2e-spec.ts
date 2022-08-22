@@ -16,7 +16,7 @@ import { CategoriesModule } from 'src/v1/categories/categories.module';
 
 describe('CategoriesController (e2e)', () => {
   let app: INestApplication;
-  const mentorIntraId = 'm-dada';
+  const mentorIntraId = 'm-engeng';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

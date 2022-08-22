@@ -18,7 +18,7 @@ export class ReportsSeeder implements Seeder {
 
     console.log('Seeding reports...');
     // --- 테스트용 ---
-    const mentors = await mentorRepository.findOneBy({ intraId: 'm-dada' });
+    const mentors = await mentorRepository.findOneBy({ intraId: 'm-engeng' });
     const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
     const mentoringLogs: MentoringLogs[] = await mentoringLogsRepository.find({
       relations: {
