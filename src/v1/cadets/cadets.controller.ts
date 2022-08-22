@@ -64,10 +64,10 @@ export class CadetsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'updateCadet API',
-    description: '카뎃 로그인 정보 생성하기',
+    description: '카뎃 정보 수정하기',
   })
   @ApiCreatedResponse({
-    description: '카뎃 로그인 정보 생성 성공',
+    description: '카뎃 정보 수정 성공',
     type: Promise<string>,
   })
   UpdateCadet(@User() user: JwtUser, @Body() updateCadetDto: UpdateCadetDto) {
