@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
@@ -6,13 +6,13 @@ import { AvailableTimeDto } from '../available-time.dto';
 export class UpdateMentorDatailDto {
   @IsOptional()
   @Type(() => AvailableTimeDto)
-  @Transform(data => JSON.parse(data.value))
-  @ApiProperty({
+  @Transform(data => JSON.parse(JSON.stringify(data.value)))
+  @ApiPropertyOptional({
     description: 'availableTime',
     required: true,
     type: [[AvailableTimeDto]],
   })
-  availableTime: AvailableTimeDto[][];
+  availableTime?: AvailableTimeDto[][];
 
   @IsString()
   @IsOptional()
@@ -20,7 +20,7 @@ export class UpdateMentorDatailDto {
     description: 'introduction',
     required: false,
   })
-  introduction: string;
+  introduction?: string;
 
   @IsOptional()
   @IsEmail()
@@ -28,7 +28,7 @@ export class UpdateMentorDatailDto {
     description: 'email',
     required: false,
   })
-  email: string;
+  email?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -37,7 +37,7 @@ export class UpdateMentorDatailDto {
     required: false,
     type: Boolean,
   })
-  isActive: boolean;
+  isActive?: boolean;
 
   @IsString()
   @IsOptional()
@@ -45,5 +45,14 @@ export class UpdateMentorDatailDto {
     description: 'markdownContent',
     required: false,
   })
-  markdownContent: string;
+  markdownContent?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'slackId',
+    required: true,
+    type: String,
+  })
+  slackId?: string;
 }

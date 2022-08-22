@@ -104,7 +104,7 @@ export class CadetsController {
   })
   join(@Body() body: JoinCadetDto, @User() user: JwtUser) {
     const { name } = body;
-    this.cadetsService.saveName(user.intraId, name);
+    return this.cadetsService.saveName(user.intraId, name);
   }
 
   @Post('mentorings/apply/:mentorIntraId')

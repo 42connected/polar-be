@@ -40,7 +40,7 @@ export class MentoringLogsController {
       status: MentoringLogStatus.Approve,
       meetingAt: body.meetingAt,
     });
-    this.emailService.sendMessage(log.id, MailType.Approve);
+    return this.emailService.sendMessage(log.id, MailType.Approve);
   }
 
   @Patch('reject')
@@ -61,7 +61,7 @@ export class MentoringLogsController {
       status: MentoringLogStatus.Cancel,
       rejectMessage: body.rejectMessage,
     });
-    this.emailService.sendMessage(log.id, MailType.Cancel);
+    return this.emailService.sendMessage(log.id, MailType.Cancel);
   }
 
   @Patch('done')
@@ -76,7 +76,7 @@ export class MentoringLogsController {
     @User() user: JwtUser,
     @Body() body: CompleteMentoringDto,
   ) {
-    const log = await this.mentoringLogsService.changeStatus({
+    return await this.mentoringLogsService.changeStatus({
       userId: user.intraId,
       mentoringLogId: body.mentoringLogId,
       status: MentoringLogStatus.Done,

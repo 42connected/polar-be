@@ -71,13 +71,15 @@
     "passport-42": "^1.2.6",
     "passport-jwt": "^4.0.0",
     "pg": "^8.7.3",
+    "read-excel-file": "^5.4.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "swagger-ui-express": "^4.5.0",
     "typeorm": "^0.3.7",
     "typeorm-extension": "^2.1.6",
-    "typeorm-naming-strategies": "^4.1.0"
+    "typeorm-naming-strategies": "^4.1.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",
