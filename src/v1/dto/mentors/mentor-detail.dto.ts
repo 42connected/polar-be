@@ -6,7 +6,7 @@ import { AvailableTimeDto } from '../available-time.dto';
 export class UpdateMentorDatailDto {
   @IsOptional()
   @Type(() => AvailableTimeDto)
-  @Transform(data => JSON.parse(data.value))
+  @Transform(data => JSON.parse(JSON.stringify(data.value)))
   @ApiPropertyOptional({
     description: 'availableTime',
     required: true,
@@ -46,4 +46,13 @@ export class UpdateMentorDatailDto {
     required: false,
   })
   markdownContent?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'slackId',
+    required: true,
+    type: String,
+  })
+  slackId?: string;
 }
