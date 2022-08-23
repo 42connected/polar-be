@@ -14,7 +14,7 @@ import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 
 @Controller()
-@ApiTags('categories API')
+@ApiTags('Categories API')
 export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
@@ -24,11 +24,11 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({
-    summary: 'getcategories API',
-    description: '카테고리 가져오기 api',
+    summary: 'Get category array',
+    description: '카테고리 이름이 담긴 객체 배열을 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '카테고리 받아오기 성공',
+    description: '카테고리 객체 배열',
     type: Promise<Categories[]>,
   })
   getCategories(): Promise<Categories[]> {
@@ -37,11 +37,11 @@ export class CategoriesController {
 
   @Get('/:category/keywords')
   @ApiOperation({
-    summary: 'getKeywords API',
-    description: '카테고리의 키워드 가져오기 api',
+    summary: 'Get category keywords',
+    description: '해당 카테고리에 포함되는 키워드를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '키워드 받아오기 성공',
+    description: '키워드 이름 배열',
     type: Promise<string[]>,
   })
   async getKeywords(

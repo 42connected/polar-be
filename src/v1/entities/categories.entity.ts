@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { KeywordCategories } from './keyword-categories.entity';
 
@@ -6,6 +7,7 @@ export class Categories {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column({ type: 'varchar', length: 15, unique: true })
   name: string;
 
