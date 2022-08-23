@@ -78,7 +78,7 @@ export class ReportsService {
       signatureVersion: 'v4',
       region: 'ap-northeast-2',
     });
-    if (report.imageUrl.length) {
+    if (report.imageUrl) {
       report.imageUrl = report.imageUrl.map(key => {
         return s3.getSignedUrl('getObject', {
           Bucket: process.env.AWS_BUCKET_NAME,
@@ -143,7 +143,7 @@ export class ReportsService {
     if (
       !report.cadets ||
       !report.mentors ||
-      report.imageUrl.length === 0 ||
+      !report.imageUrl ||
       !report.signatureUrl ||
       !report.mentoringLogs ||
       !report.topic ||
