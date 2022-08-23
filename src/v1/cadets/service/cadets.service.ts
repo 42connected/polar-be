@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CadetMentoringInfo } from 'src/v1/dto/cadet-mentoring-info.interface';
 import { CadetMentoringLogs } from 'src/v1/dto/cadet-mentoring-logs.interface';
 import { CreateCadetDto } from 'src/v1/dto/cadets/create-cadet.dto';
 import { UpdateCadetDto } from 'src/v1/dto/cadets/update-cadet.dto';
@@ -13,6 +12,7 @@ import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
+import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
 
 @Injectable()
 export class CadetsService {
@@ -98,7 +98,7 @@ export class CadetsService {
     });
   }
 
-  async getMentoringLogs(id: string): Promise<CadetMentoringInfo> {
+  async getMentoringLogs(id: string): Promise<MentoringInfoDto> {
     let cadet: Cadets;
     try {
       cadet = await this.cadetsRepository.findOne({
@@ -154,6 +154,5 @@ export class CadetsService {
     } catch {
       throw new ConflictException('예기치 못한 에러가 발생하였습니다');
     }
-    return 'ok';
   }
 }

@@ -12,12 +12,10 @@ import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
-import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
-import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -28,7 +26,6 @@ import {
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
-import { SimpleLogDto } from '../dto/mentoring-logs/simple-log.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 
