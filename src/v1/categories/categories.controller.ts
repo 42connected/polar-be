@@ -12,6 +12,7 @@ import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { CategoriesService } from './service/categories.service';
 import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
+import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
 
 @Controller()
 @ApiTags('Categories API')
@@ -29,9 +30,9 @@ export class CategoriesController {
   })
   @ApiCreatedResponse({
     description: '카테고리 객체 배열',
-    type: Promise<Categories[]>,
+    type: Promise<GetCategoriesDto[]>,
   })
-  getCategories(): Promise<Categories[]> {
+  getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
   }
 
