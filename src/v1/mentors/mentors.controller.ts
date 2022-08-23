@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   UseGuards,
   Query,
   Patch,
@@ -19,15 +18,18 @@ import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
-import { MentorMentoringInfo } from '../interface/mentors/mentor-mentoring-info.interface';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
+import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
+import { SimpleLogDto } from '../dto/mentoring-logs/simple-log.dto';
+import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 
 @Controller()
 @ApiTags('mentors API')
@@ -42,16 +44,14 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getMentoringsLists API',
-    description: '멘토링 리스트 가져오는 api',
+    summary: 'Get mentoring logs',
+    description: '로그인된 멘토의 멘토링 로그와 인트라 아이디를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '멘토링 리스트 가져오기 성공',
-    type: Promise<MentorMentoringInfo>,
+    description: '멘토 인트라 아이디, 멘토링 로그',
+    type: MentoringInfoDto,
   })
-  async getMentoringsLists(
-    @User() user: JwtUser,
-  ): Promise<MentorMentoringInfo> {
+  async getMentoringsLists(@User() user: JwtUser): Promise<MentoringInfoDto> {
     return await this.mentoringsService.getMentoringsLists(user);
   }
 
@@ -60,14 +60,29 @@ export class MentorsController {
     summary: 'getSimpleLogs API',
     description: '멘토링 로그 pagination',
   })
+  @ApiQuery({
+    name: 'take',
+    type: Number,
+    description: '한 페이지에 띄울 멘토링 로그 정보의 수',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    description: '선택한 페이지(1페이지, 2페이지, ...)',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링 로그 정보 심플 버전의 배열',
+    type: LogPaginationDto,
+  })
   async getSimpleLogs(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
-  ): Promise<[MentoringLogs[], number]> {
-    return await this.mentoringsService.getSimpleLogsPagination(
+  ): Promise<LogPaginationDto> {
+    const result = await this.mentoringsService.getSimpleLogsPagination(
       mentorIntraId,
       paginationDto,
     );
+    return { logs: result[0], total: result[1] };
   }
 
   @Patch(':intraId')
@@ -75,12 +90,12 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'updateMentorDetails API',
+    summary: 'Update mentor details',
     description: '멘토 정보 수정 api',
   })
   @ApiCreatedResponse({
     description: '멘토 정보 수정 성공',
-    type: Promise<boolean>,
+    type: Boolean,
   })
   async updateMentorDetails(
     @User() user: JwtUser,
