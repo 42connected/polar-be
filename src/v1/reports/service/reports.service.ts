@@ -268,6 +268,8 @@ export class ReportsService {
   ): Promise<boolean> {
     const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(report.status);
+    console.log('레포트 주인', report.mentors);
+    console.log('현재 유저', mentorIntraId);
     if (!rs.verify()) {
       throw new UnauthorizedException(
         '해당 레포트를 수정할 수 없는 상태입니다',
