@@ -4,7 +4,6 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 
 export class AvailableTimeDto {
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @ApiProperty({
     description: 'start hour',
@@ -14,7 +13,6 @@ export class AvailableTimeDto {
   startHour: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @ApiProperty({
     description: 'start minute',
@@ -24,7 +22,6 @@ export class AvailableTimeDto {
   startMinute: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @ApiProperty({
     description: 'end hour',
@@ -34,7 +31,6 @@ export class AvailableTimeDto {
   endHour: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @ApiProperty({
     description: 'end minute',
