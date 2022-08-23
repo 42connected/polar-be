@@ -1,5 +1,4 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsNumber,
@@ -13,7 +12,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'place',
+    description: '멘토링 진행 장소',
     required: false,
   })
   place: string;
@@ -21,7 +20,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'topic',
+    description: '멘토링 제목/주제',
     required: false,
   })
   topic: string;
@@ -29,7 +28,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'content',
+    description: '멘토링 신청 내용',
     required: false,
   })
   content: string;
@@ -37,13 +36,12 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'feedbackMessage',
+    description: '멘토가 카뎃에게 쓰는 피드백',
     required: false,
   })
   feedbackMessage: string;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
@@ -55,7 +53,6 @@ export class UpdateReportDto {
   feedback1: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
@@ -67,7 +64,6 @@ export class UpdateReportDto {
   feedback2: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
@@ -81,7 +77,7 @@ export class UpdateReportDto {
   @IsBoolean()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'isDone',
+    description: '레포트가 작성 완료인지',
     required: false,
     type: Boolean,
   })

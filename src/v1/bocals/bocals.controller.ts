@@ -25,13 +25,14 @@ export class BocalsController {
   ) {}
 
   @ApiOperation({
-    summary: 'getMentoringExcelFile API',
-    description: 'mentoringLogId를 이용해 해당 멘토링로그 엑셀 파일을 다운받음',
+    summary: 'Download report',
+    description:
+      'body의 reportIds 배열을 이용하여 레포트를 찾아서 엑셀 파일로 다운받음',
   })
   @Post('data-room/excel')
   @Roles('bocal')
-  @ApiBearerAuth('access-token')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   async getMentoringExcelFile(
     @Body('reportIds') reportIds: string[],
     @Res({ passthrough: true }) response,

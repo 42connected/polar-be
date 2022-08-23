@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
   IsBoolean,
   IsNotEmpty,
@@ -11,7 +10,6 @@ import {
 
 export class GetDataRoomDto {
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @Min(1)
   @ApiProperty({
@@ -23,7 +21,6 @@ export class GetDataRoomDto {
   take: number;
 
   @IsNumber()
-  @Transform(value => Number(value))
   @IsNotEmpty()
   @Min(1)
   @ApiProperty({

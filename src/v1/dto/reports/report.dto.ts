@@ -1,17 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
-import { Mentors } from 'src/v1/entities/mentors.entity';
 
 export class ReportDto {
   @ApiProperty()
   id: string;
 
-  @ApiProperty()
-  mentors: Mentors;
+  @ApiProperty({
+    description: '멘토 정보',
+    example: { name: '김나경' },
+  })
+  mentors: { name: string };
 
-  @ApiProperty()
-  cadets: Cadets;
+  @ApiProperty({
+    description: '카뎃 정보',
+    example: { name: '김나경', isCommon: true },
+  })
+  cadets: { name: string; isCommon: boolean };
 
   @ApiProperty()
   place: string;
@@ -22,7 +26,10 @@ export class ReportDto {
   @ApiProperty()
   content: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: String,
+    isArray: true,
+  })
   imageUrl: string[];
 
   @ApiProperty()
@@ -43,10 +50,15 @@ export class ReportDto {
   @ApiProperty()
   money: number;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: '레포트 상태',
+    example: '작성중',
+  })
   status: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: MentoringLogs,
+  })
   mentoringLogs: MentoringLogs;
 
   @ApiProperty()
