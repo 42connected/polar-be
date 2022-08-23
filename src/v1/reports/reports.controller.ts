@@ -40,11 +40,11 @@ export class ReportsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getReport API',
-    description: 'Report 받아오는 api',
+    summary: 'Get report information',
+    description: '레포트의 모든 정보를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: 'Report 정보 받아오기 성공',
+    description: '레포트 정보',
     type: Promise<Reports>,
   })
   async getReport(@Param('reportId') reportId: string): Promise<Reports> {

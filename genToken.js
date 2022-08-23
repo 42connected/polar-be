@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 const generateCadetToken = async (secret, role) => {
   console.log('-----------------------------------------\n');
   const paylaod = {
-    intraId: process.argv[3],
-    id: process.argv[4],
+    username: process.argv[3],
+    sub: process.argv[4],
     role: role,
   };
   console.log(paylaod);

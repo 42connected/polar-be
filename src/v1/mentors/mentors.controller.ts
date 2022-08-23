@@ -12,12 +12,10 @@ import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { UpdateMentorDatailDto } from '../dto/mentors/mentor-detail.dto';
-import { Mentors } from '../entities/mentors.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { MentorsService } from './service/mentors.service';
 import { MentoringsService } from './service/mentorings.service';
-import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { JoinMentorDto } from '../dto/mentors/join-mentor-dto';
 import {
   ApiBearerAuth,
@@ -28,8 +26,8 @@ import {
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
-import { SimpleLogDto } from '../dto/mentoring-logs/simple-log.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
+import { MentorDto } from '../dto/mentors/mentor.dto';
 
 @Controller()
 @ApiTags('mentors API')
@@ -57,7 +55,7 @@ export class MentorsController {
 
   @Get('simplelogs/:mentorIntraId')
   @ApiOperation({
-    summary: 'getSimpleLogs API',
+    summary: 'Get mentoring simple log',
     description: '멘토링 로그 pagination',
   })
   @ApiQuery({
@@ -90,12 +88,9 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'mentor join post API',
-    description: '멘토 기본정보(name, availableTime, isActive) 입력 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토 기본정보 생성 성공',
-    type: Promise<void>,
+    summary: 'Post join mentor',
+    description:
+      '멘토 필수정보(이름, 이메일, 슬랙아이디, 가능시간, 멘토링 가능 상태)를 받아서 저장합니다.',
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
     return this.mentorsService.updateMentorDetails(user.intraId, body);
@@ -107,11 +102,7 @@ export class MentorsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Update mentor details',
-    description: '멘토 정보 수정 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토 정보 수정 성공',
-    type: Boolean,
+    description: '멘토 정보를 수정합니다.',
   })
   async updateMentorDetails(
     @User() user: JwtUser,
@@ -129,14 +120,16 @@ export class MentorsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getMentorDetails API',
-    description: '멘토 세부정보(comments, mentoringLogs) 받아오는 api',
+    summary: 'Get mentor details',
+    description: '멘토에 대한 모든 정보를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '멘토 세부정보 받아오기 성공',
-    type: Promise<Mentors>,
+    description: '멘토 정보',
+    type: MentorDto,
   })
-  async getMentorDetails(@Param('intraId') intraId: string): Promise<Mentors> {
+  async getMentorDetails(
+    @Param('intraId') intraId: string,
+  ): Promise<MentorDto> {
     return await this.mentorsService.findMentorByIntraId(intraId);
   }
 }

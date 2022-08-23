@@ -5,8 +5,9 @@ export class UpdateCadetDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'resumeUrl',
+    description: '이력서 링크',
     required: false,
+    example: 'https://asdf',
   })
   resumeUrl: string;
 }

@@ -1,7 +1,7 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsBoolean,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -43,6 +43,7 @@ export class UpdateReportDto {
   feedbackMessage: string;
 
   @IsNumber()
+  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
@@ -54,6 +55,7 @@ export class UpdateReportDto {
   feedback1: number;
 
   @IsNumber()
+  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
@@ -65,6 +67,7 @@ export class UpdateReportDto {
   feedback2: number;
 
   @IsNumber()
+  @Transform(value => Number(value))
   @IsOptional()
   @Min(1)
   @Max(5)
