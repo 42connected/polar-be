@@ -61,7 +61,7 @@ export class ReportsService {
           mentoringLogs: true,
         },
         select: {
-          cadets: { name: true },
+          cadets: { name: true, isCommon: true },
           mentors: { name: true },
         },
       });
@@ -93,7 +93,6 @@ export class ReportsService {
         Expires: 60 * 60,
       });
     }
-    console.log(report);
     return report;
   }
 
