@@ -13,6 +13,7 @@ import { CategoriesService } from './service/categories.service';
 import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
+import { MentorsListDto } from '../dto/categories/mentor-list.dto';
 
 @Controller()
 @ApiTags('Categories API')
@@ -32,6 +33,7 @@ export class CategoriesController {
     description: '카테고리 객체 배열',
     type: GetCategoriesDto,
     isArray: true,
+    status: 200,
   })
   getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
@@ -46,6 +48,7 @@ export class CategoriesController {
     description: '키워드 이름 배열',
     type: String,
     isArray: true,
+    status: 200,
   })
   async getKeywords(
     @Param('category') categoryName: string,
@@ -58,12 +61,14 @@ export class CategoriesController {
 
   @Get(':category')
   @ApiOperation({
-    summary: 'getMentors API',
-    description: '멘토리스트 받아오는 api',
+    summary: 'Get mentor list',
+    description:
+      '카테고리(+ keywords, mentorName)를 포함하는 멘토의 리스트를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '멘토리스트 받아오기 성공',
-    type: Promise<MentorsList>,
+    description: '멘토 리스트, 멘토 수, 카테고리 정보',
+    type: MentorsListDto,
+    status: 200,
   })
   async getMentors(
     @Query() getMentorsQueryDto: GetMentorsQueryDto,
