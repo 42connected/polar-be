@@ -12,9 +12,10 @@ import { MentorsList } from '../interface/mentors/mentors-list.interface';
 import { CategoriesService } from './service/categories.service';
 import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
+import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
 
 @Controller()
-@ApiTags('categories API')
+@ApiTags('Categories API')
 export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
@@ -24,25 +25,27 @@ export class CategoriesController {
 
   @Get()
   @ApiOperation({
-    summary: 'getcategories API',
-    description: '카테고리 가져오기 api',
+    summary: 'Get category array',
+    description: '카테고리 이름이 담긴 객체 배열을 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '카테고리 받아오기 성공',
-    type: Promise<Categories[]>,
+    description: '카테고리 객체 배열',
+    type: GetCategoriesDto,
+    isArray: true,
   })
-  getCategories(): Promise<Categories[]> {
+  getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
   }
 
   @Get('/:category/keywords')
   @ApiOperation({
-    summary: 'getKeywords API',
-    description: '카테고리의 키워드 가져오기 api',
+    summary: 'Get category keywords',
+    description: '해당 카테고리에 포함되는 키워드를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '키워드 받아오기 성공',
-    type: Promise<string[]>,
+    description: '키워드 이름 배열',
+    type: String,
+    isArray: true,
   })
   async getKeywords(
     @Param('category') categoryName: string,

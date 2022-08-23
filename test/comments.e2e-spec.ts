@@ -21,7 +21,7 @@ import { Comments } from 'src/v1/entities/comments.entity';
 describe('CommentsController (e2e)', () => {
   let app: INestApplication;
   let commentsRepo: Repository<Comments>;
-  const mentorIntraId = 'm-dada';
+  const mentorIntraId = 'm-engeng';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

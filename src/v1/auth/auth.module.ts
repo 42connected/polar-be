@@ -8,6 +8,7 @@ import { Cadets } from '../entities/cadets.entity';
 import { Comments } from '../entities/comments.entity';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { Mentors } from '../entities/mentors.entity';
+import { Reports } from '../entities/reports.entity';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -20,6 +21,7 @@ import { AuthService } from './auth.service';
       MentoringLogs,
       Cadets,
       Bocals,
+      Reports,
     ]),
     JwtModule.registerAsync({
       useFactory: () => {

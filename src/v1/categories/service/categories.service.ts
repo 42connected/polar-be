@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GetCategoriesDto } from 'src/v1/dto/categories/get-categories.dto';
 import { Categories } from 'src/v1/entities/categories.entity';
 import { Repository } from 'typeorm';
 
@@ -14,9 +15,9 @@ export class CategoriesService {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
-  async getCategories(): Promise<Categories[]> {
+  async getCategories(): Promise<GetCategoriesDto[]> {
     try {
-      const found = await this.categoriesRepository.find({
+      const found: GetCategoriesDto[] = await this.categoriesRepository.find({
         select: { name: true },
         take: 8,
       });
