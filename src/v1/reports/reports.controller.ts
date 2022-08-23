@@ -48,8 +48,6 @@ export class ReportsController {
     type: ReportDto,
   })
   async getReport(@Param('reportId') reportId: string): Promise<ReportDto> {
-    const result = await this.reportsService.getReport(reportId);
-    console.log(result);
     return await this.reportsService.getReport(reportId);
   }
 
