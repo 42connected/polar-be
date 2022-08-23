@@ -15,6 +15,7 @@ export class CommentsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const cadetRepository = dataSource.getRepository(Cadets);
 
+    // --- 테스트용 ---
     const mentors: MentorsInterface = await mentorRepository.findOneBy({
       intraId: 'm-dada',
     });
@@ -25,9 +26,9 @@ export class CommentsSeeder implements Seeder {
       cadets,
       content: '테스트',
     };
-
     const newUser = commentRepository.create(commentData);
     await commentRepository.save(newUser);
+    // ------------
 
     const commentsFactory = await factoryManager.get(Comments);
     const cadetsMeta = await cadetRepository.find();

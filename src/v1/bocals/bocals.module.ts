@@ -10,7 +10,7 @@ import { DataRoomService } from './service/data-room.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Bocals, MentoringLogs, Reports]),
+    TypeOrmModule.forFeature([Bocals, MentoringLogs, Reports, Reports]),
     AuthModule,
   ],
   controllers: [BocalsController],

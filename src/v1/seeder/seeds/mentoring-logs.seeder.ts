@@ -20,6 +20,7 @@ export class MentoringLogsSeeder implements Seeder {
     });
     const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
 
+    // --- 테스트용 ---
     const mentoringLogsData: Partial<MentoringLogs> = {
       mentors,
       cadets,
@@ -35,6 +36,7 @@ export class MentoringLogsSeeder implements Seeder {
         new Date('2022-08-18T11:30:00Z'),
       ],
     };
+    // ------------
 
     const newUser = mentoringLogsRepository.create(mentoringLogsData);
     await mentoringLogsRepository.save(newUser);

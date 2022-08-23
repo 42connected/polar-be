@@ -33,14 +33,14 @@ export class BocalsController {
   @ApiBearerAuth('access-token')
   @UseGuards(JwtGuard, RolesGuard)
   async getMentoringExcelFile(
-    @Body('mentoringLogId') mentoringLogsId: string[],
+    @Body('reportIds') reportIds: string[],
     @Res({ passthrough: true }) response,
   ): Promise<void> {
-    if (typeof mentoringLogsId === 'string') {
-      mentoringLogsId = [mentoringLogsId];
+    if (typeof reportIds === 'string') {
+      reportIds = [reportIds];
     }
     return await this.bocalsService.createMentoringExcelFile(
-      mentoringLogsId,
+      reportIds,
       response,
     );
   }

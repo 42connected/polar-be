@@ -16,18 +16,18 @@ import { BullQueueModule } from 'src/bull-queue/bull-queue.module';
 import { AuthModule } from 'src/v1/auth/auth.module';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
-import { UpdateReportDto } from 'src/v1/dto/reports/report.dto';
+import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Cadets } from 'src/v1/entities/cadets.entity';
 
-describe('MentorsController (e2e)', () => {
+describe('ReportsController (e2e)', () => {
   let app: INestApplication;
   let logsRepo: Repository<MentoringLogs>;
   let reportsRepo: Repository<Reports>;
   let mentorsRepo: Repository<Mentors>;
   let cadetsRepo: Repository<Cadets>;
-  const mentorIntraId = 'm-dada';
+  const mentorIntraId = 'm-engeng';
 
   const createMentoringLog = async (
     mentorIntraId: string,
@@ -142,7 +142,7 @@ describe('MentorsController (e2e)', () => {
     mentorsRepo = moduleFixture.get<Repository<Mentors>>('MentorsRepository');
     cadetsRepo = moduleFixture.get<Repository<Cadets>>('CadetsRepository');
     await app.init();
-    await createMentoringLog('m-dada', 'nakkim');
+    await createMentoringLog('m-engeng', 'nakkim');
   });
 
   beforeEach(async () => {
