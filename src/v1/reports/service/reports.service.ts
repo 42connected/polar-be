@@ -256,16 +256,7 @@ export class ReportsService {
     }
     return true;
   }
-  /**
-   * 
-   * s3: new AWS.S3({
-            accessKeyId: process.env.AWS_S3_ID,
-            secretAccessKey: process.env.AWS_S3_SECRET,
-            signatureVersion: 'v4',
-            region: 'ap-northeast-2',
-          }),
-          bucket: process.env.AWS_BUCKET_NAME,
-   */
+  
   deleteCurrentImages(report: Reports): void {
     const s3 = new AWS.S3({
       accessKeyId: process.env.AWS_S3_ID,
