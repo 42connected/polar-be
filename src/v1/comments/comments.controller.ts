@@ -24,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
 import { Comments } from '../entities/comments.entity';
+import { CommentPaginationDto } from '../dto/comment/comment-pagination.dto';
 
 @Controller()
 @ApiTags('comments API')
@@ -31,14 +32,23 @@ export class CommentsController {
   constructor(private readonly commentService: CommentsService) {}
 
   @Get(':mentorIntraId')
+  @ApiOperation({
+    summary: 'comments API',
+    description: '해당 멘토에 대한 댓글을 반환합니다.',
+  })
+  @ApiCreatedResponse({
+    description: '댓글 배열과 전체 댓글 수',
+    type: CommentPaginationDto,
+  })
   async get(
     @Param('mentorIntraId') mentorIntraId: string,
     @Query() paginationDto: PaginationDto,
-  ): Promise<[Comments[], number]> {
-    return await this.commentService.getCommentPagination(
+  ): Promise<CommentPaginationDto> {
+    const result = await this.commentService.getCommentPagination(
       mentorIntraId,
       paginationDto,
     );
+    return { comments: result[0], total: result[1] };
   }
 
   @Post(':mentorIntraId')
@@ -46,12 +56,8 @@ export class CommentsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'comments API',
+    summary: 'Create comment',
     description: '멘토링 후기 생성하기',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링 후기 생성 성공',
-    type: String,
   })
   async post(
     @User() user: JwtUser,
@@ -94,12 +100,8 @@ export class CommentsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'comments delete API',
+    summary: 'Delete comment',
     description: '멘토링 후기 삭제하기',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링 후기 삭제 성공',
-    type: String,
   })
   async delete(
     @User() user: JwtUser,
