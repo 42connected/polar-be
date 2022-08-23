@@ -256,18 +256,63 @@ export class ReportsService {
     }
     return true;
   }
+  /**
+   * 
+   * s3: new AWS.S3({
+            accessKeyId: process.env.AWS_S3_ID,
+            secretAccessKey: process.env.AWS_S3_SECRET,
+            signatureVersion: 'v4',
+            region: 'ap-northeast-2',
+          }),
+          bucket: process.env.AWS_BUCKET_NAME,
+   */
+  deleteCurrentImages(report: Reports): void {
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_S3_ID,
+      secretAccessKey: process.env.AWS_S3_SECRET,
+      signatureVersion: 'v4',
+      region: 'ap-northeast-2',
+    });
+    if (report.imageUrl) {
+      report.imageUrl.forEach(key => {
+        s3.deleteObject(
+          {
+            Bucket: process.env.AWS_BUCKET_NAME,
+            Key: key,
+          },
+          (err, data) => {
+            if (err) {
+              console.log(err);
+            }
+          },
+        );
+      });
+    }
+    if (report.signatureUrl) {
+      s3.deleteObject(
+        {
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: report.signatureUrl,
+        },
+        (err, data) => {
+          if (err) {
+            console.log(err);
+          }
+        },
+      );
+    }
+  }
 
   /*
    * @Patch
    */
   async updateReport(
-    reportId: string,
+    report: Reports,
     mentorIntraId: string,
     filePaths: string[],
     signature: string,
     body: UpdateReportDto,
   ): Promise<boolean> {
-    const report = await this.findReportWithMentoringLogsById(reportId);
     const rs: ReportStatus = new ReportStatus(report.status);
     console.log('레포트 주인', report.mentors);
     console.log('현재 유저', mentorIntraId);
@@ -283,7 +328,7 @@ export class ReportsService {
     }
     try {
       this.reportsRepository.save({
-        id: reportId,
+        id: report.id,
         imageUrl: filePaths,
         signatureUrl: signature,
         place: body.place,
@@ -298,7 +343,7 @@ export class ReportsService {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
     }
     if (body.isDone) {
-      await this.reportDone(reportId);
+      await this.reportDone(report.id);
     }
     return true;
   }
