@@ -23,7 +23,6 @@ export class AuthService {
     } catch (err) {
       throw new ConflictException(err, 'fetch 작업 중 에러가 발생했습니다.');
     }
-    console.log(res);
     if (res.status >= 400) {
       throw new UnauthorizedException('Access Token을 받아올 수 없습니다.');
     }
