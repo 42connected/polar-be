@@ -13,7 +13,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'place',
+    description: '멘토링 진행 장소',
     required: false,
   })
   place: string;
@@ -21,7 +21,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'topic',
+    description: '멘토링 제목/주제',
     required: false,
   })
   topic: string;
@@ -29,7 +29,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'content',
+    description: '멘토링 신청 내용',
     required: false,
   })
   content: string;
@@ -37,7 +37,7 @@ export class UpdateReportDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'feedbackMessage',
+    description: '멘토가 카뎃에게 쓰는 피드백',
     required: false,
   })
   feedbackMessage: string;
@@ -81,7 +81,7 @@ export class UpdateReportDto {
   @IsBoolean()
   @IsOptional()
   @ApiPropertyOptional({
-    description: 'isDone',
+    description: '레포트가 작성 완료인지',
     required: false,
     type: Boolean,
   })

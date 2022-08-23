@@ -15,7 +15,6 @@ import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { UpdateReportDto } from '../dto/reports/update-report.dto';
-import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
@@ -28,6 +27,7 @@ import {
 import * as multerS3 from 'multer-s3';
 import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
+import { ReportDto } from '../dto/reports/report.dto';
 config();
 
 @Controller()
@@ -45,9 +45,11 @@ export class ReportsController {
   })
   @ApiCreatedResponse({
     description: '레포트 정보',
-    type: Promise<Reports>,
+    type: ReportDto,
   })
-  async getReport(@Param('reportId') reportId: string): Promise<Reports> {
+  async getReport(@Param('reportId') reportId: string): Promise<ReportDto> {
+    const result = await this.reportsService.getReport(reportId);
+    console.log(result);
     return await this.reportsService.getReport(reportId);
   }
 
@@ -63,12 +65,9 @@ export class ReportsController {
     }),
   )
   @ApiOperation({
-    summary: 'createReport API',
-    description: 'Report 생성하는 api',
-  })
-  @ApiCreatedResponse({
-    description: 'Report 생성 성공',
-    type: Promise<string>,
+    summary: 'Create report',
+    description:
+      '레포트 작성하기를 최초로 누르면 해당 멘토링 로그에 대한 레포트의 기본 정보가 DB에 생성된다.',
   })
   async createReport(
     @Param('mentoringLogId') mentoringLogId: string,
@@ -110,12 +109,8 @@ export class ReportsController {
     ),
   )
   @ApiOperation({
-    summary: 'updateReport API',
-    description: 'Report 수정하는 api',
-  })
-  @ApiCreatedResponse({
-    description: 'Report 수정 성공',
-    type: Promise<string>,
+    summary: 'Update report',
+    description: '레포트 정보를 수정합니다.',
   })
   async updateReport(
     @Param('reportId') reportId: string,

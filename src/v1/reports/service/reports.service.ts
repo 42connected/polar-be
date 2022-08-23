@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
@@ -50,7 +51,7 @@ export class ReportsService {
     return report;
   }
 
-  async findReportById(reportId: string): Promise<Reports> {
+  async findReportById(reportId: string): Promise<ReportDto> {
     let report: Reports;
     try {
       report = await this.reportsRepository.findOne({
@@ -218,7 +219,7 @@ export class ReportsService {
   /*
    * @Get
    */
-  async getReport(reportId: string): Promise<Reports> {
+  async getReport(reportId: string): Promise<ReportDto> {
     return await this.findReportById(reportId);
   }
 
