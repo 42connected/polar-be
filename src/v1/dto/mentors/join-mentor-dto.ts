@@ -10,6 +10,7 @@ export class JoinMentorDto {
     description: 'name',
     required: true,
     type: String,
+    example: '김나경',
   })
   name: string;
 
@@ -19,6 +20,7 @@ export class JoinMentorDto {
     description: 'email',
     required: true,
     type: String,
+    example: 'test@gmail.com',
   })
   email: string;
 
@@ -28,6 +30,7 @@ export class JoinMentorDto {
     description: 'slackId',
     required: true,
     type: String,
+    example: 'nakkim',
   })
   slackId: string;
 
@@ -38,6 +41,18 @@ export class JoinMentorDto {
     description: 'availableTime',
     required: true,
     type: [[AvailableTimeDto]],
+    example: [
+      [],
+      [
+        { startHour: 6, startMinute: 0, endHour: 10, endMinute: 0 },
+        { startHour: 10, startMinute: 0, endHour: 11, endMinute: 0 },
+      ],
+      [],
+      [],
+      [{ startHour: 6, startMinute: 30, endHour: 9, endMinute: 0 }],
+      [],
+      [{ startHour: 6, startMinute: 30, endHour: 9, endMinute: 0 }],
+    ],
   })
   availableTime?: AvailableTimeDto[][];
 

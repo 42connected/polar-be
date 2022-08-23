@@ -11,6 +11,7 @@ import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { UpdateMentor } from 'src/v1/interface/mentors/update-mentor.interface';
+import { MentorDto } from 'src/v1/dto/mentors/mentor.dto';
 
 @Injectable()
 export class MentorsService {
