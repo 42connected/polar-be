@@ -6,12 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
-import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
 import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
-import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
+import { UpdateMentor } from 'src/v1/interface/mentors/update-mentor.interface';
 
 @Injectable()
 export class MentorsService {
@@ -69,53 +68,53 @@ export class MentorsService {
     return mentor;
   }
 
-  async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
-    const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    if (body.availableTime) {
-      mentor.availableTime = JSON.stringify(
-        this.validateAvailableTime(body.availableTime),
-      );
-    }
-    mentor.introduction = body.introduction;
-    mentor.markdownContent = body.markdownContent;
-    mentor.email = body.email;
-    mentor.isActive = body.isActive;
-    try {
-      await this.mentorsRepository.save(mentor);
-      return true;
-    } catch {
-      throw new ConflictException('데이터 저장 중 에러가 발생하였습니다');
-    }
-  }
-
   async validateInfo(intraId: string): Promise<boolean> {
     try {
       const mentor: Mentors = await this.findMentorByIntraId(intraId);
-      if (mentor.name === null) {
+      if (!mentor.slackId || !mentor.email || !mentor.name) {
         return false;
       }
-      const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
-      week.forEach(day => {
-        if (day.length > 0) {
-          return true;
+      if (mentor.isActive) {
+        if (!mentor.availableTime) {
+          return false;
         }
-      });
-      return false;
+        const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+        week.forEach(day => {
+          if (day.length > 0) {
+            return true;
+          }
+        });
+        return false;
+      }
+      return true;
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
     }
   }
 
-  async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
-    const { name, email, availableTime } = infos;
-    try {
-      const foundUser: Mentors = await this.findMentorByIntraId(intraId);
-      foundUser.name = name;
-      foundUser.email = email;
+  async updateMentorDetails(
+    intraId: string,
+    infos: UpdateMentor,
+  ): Promise<void> {
+    const { name, email, availableTime, slackId, isActive, markdownContent } =
+      infos;
+    const foundUser: Mentors = await this.findMentorByIntraId(intraId);
+    foundUser.name = name;
+    foundUser.email = email;
+    foundUser.slackId = slackId;
+    foundUser.isActive = isActive;
+    foundUser.markdownContent = markdownContent;
+    if (isActive) {
+      if (!availableTime) {
+        throw new BadRequestException(
+          '멘토링 가능으로 설정 시 가능시간을 입력해야 합니다.',
+        );
+      }
       foundUser.availableTime = JSON.stringify(
         this.validateAvailableTime(availableTime),
       );
-      foundUser.isActive = true;
+    }
+    try {
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');

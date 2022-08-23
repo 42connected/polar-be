@@ -85,6 +85,22 @@ export class MentorsController {
     return { logs: result[0], total: result[1] };
   }
 
+  @Patch('join')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'mentor join post API',
+    description: '멘토 기본정보(name, availableTime, isActive) 입력 api',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 기본정보 생성 성공',
+    type: Promise<void>,
+  })
+  join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+    return this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
   @Patch(':intraId')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
@@ -101,28 +117,11 @@ export class MentorsController {
     @User() user: JwtUser,
     @Param('intraId') intraId: string,
     @Body() body: UpdateMentorDatailDto,
-  ): Promise<boolean> {
+  ): Promise<void> {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
     return await this.mentorsService.updateMentorDetails(user.intraId, body);
-  }
-
-  @Patch('join')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'mentor join post API',
-    description: '멘토 기본정보(name, availableTime, isActive) 입력 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토 기본정보 생성 성공',
-    type: Promise<void>,
-  })
-  join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
-    this.mentorsService.validateAvailableTime(body.availableTime);
-    return this.mentorsService.saveInfos(user.intraId, body);
   }
 
   @Get(':intraId')

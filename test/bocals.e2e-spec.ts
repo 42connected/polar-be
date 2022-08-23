@@ -13,13 +13,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
-import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { BocalsModule } from 'src/v1/bocals/bocals.module';
 import { GetDataRoomDto } from 'src/v1/dto/bocals/get-data-room.dto';
+import { Reports } from 'src/v1/entities/reports.entity';
 
 describe('BocalsController (e2e)', () => {
   let app: INestApplication;
-  let mentoringLogsRepo: Repository<MentoringLogs>;
+  let reportsRepo: Repository<Reports>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -61,9 +61,7 @@ describe('BocalsController (e2e)', () => {
       .compile();
 
     app = moduleFixture.createNestApplication();
-    mentoringLogsRepo = moduleFixture.get<Repository<MentoringLogs>>(
-      'MentoringLogsRepository',
-    );
+    reportsRepo = moduleFixture.get<Repository<Reports>>('ReportsRepository');
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,
@@ -78,12 +76,10 @@ describe('BocalsController (e2e)', () => {
   });
 
   it('POST /data-room/excel', async () => {
-    const log = await mentoringLogsRepo.findOneBy({
-      topic: '테스트용멘토링로그',
-    });
+    const reports = await reportsRepo.find();
     return request(app.getHttpServer())
       .post('/data-room/excel')
-      .send({ mentoringLogId: log.id })
+      .send({ reportIds: reports[0].id })
       .expect(201);
   });
 

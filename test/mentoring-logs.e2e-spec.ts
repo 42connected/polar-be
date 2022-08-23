@@ -106,7 +106,7 @@ describe('MentoringLogsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'm-dada', role: 'mentor' };
+          req.user = { intraId: 'm-engeng', role: 'mentor' };
           return true;
         },
       })
@@ -141,7 +141,7 @@ describe('MentoringLogsController (e2e)', () => {
   });
 
   it('PATCH /approve', async () => {
-    const log = await createMentoringLog('m-dada', 'nakkim', '대기중');
+    const log = await createMentoringLog('m-engeng', 'nakkim', '대기중');
     const body: ApproveMentoringDto = {
       mentoringLogId: log.id,
       meetingAt: [
@@ -156,7 +156,7 @@ describe('MentoringLogsController (e2e)', () => {
   });
 
   it('PATCH /reject', async () => {
-    const log = await createMentoringLog('m-dada', 'nakkim', '대기중');
+    const log = await createMentoringLog('m-engeng', 'nakkim', '대기중');
     const body: RejectMentoringDto = {
       mentoringLogId: log.id,
       rejectMessage: '테스트중',
@@ -165,7 +165,7 @@ describe('MentoringLogsController (e2e)', () => {
   });
 
   it('PATCH /done', async () => {
-    const log = await createMentoringLog('m-dada', 'nakkim', '확정');
+    const log = await createMentoringLog('m-engeng', 'nakkim', '확정');
     const body: CompleteMentoringDto = {
       mentoringLogId: log.id,
     };

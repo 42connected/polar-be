@@ -19,6 +19,9 @@ export class Mentors {
   @Column({ type: 'varchar', length: 50 })
   intraId: string;
 
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  slackId: string;
+
   @Column({ type: 'varchar', length: 10, nullable: true })
   name: string;
 
