@@ -30,7 +30,8 @@ export class CategoriesController {
   })
   @ApiCreatedResponse({
     description: '카테고리 객체 배열',
-    type: Promise<GetCategoriesDto[]>,
+    type: GetCategoriesDto,
+    isArray: true,
   })
   getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
@@ -43,7 +44,8 @@ export class CategoriesController {
   })
   @ApiCreatedResponse({
     description: '키워드 이름 배열',
-    type: Promise<string[]>,
+    type: String,
+    isArray: true,
   })
   async getKeywords(
     @Param('category') categoryName: string,
