@@ -48,6 +48,7 @@ export class DataRoomService {
             cadets: {
               intraId: true,
               name: true,
+              isCommon: true,
             },
           },
           order: {
