@@ -17,65 +17,40 @@ export class ReportsSeeder implements Seeder {
     const mentoringLogsRepository = dataSource.getRepository(MentoringLogs);
 
     console.log('Seeding reports...');
-    const mentors = await mentorRepository.findOneBy({ intraId: 'm-dada' });
-    const cadets = await cadetRepository.findOneBy({ intraId: 'nakkim' });
-    const mentoringLogs: MentoringLogs[] = await mentoringLogsRepository.find({
-      relations: {
-        mentors: true,
-        cadets: true,
-      },
-      where: { topic: '테스트용멘토링로그' },
+    const cadetId = await cadetRepository.findOne({
+      select: { id: true },
+      where: { intraId: 'jeounpar' },
     });
-    if (mentoringLogs.length === 0) {
-      console.log('No mentoring logs found');
-      return;
-    }
-    const reportData: ReportsInterface = {
-      mentors,
-      cadets,
-      status: '작성중',
-      content: '테스트',
+    const mentorId = await mentorRepository.findOne({
+      select: { id: true },
+      where: { intraId: 'm-engeng' },
+    });
+    const mentoringLogs = await mentoringLogsRepository.find({
+      where: { mentors: true, cadets: true },
+    });
+    const newData = reportRepository.create({
+      mentoringLogs: mentoringLogs[0],
+      mentors: mentorId,
+      cadets: cadetId,
+      status: '완료',
+      topic: mentoringLogs[0].topic,
+      content: mentoringLogs[0].content,
+      feedback1: 5,
+      feedback2: 5,
+      feedback3: 5,
+      feedbackMessage: '좋았습니다',
+      money: 100000,
       place: 'on-line',
       imageUrl: [
         'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
       ],
-      mentoringLogs: mentoringLogs[0],
-    };
-
-    const newUser = reportRepository.create(reportData);
-    await reportRepository.save(newUser);
-
-    const reportsFactory = await factoryManager.get(Reports);
-    const reportsMentoingLogs = await reportRepository.find({
-      relations: {
-        mentoringLogs: true,
-      },
-      select: {
-        mentoringLogs: {
-          id: true,
-        },
-      },
+      signatureUrl:
+        'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png',
     });
-
-    const reportsMentoingLogsRoom = reportsMentoingLogs.map(report => {
-      if (report.mentoringLogs?.id) {
-        return report.mentoringLogs.id;
-      }
-    });
-    const mentoringLogsMeta = await mentoringLogsRepository.find({
-      relations: {
-        cadets: true,
-        mentors: true,
-      },
-      where: {
-        id: Not(In(reportsMentoingLogsRoom)),
-      },
-    });
-    if (mentoringLogsMeta.length === 0) {
-      console.log('No mentoring logs found');
-      return;
+    try {
+      await reportRepository.save(newData);
+    } catch (err) {
+      console.log(err);
     }
-    // await reportsFactory.setMeta({ mentoringLogsMeta });
-    // await reportsFactory.saveMany(4);
   }
 }

@@ -32,7 +32,6 @@ export class KeywordsSeeder implements Seeder {
     const keywordList = keywordsArray.filter(
       (v, i) => keywordsArray.indexOf(v) === i,
     );
-    // console.log(keywordList.sort());
     for (const keywordData of keywordList) {
       const isExists = await keywordRepository.findOneBy({
         name: keywordData,

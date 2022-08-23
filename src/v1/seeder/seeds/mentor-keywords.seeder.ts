@@ -3,7 +3,6 @@ import { DataSource } from 'typeorm';
 import { Seeder } from 'typeorm-extension';
 import { Mentors } from '../../entities/mentors.entity';
 import { Keywords } from '../../entities/keywords.entity';
-import { MentorKeywordsInterface } from 'src/v1/interface/mentor-keywords/mentor-keywords.interface';
 import * as XLSX from 'xlsx';
 
 export class MentorKeywordsSeeder implements Seeder {
