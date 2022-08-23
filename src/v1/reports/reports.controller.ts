@@ -28,6 +28,7 @@ import * as multerS3 from 'multer-s3';
 import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
 import { ReportDto } from '../dto/reports/report.dto';
+import { Reports } from '../entities/reports.entity';
 config();
 
 @Controller()
@@ -122,8 +123,11 @@ export class ReportsController {
   ): Promise<boolean> {
     const filePaths: string[] = this.reportsService.getImagesPath(files);
     const signaturePaths: string = this.reportsService.getSignaturePath(files);
+    const report: Reports =
+      await this.reportsService.findReportWithMentoringLogsById(reportId);
+    this.reportsService.deleteCurrentImages(report);
     return await this.reportsService.updateReport(
-      reportId,
+      report,
       user.intraId,
       filePaths,
       signaturePaths,
