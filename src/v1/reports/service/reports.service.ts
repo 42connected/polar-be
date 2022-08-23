@@ -314,8 +314,6 @@ export class ReportsService {
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    console.log('레포트 주인', report.mentors);
-    console.log('현재 유저', mentorIntraId);
     if (!rs.verify()) {
       throw new UnauthorizedException(
         '해당 레포트를 수정할 수 없는 상태입니다',
@@ -329,8 +327,8 @@ export class ReportsService {
     try {
       this.reportsRepository.save({
         id: report.id,
-        imageUrl: filePaths,
-        signatureUrl: signature,
+        imageUrl: filePaths || null,
+        signatureUrl: signature || null,
         place: body.place,
         topic: body.topic,
         content: body.content,
