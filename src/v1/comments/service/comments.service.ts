@@ -1,8 +1,8 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -143,7 +143,7 @@ export class CommentsService {
   ): Promise<boolean> {
     const comment = await this.findCommentById(commentId);
     if (intraId !== comment.cadets?.intraId) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         `해당 코멘트를 수정할 수 있는 권한이 없습니다`,
       );
     }
@@ -162,7 +162,7 @@ export class CommentsService {
   async deleteComment(intraId: string, commentId: string): Promise<boolean> {
     const comment = await this.findCommentById(commentId);
     if (intraId !== comment.cadets?.intraId) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         `해당 코멘트를 삭제할 수 있는 권한이 없습니다`,
       );
     }

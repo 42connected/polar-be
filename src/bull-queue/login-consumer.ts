@@ -1,5 +1,5 @@
 import { Process, Processor } from '@nestjs/bull';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { Job } from 'bull';
 import fetch from 'node-fetch';
 import { LoginJob } from '../v1/interface/login-job.interface';
@@ -21,7 +21,7 @@ export class LoginConsumer {
       throw new ConflictException(err, 'fetch 작업 중 에러가 발생했습니다.');
     }
     if (res.status !== 200) {
-      throw new UnauthorizedException('프로필 정보를 받아올 수 없습니다.');
+      throw new ConflictException('프로필 정보를 받아올 수 없습니다.');
     }
     try {
       const profile = await res.json();
