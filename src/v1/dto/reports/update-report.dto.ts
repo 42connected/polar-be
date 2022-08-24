@@ -11,6 +11,7 @@ import {
 export class UpdateReportDto {
   @IsString()
   @IsOptional()
+  @Max(100)
   @ApiPropertyOptional({
     description: '멘토링 진행 장소',
     required: false,
@@ -19,6 +20,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Max(150)
   @ApiPropertyOptional({
     description: '멘토링 제목/주제',
     required: false,
@@ -27,6 +29,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Max(5000)
   @ApiPropertyOptional({
     description: '멘토링 신청 내용',
     required: false,
@@ -35,6 +38,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Max(3000)
   @ApiPropertyOptional({
     description: '멘토가 카뎃에게 쓰는 피드백',
     required: false,
