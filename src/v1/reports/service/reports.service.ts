@@ -1,10 +1,10 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
@@ -256,7 +256,7 @@ export class ReportsService {
     }
     return true;
   }
-  
+
   deleteCurrentImages(report: Reports): void {
     const s3 = new AWS.S3({
       accessKeyId: process.env.AWS_S3_ID,
@@ -306,12 +306,10 @@ export class ReportsService {
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
-      throw new UnauthorizedException(
-        '해당 레포트를 수정할 수 없는 상태입니다',
-      );
+      throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (report.mentors.intraId !== mentorIntraId) {
-      throw new UnauthorizedException(
+      throw new ForbiddenException(
         `해당 레포트를 수정할 수 있는 권한이 없습니다`,
       );
     }
