@@ -35,15 +35,6 @@ export class UpdateMentorDatailDto {
   })
   introduction?: string;
 
-  @IsOptional()
-  @IsEmail()
-  @ApiPropertyOptional({
-    description: 'email',
-    required: false,
-    example: 'test@gmail.com',
-  })
-  email?: string;
-
   @IsBoolean()
   @IsOptional()
   @ApiPropertyOptional({

@@ -97,11 +97,9 @@ export class MentorsService {
     intraId: string,
     infos: UpdateMentor,
   ): Promise<void> {
-    const { name, email, availableTime, slackId, isActive, markdownContent } =
-      infos;
+    const { name, availableTime, slackId, isActive, markdownContent } = infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
-    foundUser.email = email;
     foundUser.slackId = slackId;
     foundUser.isActive = isActive;
     foundUser.markdownContent = markdownContent;
