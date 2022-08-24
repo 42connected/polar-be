@@ -82,10 +82,10 @@ export class CadetsService {
         },
         createdAt: mentoring.createdAt,
         status: mentoring.status,
-        content: mentoring.content,
+        topic: mentoring.topic,
         meta: {
           isCommon,
-          topic: mentoring.topic,
+          content: mentoring.content,
           requestTime: [
             mentoring.requestTime1,
             mentoring.requestTime2,

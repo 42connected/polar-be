@@ -152,6 +152,7 @@ export class EmailService {
           context: {
             mentorSlackId: messageDto.mentorSlackId,
             cadetSlackId: messageDto.cadetSlackId,
+            topic: messageDto.topic,
             intraProfileUrl:
               'https://profile.intra.42.fr/users/' + messageDto.cadetSlackId,
             commonType: commonType,
@@ -176,6 +177,7 @@ export class EmailService {
           context: {
             cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
+            topic: messageDto.topic,
             reservationTimeToString: reservationTimeToString,
           },
         };
@@ -187,6 +189,7 @@ export class EmailService {
           context: {
             cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
+            topic: messageDto.topic,
             rejectMessage: messageDto.rejectMessage,
           },
         };
@@ -231,6 +234,7 @@ export class EmailService {
           mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           reservationTime1: mentoringsLogsInfoDb.requestTime1,
           reservationTime2: mentoringsLogsInfoDb.requestTime2,
           reservationTime3: mentoringsLogsInfoDb.requestTime3,
@@ -244,6 +248,7 @@ export class EmailService {
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           meetingAt: mentoringsLogsInfoDb.meetingAt,
         };
         return approveMessage;
@@ -254,6 +259,7 @@ export class EmailService {
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           rejectMessage: mentoringsLogsInfoDb.rejectMessage,
         };
         return cancelMessage;
