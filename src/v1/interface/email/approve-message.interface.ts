@@ -3,5 +3,6 @@ export interface ApproveMessage {
   mentorSlackId: string;
   cadetEmail: string;
   cadetSlackId: string;
+  topic: string;
   meetingAt: Date[];
 }

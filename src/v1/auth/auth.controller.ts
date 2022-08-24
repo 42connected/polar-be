@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UnauthorizedException } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, Query } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BocalsService } from '../bocals/service/bocals.service';
@@ -63,7 +63,7 @@ export class AuthController {
     } else {
       result = await this.cadetsService.findByIntra(intraId);
       if (cursus.length < 2) {
-        throw new UnauthorizedException('본과정 카뎃만 가입이 가능합니다.');
+        throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
       }
       if (result.id === undefined) {
         const user: CreateCadetDto = {

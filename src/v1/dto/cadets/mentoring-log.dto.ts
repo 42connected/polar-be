@@ -26,16 +26,16 @@ export class MentoringLogDto {
   status: string;
 
   @ApiProperty({
-    description: '멘토링 신청 시 작성한 내용',
-    example: '머시기가 궁금해요. 제가 똑바로 하고 있는 게 맞나요?',
+    description: '멘토링 제목/주제',
+    example: '백엔드가 궁금',
   })
-  content: string;
+  topic: string;
 
   @ApiProperty({
     description: '해당 로그 클릭 시 띄울 로그에 대한 자세한 정보',
     example: {
       isCommon: true,
-      topic: '백엔드가 궁금',
+      content: '머시기가 궁금해요. 제가 똑바로 하고 있는 게 맞나요?',
       requestTime: [
         ['2022-08-18T10:00:00.000Z', '2022-08-18T11:30:00.000Z'],
         null,
@@ -47,7 +47,7 @@ export class MentoringLogDto {
   })
   meta: {
     isCommon: boolean;
-    topic: string;
+    content: string;
     requestTime: Date[][];
     meetingAt: Date[];
     rejectMessage: string;
