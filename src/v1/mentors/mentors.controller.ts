@@ -45,12 +45,28 @@ export class MentorsController {
     summary: 'Get mentoring logs',
     description: '로그인된 멘토의 멘토링 로그와 인트라 아이디를 반환합니다.',
   })
+  @ApiQuery({
+    name: 'take',
+    type: Number,
+    description: '한 페이지에 띄울 멘토링 로그 정보의 수',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    description: '선택한 페이지(1페이지, 2페이지, ...)',
+  })
   @ApiCreatedResponse({
     description: '멘토 인트라 아이디, 멘토링 로그',
     type: MentoringInfoDto,
   })
-  async getMentoringsLists(@User() user: JwtUser): Promise<MentoringInfoDto> {
-    return await this.mentoringsService.getMentoringsLists(user);
+  async getMentoringsLists(
+    @User() user: JwtUser,
+    @Query() pagination: PaginationDto,
+  ): Promise<MentoringInfoDto> {
+    return await this.mentoringsService.getMentoringsLists(
+      user.intraId,
+      pagination,
+    );
   }
 
   @Get('simplelogs/:mentorIntraId')

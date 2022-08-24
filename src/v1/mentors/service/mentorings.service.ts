@@ -22,56 +22,50 @@ export class MentoringsService {
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async getMentoringsLists(user: JwtUser): Promise<MentoringInfoDto> {
-    const mentorIntraId = user.intraId;
-    let mentorDb = null;
+  formatMentoringLog(log: MentoringLogs): MentoringLogsDto {
+    return {
+      id: log.id,
+      createdAt: log.createdAt,
+      meetingAt: log.meetingAt,
+      cadet: {
+        name: log.cadets.name,
+        intraId: log.cadets.intraId,
+        resumeUrl: log.cadets.resumeUrl,
+      },
+      topic: log.topic,
+      status: log.status,
+      reportStatus: log.reports ? log.reports.status : null,
+      meta: {
+        requestTime: [log.requestTime1, log.requestTime2, log.requestTime3],
+        isCommon: log.cadets.isCommon,
+        rejectMessage: log.rejectMessage,
+        content: log.content,
+      },
+    };
+  }
 
+  async getMentoringsLists(
+    intraId: string,
+    pagination: PaginationDto,
+  ): Promise<MentoringInfoDto> {
+    let result: [MentoringLogs[], number];
     try {
-      mentorDb = await this.mentorsRepository.findOne({
-        where: { intraId: mentorIntraId },
-        relations: {
-          mentoringLogs: { cadets: true },
+      result = await this.mentoringsLogsRepository.findAndCount({
+        relations: { cadets: true, reports: true },
+        where: {
+          mentors: { intraId },
         },
-        order: {
-          mentoringLogs: {
-            createdAt: 'DESC',
-          },
-        },
+        take: pagination.take,
+        skip: pagination.take * (pagination.page - 1),
+        order: { createdAt: 'DESC' },
       });
     } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+      throw new ConflictException('데이터 검색 중 에러가 발생했습니다.');
     }
-
-    if (mentorDb === null)
-      throw new NotFoundException('데이터를 찾을 수 없습니다');
-
-    const mentoringLogs: MentoringLogsDto[] = mentorDb.mentoringLogs.map(
-      mentoring => {
-        return {
-          id: mentoring.id,
-          createdAt: mentoring.createdAt,
-          meetingAt: mentoring.meetingAt,
-          cadet: {
-            name: mentoring.cadets.name,
-            intraId: mentoring.cadets.intraId,
-            resumeUrl: mentoring.cadets.resumeUrl,
-          },
-          topic: mentoring.topic,
-          status: mentoring.status,
-          meta: {
-            requestTime: [
-              mentoring.requestTime1,
-              mentoring.requestTime2,
-              mentoring.requestTime3,
-            ],
-            isCommon: mentoring.cadets.isCommon,
-            rejectMessage: mentoring.rejectMessage,
-            content: mentoring.content,
-          },
-        };
-      },
-    );
-    return { intraId: mentorIntraId, mentoringLogs };
+    const logs: MentoringLogsDto[] = result[0].map(log => {
+      return this.formatMentoringLog(log);
+    });
+    return { logs, total: result[1] };
   }
 
   async getSimpleLogsPagination(

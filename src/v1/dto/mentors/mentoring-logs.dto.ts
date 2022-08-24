@@ -8,7 +8,7 @@ export class MentoringLogsDto {
   createdAt: Date;
 
   @ApiProperty()
-  meetingAt: Date;
+  meetingAt: Date[];
 
   @ApiProperty({
     example: {
@@ -34,6 +34,11 @@ export class MentoringLogsDto {
   status: string;
 
   @ApiProperty({
+    example: '작성가능',
+  })
+  reportStatus: string;
+
+  @ApiProperty({
     example: {
       requestTime: [
         ['2022-08-12T08:00:00.000Z', '2022-08-12T10:00:00.000Z'],
@@ -46,7 +51,7 @@ export class MentoringLogsDto {
     },
   })
   meta: {
-    requestTime: Date[][2];
+    requestTime: Date[][];
     isCommon: boolean;
     rejectMessage: string;
     content: string;
