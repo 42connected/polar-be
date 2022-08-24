@@ -34,9 +34,15 @@ export class MentoringLogsDto {
   status: string;
 
   @ApiProperty({
-    example: '작성가능',
+    example: {
+      id: 'uuid',
+      status: '작성가능',
+    },
   })
-  reportStatus: string;
+  report: {
+    id: string;
+    status: string;
+  };
 
   @ApiProperty({
     example: {

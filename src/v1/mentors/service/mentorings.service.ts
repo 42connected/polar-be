@@ -34,7 +34,10 @@ export class MentoringsService {
       },
       topic: log.topic,
       status: log.status,
-      reportStatus: log.reports ? log.reports.status : null,
+      report: {
+        id: log.reports ? log.reports.id : null,
+        status: log.reports ? log.reports.status : null,
+      },
       meta: {
         requestTime: [log.requestTime1, log.requestTime2, log.requestTime3],
         isCommon: log.cadets.isCommon,
