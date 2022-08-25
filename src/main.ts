@@ -19,7 +19,7 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: ['localhost:3000', process.env.FRONT_URL],
+    origin: ['http://localhost:3000', process.env.FRONT_URL],
   });
   app.use(
     ['/api-docs'],
