@@ -29,7 +29,7 @@ export class Reports {
   @Column({ type: 'varchar', length: 150, nullable: true })
   topic: string;
 
-  @Column({ type: 'varchar', length: 5000, nullable: true })
+  @Column({ type: 'varchar', length: 800, nullable: true })
   content: string;
 
   @Column({
@@ -44,7 +44,7 @@ export class Reports {
   @Column({ type: 'varchar', length: 1000, nullable: true })
   signatureUrl: string;
 
-  @Column({ type: 'varchar', length: 3000, nullable: true })
+  @Column({ type: 'varchar', length: 800, nullable: true })
   feedbackMessage: string;
 
   @Column({ type: 'smallint', nullable: true })
