@@ -118,7 +118,7 @@ export class CadetsService {
       cadet.mentoringLogs,
       cadet.isCommon,
     );
-    return { username: cadet.name, mentorings };
+    return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
   async validateInfo(intraId: string): Promise<boolean> {
