@@ -17,16 +17,6 @@ export class JoinMentorDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'email',
-    required: true,
-    type: String,
-    example: 'test@gmail.com',
-  })
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
     description: 'slackId',
     required: true,
     type: String,
