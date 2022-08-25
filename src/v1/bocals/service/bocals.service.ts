@@ -21,9 +21,15 @@ export class BocalsService {
     private reportsRepository: Repository<Reports>,
   ) {}
 
-  async createUser(user: CreateBocalDto): Promise<JwtUser> {
+  async updateLogin(bocal: Bocals, newData: CreateBocalDto): Promise<JwtUser> {
+    bocal.intraId = newData.intraId;
+    await this.bocalsRepository.save(bocal);
+    return { id: bocal.id, intraId: bocal.intraId, role: 'bocal' };
+  }
+
+  async createUser(newData: CreateBocalDto): Promise<JwtUser> {
     try {
-      const createdUser: Bocals = await this.bocalsRepository.create(user);
+      const createdUser: Bocals = await this.bocalsRepository.create(newData);
       await this.bocalsRepository.save(createdUser);
       return {
         id: createdUser.id,
@@ -38,12 +44,12 @@ export class BocalsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<JwtUser> {
+  async findByIntra(intraId: string): Promise<Bocals> {
     try {
       const foundUser: Bocals = await this.bocalsRepository.findOneBy({
         intraId,
       });
-      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
+      return foundUser;
     } catch (err) {
       throw new ConflictException(
         err,
