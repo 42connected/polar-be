@@ -21,11 +21,11 @@ export class ValidateInfoMiddleware implements NestMiddleware {
     const user: JwtUser = this.jwtService.verify(jwt.substring(7));
     if (user.role === 'mentor') {
       if ((await this.mentorsService.validateInfo(user.intraId)) === false) {
-        return res.redirect('https://프론트주소/mentors/join');
+        return res.redirect(`${process.env.FRONT_URL}/mentors/join`);
       }
     } else if (user.role === 'cadet') {
       if ((await this.cadetsService.validateInfo(user.intraId)) === false) {
-        return res.redirect('https://프론트주소/cadets/join');
+        return res.redirect(`${process.env.FRONT_URL}/cadets/join`);
       }
     }
     next();

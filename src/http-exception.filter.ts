@@ -22,6 +22,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let responseBody: ExceptionResponse;
+    console.log(exception);
     if (exception instanceof TokenExpiredError) {
       responseBody = {
         statusCode: HttpStatus.UNAUTHORIZED,
