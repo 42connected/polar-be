@@ -161,7 +161,7 @@ export class MentorsService {
     if (
       time1.endHour === time2.startHour &&
       time1.endMinute === 30 &&
-      time2.endMinute === 0
+      time2.startMinute === 0
     ) {
       throw new BadRequestException('시간 사이에 중복이 존재합니다.');
     }
