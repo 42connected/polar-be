@@ -15,12 +15,14 @@ export class MentoringLogsDto {
       name: '김나경',
       intraId: 'nakkim',
       resumeUrl: 'https://asdf',
+      isCommon: true,
     },
   })
   cadet: {
     name: string;
     intraId: string;
     resumeUrl: string;
+    isCommon: boolean;
   };
 
   @ApiProperty({

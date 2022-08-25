@@ -31,6 +31,7 @@ export class MentoringsService {
         name: log.cadets.name,
         intraId: log.cadets.intraId,
         resumeUrl: log.cadets.resumeUrl,
+        isCommon: log.cadets.isCommon,
       },
       topic: log.topic,
       status: log.status,
