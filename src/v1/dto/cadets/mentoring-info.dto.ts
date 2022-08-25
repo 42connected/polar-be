@@ -9,6 +9,13 @@ export class MentoringInfoDto {
   username: string;
 
   @ApiProperty({
+    description: '이력서 링크',
+    required: false,
+    example: 'https://asdf',
+  })
+  resumeUrl: string;
+
+  @ApiProperty({
     description: '멘토링 로그 정보의 배열',
     type: MentoringLogDto,
     isArray: true,

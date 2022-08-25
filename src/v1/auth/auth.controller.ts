@@ -7,6 +7,9 @@ import { AuthResponse } from '../dto/auth-response.dto';
 import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
+import { Bocals } from '../entities/bocals.entity';
+import { Cadets } from '../entities/cadets.entity';
+import { Mentors } from '../entities/mentors.entity';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { AuthService } from './auth.service';
@@ -43,36 +46,40 @@ export class AuthController {
       email,
     } = profile;
     let result: JwtUser;
+    if (profile.campus[0].name !== 'Seoul') {
+      throw new ForbiddenException('서울 캠퍼스만 가입이 가능합니다.');
+    }
     if (intraId.startsWith('m-')) {
-      result = await this.mentorsService.findByIntra(intraId);
-      if (result.id === undefined) {
-        const user: CreateMentorDto = {
-          intraId,
-          profileImage,
-        };
-        result = await this.mentorsService.createUser(user);
+      const mentor: Mentors = await this.mentorsService.findByIntra(intraId);
+      const newData: CreateMentorDto = { intraId, profileImage };
+      if (!mentor) {
+        result = await this.mentorsService.createUser(newData);
+      } else {
+        result = await this.mentorsService.updateLogin(mentor, newData);
       }
     } else if (profile['staff?']) {
-      result = await this.bocalsService.findByIntra(intraId);
-      if (result.id === undefined) {
-        const user: CreateBocalDto = {
-          intraId,
-        };
-        result = await this.bocalsService.createUser(user);
+      const bocal: Bocals = await this.bocalsService.findByIntra(intraId);
+      const newData: CreateBocalDto = { intraId };
+      if (!bocal) {
+        result = await this.bocalsService.createUser(newData);
+      } else {
+        result = await this.bocalsService.updateLogin(bocal, newData);
       }
     } else {
-      result = await this.cadetsService.findByIntra(intraId);
+      const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
       if (cursus.length < 2) {
         throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
       }
-      if (result.id === undefined) {
-        const user: CreateCadetDto = {
-          intraId,
-          profileImage,
-          isCommon: isCommon === null ? true : false,
-          email,
-        };
-        result = await this.cadetsService.createUser(user);
+      const newData: CreateCadetDto = {
+        intraId,
+        profileImage,
+        isCommon: isCommon === null ? true : false,
+        email,
+      };
+      if (!cadet) {
+        result = await this.cadetsService.createUser(newData);
+      } else {
+        result = await this.cadetsService.updateLogin(cadet, newData);
       }
     }
     const jwt = await this.jwtService.sign({
