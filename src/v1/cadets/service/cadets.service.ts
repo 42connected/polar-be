@@ -20,6 +20,15 @@ export class CadetsService {
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
   ) {}
 
+  async updateLogin(cadet: Cadets, newData: CreateCadetDto): Promise<JwtUser> {
+    cadet.intraId = newData.intraId;
+    cadet.profileImage = newData.intraId;
+    cadet.isCommon = newData.isCommon;
+    cadet.email = newData.email;
+    await this.cadetsRepository.save(cadet);
+    return { id: cadet.id, intraId: cadet.intraId, role: 'cadet' };
+  }
+
   async createUser(user: CreateCadetDto): Promise<JwtUser> {
     try {
       const createdUser: Cadets = await this.cadetsRepository.create(user);
@@ -37,12 +46,12 @@ export class CadetsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<JwtUser> {
+  async findByIntra(intraId: string): Promise<Cadets> {
     try {
       const foundUser: Cadets = await this.cadetsRepository.findOneBy({
         intraId,
       });
-      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'cadet' };
+      return foundUser;
     } catch (err) {
       throw new ConflictException(
         err,
@@ -118,7 +127,7 @@ export class CadetsService {
       cadet.mentoringLogs,
       cadet.isCommon,
     );
-    return { username: cadet.name, mentorings };
+    return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
   async validateInfo(intraId: string): Promise<boolean> {

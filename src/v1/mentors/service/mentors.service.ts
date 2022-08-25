@@ -20,9 +20,23 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async createUser(user: CreateMentorDto): Promise<JwtUser> {
+  async updateLogin(
+    mentor: Mentors,
+    newData: CreateMentorDto,
+  ): Promise<JwtUser> {
+    mentor.intraId = newData.intraId;
+    mentor.profileImage = newData.profileImage;
+    await this.mentorsRepository.save(mentor);
+    return {
+      id: mentor.id,
+      intraId: mentor.intraId,
+      role: 'mentor',
+    };
+  }
+
+  async createUser(newData: CreateMentorDto): Promise<JwtUser> {
     try {
-      const createdUser: Mentors = this.mentorsRepository.create(user);
+      const createdUser: Mentors = this.mentorsRepository.create(newData);
       createdUser.isActive = false;
       await this.mentorsRepository.save(createdUser);
       return {
@@ -38,12 +52,12 @@ export class MentorsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<JwtUser> {
+  async findByIntra(intraId: string): Promise<Mentors> {
     try {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,
       });
-      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+      return foundUser;
     } catch (err) {
       throw new ConflictException(
         err,
@@ -97,11 +111,9 @@ export class MentorsService {
     intraId: string,
     infos: UpdateMentor,
   ): Promise<void> {
-    const { name, email, availableTime, slackId, isActive, markdownContent } =
-      infos;
+    const { name, availableTime, slackId, isActive, markdownContent } = infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
-    foundUser.email = email;
     foundUser.slackId = slackId;
     foundUser.isActive = isActive;
     foundUser.markdownContent = markdownContent;
