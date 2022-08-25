@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  Length,
   Max,
   Min,
 } from 'class-validator';
@@ -11,6 +12,7 @@ import {
 export class UpdateReportDto {
   @IsString()
   @IsOptional()
+  @Length(0, 100)
   @ApiPropertyOptional({
     description: '멘토링 진행 장소',
     required: false,
@@ -19,6 +21,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Length(0, 150)
   @ApiPropertyOptional({
     description: '멘토링 제목/주제',
     required: false,
@@ -27,6 +30,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Length(0, 5000)
   @ApiPropertyOptional({
     description: '멘토링 신청 내용',
     required: false,
@@ -35,6 +39,7 @@ export class UpdateReportDto {
 
   @IsString()
   @IsOptional()
+  @Length(0, 3000)
   @ApiPropertyOptional({
     description: '멘토가 카뎃에게 쓰는 피드백',
     required: false,

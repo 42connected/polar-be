@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Length, Max } from 'class-validator';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 export class ReportDto {
@@ -18,12 +19,15 @@ export class ReportDto {
   cadets: { name: string; isCommon: boolean };
 
   @ApiProperty()
+  @Length(0, 100)
   place: string;
 
   @ApiProperty()
+  @Length(0, 150)
   topic: string;
 
   @ApiProperty()
+  @Length(0, 5000)
   content: string;
 
   @ApiProperty({
@@ -36,6 +40,7 @@ export class ReportDto {
   signatureUrl: string;
 
   @ApiProperty()
+  @Length(0, 3000)
   feedbackMessage: string;
 
   @ApiProperty()
@@ -54,6 +59,7 @@ export class ReportDto {
     description: '레포트 상태',
     example: '작성중',
   })
+  @Length(0, 10)
   status: string;
 
   @ApiProperty({
