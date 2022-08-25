@@ -68,9 +68,13 @@ export class ReportsController {
     description:
       '레포트 작성하기를 최초로 누르면 해당 멘토링 로그에 대한 레포트의 기본 정보가 DB에 생성된다.',
   })
+  @ApiCreatedResponse({
+    description: '생성된 레포트 아이디',
+    type: String,
+  })
   async createReport(
     @Param('mentoringLogId') mentoringLogId: string,
-  ): Promise<boolean> {
+  ): Promise<string> {
     return await this.reportsService.createReport(mentoringLogId);
   }
 
