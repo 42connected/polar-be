@@ -2,7 +2,7 @@ name: deploy-develop-heroku CI
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "main" ]
 
 jobs:
   build:
@@ -11,7 +11,6 @@ jobs:
       - name: test
         run : echo "needs build test"
       
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -20,6 +19,9 @@ jobs:
     - uses: akhileshns/heroku-deploy@v3.12.12
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+        if: github.ref == 'refs/heads/develop'
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME_DEVELOP}}
+        if: github.ref == 'refs/heads/main'
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME_MAIN}}
         heroku_email: ${{secrets.HEROKU_EMAIL}}
         remote_branch: master
