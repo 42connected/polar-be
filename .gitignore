@@ -33,3 +33,21 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# Environment
+.env
+
+# Migrations
+/src/migrations
+
+# Uploads
+/uploads
+
+# local redis db
+dump.rdb
+
+# Seeder
+# /src/v1/seeder
+
+*.md
+*.xlsx
