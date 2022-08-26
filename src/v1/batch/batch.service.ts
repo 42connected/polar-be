@@ -59,10 +59,6 @@ export class BatchService {
       this.logger.log(
         '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
       );
-      // TODO: 로그를 예외로 변경
-      // throw new BadRequestException(
-      //   '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
-      // );
     }
     await this.addTimeout(millisecondsTime, mentoringLogsData);
 
