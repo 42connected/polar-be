@@ -132,8 +132,6 @@ export class MentorsController {
   }
 
   @Get(':intraId')
-  @Roles('mentor', 'cadet')
-  @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Get mentor details',

@@ -123,6 +123,7 @@ export class MentoringLogsService {
     if (infos.status === MentoringLogStatus.Approve) {
       this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
       foundLog.meetingAt = infos.meetingAt;
+      foundLog.meetingStart = infos.meetingAt[0];
     }
     try {
       await this.mentoringLogsRepository.save(foundLog);

@@ -23,7 +23,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { PaginationDto } from '../dto/pagination.dto';
-import { Comments } from '../entities/comments.entity';
 import { CommentPaginationDto } from '../dto/comment/comment-pagination.dto';
 
 @Controller()
