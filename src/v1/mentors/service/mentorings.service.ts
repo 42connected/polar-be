@@ -41,7 +41,6 @@ export class MentoringsService {
       },
       meta: {
         requestTime: [log.requestTime1, log.requestTime2, log.requestTime3],
-        isCommon: log.cadets.isCommon,
         rejectMessage: log.rejectMessage,
         content: log.content,
       },

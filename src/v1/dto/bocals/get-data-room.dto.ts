@@ -41,13 +41,14 @@ export class GetDataRoomDto {
   isAscending: boolean;
 
   @IsOptional()
-  @IsNumber()
+  @IsString()
   @ApiProperty({
-    description: '월별 조회',
+    description: '날짜별 조회',
     required: false,
-    type: Number,
+    type: String,
+    example: '2022-06',
   })
-  month: number;
+  date: string;
 
   @IsOptional()
   @IsString()
