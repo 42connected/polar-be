@@ -53,14 +53,12 @@ export class MentoringLogsDto {
         null,
         null,
       ],
-      isCommon: true,
       rejectMessage: null,
       content: '테스트중',
     },
   })
   meta: {
     requestTime: Date[][];
-    isCommon: boolean;
     rejectMessage: string;
     content: string;
   };
