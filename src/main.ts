@@ -3,7 +3,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as expressBasicAuth from 'express-basic-auth';
 import { setupSwagger } from './util/swagger';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,12 +17,9 @@ async function bootstrap() {
     }),
   );
 
-  const configService = app.get(ConfigService);
-  const origin = configService.get('FRONT_URL');
-
   app.enableCors({
     credentials: true,
-    origin: [process.env.BASE_URL, 'http://localhost:3000'],
+    origin: [process.env.FRONT_URL, 'http://localhost:3000'],
     methods: ['GET', 'HEAD', 'PATCH', 'POST', 'PUT', 'DELETE'],
   });
   app.use(
