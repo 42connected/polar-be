@@ -1,6 +1,5 @@
-import { Controller, Get, Res } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 
 @Controller()
 @ApiTags('Login API')
@@ -13,7 +12,7 @@ export class V1Controller {
   @ApiCreatedResponse({
     description: '42 OAuth 콜백 uri로 리다이렉트',
   })
-  login(@Res() res: Response): string {
+  login(): string {
     const authorizationUrl = `https://api.intra.42.fr/oauth/authorize?client_id=${process.env.UID_42}&redirect_uri=${process.env.REDIRECT_42}&response_type=code`;
     return authorizationUrl;
   }
