@@ -79,6 +79,12 @@ describe('CategoriesController (e2e)', () => {
     return request(app.getHttpServer()).get(encodeURI('/개발')).expect(200);
   });
 
+  it('GET /:category/keywords', () => {
+    return request(app.getHttpServer())
+      .get(encodeURI('/개발/keywords'))
+      .expect(200);
+  });
+
   afterAll(async () => {
     await app.close();
   });
