@@ -25,22 +25,19 @@ export class ValidateInfoMiddleware implements NestMiddleware {
     }
     const user: JwtUser = this.jwtService.verify(jwt.substring(7));
     if (user.role === 'mentor') {
-      console.log('멘토');
+      console.log('join 필요');
       if ((await this.mentorsService.validateInfo(user.intraId)) === false) {
         console.log('통과');
-        res.header(
-          'Access-Control-Allow-Origin',
-          'https://polar42-be-dev.herokuapp.com',
-        );
-        return res.redirect(`${process.env.FRONT_URL}/mentors/join`);
+        return res.redirect(`/mentors/join`);
       }
     } else if (user.role === 'cadet') {
       console.log('카뎃');
       if ((await this.cadetsService.validateInfo(user.intraId)) === false) {
         console.log('join 필요');
-        return res.redirect(`${process.env.FRONT_URL}/cadets/join`);
+        return res.redirect(`/cadets/join`);
       }
     }
+    console.log('통과');
     next();
   }
 }
