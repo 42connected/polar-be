@@ -164,7 +164,9 @@ export class BocalsService {
       await worksheet.addRow(row, 'o+');
     }
 
-    const fileName: string = new Date().toISOString().split('T')[0];
+    const fileName: string = new Date()
+      .toLocaleDateString('ko-KR')
+      .replace(' ', '');
     try {
       await response.writeHead(201, {
         'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
@@ -200,17 +202,27 @@ export class BocalsService {
       metorIntraId: report.mentors.intraId,
       mentorCompany: report.mentors.company,
       mentorDuty: report.mentors.duty,
-      date: report.mentoringLogs.meetingAt[0].toISOString().split('T')[0],
+      date: report.mentoringLogs.meetingAt[0].toLocaleDateString('ko-KR'),
       place: report.place,
       isCommon: report.cadets.isCommon ? '공통' : '심화',
       startTime: report.mentoringLogs.meetingAt[0]
-        .toISOString()
-        .split('T')[1]
-        .substr(0, 5),
+        .toLocaleTimeString('ko-KR')
+        .split(/오. /)[1]
+        .slice(
+          0,
+          report.mentoringLogs.meetingAt[0]
+            .toLocaleTimeString('ko-KR')
+            .lastIndexOf(':'),
+        ),
       endTime: report.mentoringLogs.meetingAt[1]
-        .toISOString()
-        .split('T')[1]
-        .substr(0, 5),
+        .toLocaleTimeString('ko-KR')
+        .split(/오. /)[1]
+        .slice(
+          0,
+          report.mentoringLogs.meetingAt[1]
+            .toLocaleTimeString('ko-KR')
+            .lastIndexOf(':'),
+        ),
       totalHour: report.money / MONEY_PER_HOUR,
       money: report.money,
       cadetName: report.cadets.name,
