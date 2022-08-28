@@ -28,13 +28,13 @@ export class ValidateInfoMiddleware implements NestMiddleware {
       console.log('join 필요');
       if ((await this.mentorsService.validateInfo(user.intraId)) === false) {
         console.log('통과');
-        return res.redirect(`/mentors/join`);
+        return res.redirect(`${process.env.FRONT_URL}/mentors/join`);
       }
     } else if (user.role === 'cadet') {
       console.log('카뎃');
       if ((await this.cadetsService.validateInfo(user.intraId)) === false) {
         console.log('join 필요');
-        return res.redirect(`/cadets/join`);
+        return res.redirect(`${process.env.FRONT_URL}/cadets/join`);
       }
     }
     console.log('통과');
