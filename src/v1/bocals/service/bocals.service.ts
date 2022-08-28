@@ -195,7 +195,7 @@ export class BocalsService {
     }
     const result: MentoringExcelData = {
       mentorName: report.mentors.name,
-      metorIntraId: report.mentors.intraId,
+      mentorIntraId: report.mentors.intraId,
       mentorCompany: report.mentors.company,
       mentorDuty: report.mentors.duty,
       date: report.mentoringLogs.meetingAt[0].toLocaleDateString('ko-KR'),
