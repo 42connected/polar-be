@@ -164,12 +164,8 @@ export class BocalsService {
       await worksheet.addRow(row, 'o+');
     }
 
-    const fileName: string = new Date()
-      .toLocaleDateString('ko-KR')
-      .replace(' ', '');
     try {
       await response.writeHead(201, {
-        'Content-Disposition': `attachment; filename=mentoring-data_${fileName}.xlsx`,
         'Content-Type':
           'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
