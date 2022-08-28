@@ -28,6 +28,10 @@ export class ValidateInfoMiddleware implements NestMiddleware {
       console.log('멘토');
       if ((await this.mentorsService.validateInfo(user.intraId)) === false) {
         console.log('통과');
+        res.header(
+          'Access-Control-Allow-Origin',
+          'https://polar42-be-dev.herokuapp.com',
+        );
         return res.redirect(`${process.env.FRONT_URL}/mentors/join`);
       }
     } else if (user.role === 'cadet') {
