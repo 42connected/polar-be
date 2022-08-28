@@ -96,7 +96,9 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('GET /mentorings', () => {
-    return request(app.getHttpServer()).get('/mentorings').expect(200);
+    return request(app.getHttpServer())
+      .get('/mentorings?take=2&page=1')
+      .expect(200);
   });
 
   it('GET /simplelogs/:mentorIntraId', () => {
@@ -114,7 +116,6 @@ describe('MentorsController (e2e)', () => {
     };
     const body: JoinMentorDto = {
       name: '테스트',
-      email: 'test@gmail.com',
       isActive: true,
       availableTime: [[availableTime], [], [], [], [availableTime], [], []],
       slackId: 'm-tedkim',
@@ -134,7 +135,6 @@ describe('MentorsController (e2e)', () => {
       endMinute: 0,
     };
     const body: UpdateMentorDatailDto = {
-      email: 'test2@gmail.com',
       availableTime: [
         [availableTime],
         [],
