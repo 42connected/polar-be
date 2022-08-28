@@ -1,5 +1,5 @@
 import { DataSource } from 'typeorm';
-import { runSeeder, Seeder, SeederFactoryManager } from 'typeorm-extension';
+import { runSeeder, Seeder } from 'typeorm-extension';
 import { BocalsSeeder } from './bocals.seeder';
 import { CadetsSeeder } from './cadets.seeder';
 import { CategoriesSeeder } from './categories.seeder';
@@ -12,10 +12,7 @@ import { MentorsSeeder } from './mentors.seeder';
 import { ReportsSeeder } from './reports.seeder';
 
 export class MainSeeder implements Seeder {
-  async run(
-    dataSource: DataSource,
-    factoryManager: SeederFactoryManager,
-  ): Promise<void> {
+  async run(dataSource: DataSource): Promise<void> {
     // await runSeeder(dataSource, BocalsSeeder);
     // await runSeeder(dataSource, CadetsSeeder);
     await runSeeder(dataSource, KeywordsSeeder);

@@ -12,32 +12,43 @@ export class MentoringLogsSeeder implements Seeder {
     const mentorRepository = dataSource.getRepository(Mentors);
     const cadetRepository = dataSource.getRepository(Cadets);
 
-    const cadetId = await cadetRepository.findOne({
-      select: { id: true },
-      where: { intraId: 'jeounpar' },
-    });
-    const mentorId = await mentorRepository.findOne({
-      select: { id: true },
-      where: { intraId: 'm-engeng' },
-    });
+    const found = await mentoringLogsRepository.find();
+    const rst = await Promise.all(
+      found.map(async e => {
+        if (e.meetingAt && e.meetingAt.length == 2) {
+          e.meetingStart = e.meetingAt[0];
+          await mentoringLogsRepository.save(e);
+        }
+      }),
+    );
+    // const cadetId = await cadetRepository.findOne({
+    //   select: { id: true },
+    //   where: { intraId: 'jeounpar' },
+    // });
+    // const mentorId = await mentorRepository.findOne({
+    //   select: { id: true },
+    //   where: { intraId: 'm-engeng' },
+    // });
 
-    const mentoringLogsData: Partial<MentoringLogs> = {
-      mentors: mentorId,
-      cadets: cadetId,
-      topic: '42서울 프론트엔드 사이드프로젝트',
-      content: '42서울 프론트엔드 사이드프로젝트',
-      status: '완료',
-      requestTime1: [
-        new Date('2022-08-18T10:00:00Z'),
-        new Date('2022-08-18T11:30:00Z'),
-      ],
-      meetingAt: [
-        new Date('2022-08-18T10:00:00Z'),
-        new Date('2022-08-18T11:30:00Z'),
-      ],
-    };
+    // for (let i = 0; i < 100; i++) {
+    //   const mentoringLogsData: Partial<MentoringLogs> = {
+    //     mentors: mentorId,
+    //     cadets: cadetId,
+    //     topic: '42서울 사이드프로젝트',
+    //     content: '42서울 사이드프로젝트',
+    //     status: '확정',
+    //     requestTime1: [
+    //       new Date('2022-09-18T10:00:00Z'),
+    //       new Date('2022-09-18T11:30:00Z'),
+    //     ],
+    //     meetingAt: [
+    //       new Date('2022-09-18T10:00:00Z'),
+    //       new Date('2022-09-18T11:30:00Z'),
+    //     ],
+    //   };
 
-    const newUser = mentoringLogsRepository.create(mentoringLogsData);
-    await mentoringLogsRepository.save(newUser);
+    //   const newUser = mentoringLogsRepository.create(mentoringLogsData);
+    //   await mentoringLogsRepository.save(newUser);
+    // }
   }
 }

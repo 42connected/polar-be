@@ -24,22 +24,24 @@ export class MentorsSeeder implements Seeder {
       keywords: string;
     }
     const mentorDataList: MentorsInterface[] = [];
-    resultSheet.map(e => {
-      const fileName =
-        '/Users/park/NestJS/polar-be/src/v1/seeder/seeds/mentor-mds/' +
-        e.name +
-        '.md';
-      const markdownContent = fs.readFileSync(fileName, 'utf8');
-      const newData: MentorsInterface = {
-        name: e.name,
-        intraId: e.intraId,
-        profileImage: e.profileImage,
-        isActive: false,
-        availableTime: null,
-        markdownContent: markdownContent,
-      };
-      mentorDataList.push(newData);
-    });
+    await Promise.all(
+      resultSheet.map(async e => {
+        const fileName =
+          '/Users/park/NestJS/polar-be/src/v1/seeder/seeds/mentor-mds/' +
+          e.name +
+          '.md';
+        const markdownContent = fs.readFileSync(fileName, 'utf8');
+        const newData: MentorsInterface = {
+          name: e.name,
+          intraId: e.intraId,
+          profileImage: e.profileImage,
+          isActive: false,
+          availableTime: null,
+          markdownContent: markdownContent,
+        };
+        mentorDataList.push(newData);
+      }),
+    );
     for (const mentorData of mentorDataList) {
       const newUser = mentorRepository.create(mentorData);
       await mentorRepository.save(newUser);

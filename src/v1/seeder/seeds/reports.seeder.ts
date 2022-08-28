@@ -23,18 +23,19 @@ export class ReportsSeeder implements Seeder {
     });
     const mentorId = await mentorRepository.findOne({
       select: { id: true },
-      where: { intraId: 'm-engeng' },
+      where: { intraId: 'm-kbs' },
     });
     const mentoringLogs = await mentoringLogsRepository.find({
       where: { mentors: true, cadets: true },
     });
+    const index = 12;
     const newData = reportRepository.create({
-      mentoringLogs: mentoringLogs[0],
+      mentoringLogs: mentoringLogs[index],
       mentors: mentorId,
       cadets: cadetId,
       status: '완료',
-      topic: mentoringLogs[0].topic,
-      content: mentoringLogs[0].content,
+      topic: mentoringLogs[index].topic,
+      content: mentoringLogs[index].content,
       feedback1: 5,
       feedback2: 5,
       feedback3: 5,
