@@ -10,11 +10,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
-import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
+import { PaginationReportDto } from '../dto/reports/pagination-report.dto';
 
 @ApiTags('bocals API')
 @Controller()
@@ -57,7 +57,7 @@ export class BocalsController {
   @ApiBearerAuth('access-token')
   async getReportPagination(
     @Query() getDataRoomDto: GetDataRoomDto,
-  ): Promise<[Reports[], number]> {
+  ): Promise<PaginationReportDto> {
     return await this.dataRoomService.getReportPagination(getDataRoomDto);
   }
 }
