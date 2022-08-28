@@ -15,7 +15,10 @@ export class ValidateInfoMiddleware implements NestMiddleware {
 
   async use(req: any, res: Response, next: () => void): Promise<void> {
     const jwt = req.headers['authorization'];
-    if (jwt === undefined || !jwt.startsWith('Bearer')) {
+    if (
+      jwt === undefined ||
+      (!jwt.startsWith('Bearer') && !jwt.startsWith('bearer'))
+    ) {
       return next();
     }
     const user: JwtUser = this.jwtService.verify(jwt.substring(7));
