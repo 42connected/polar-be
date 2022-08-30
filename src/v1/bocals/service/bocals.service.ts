@@ -195,7 +195,7 @@ export class BocalsService {
     }
     const result: MentoringExcelData = {
       mentorName: report.mentors.name,
-      metorIntraId: report.mentors.intraId,
+      mentorIntraId: report.mentors.intraId,
       mentorCompany: report.mentors.company,
       mentorDuty: report.mentors.duty,
       date: report.mentoringLogs.meetingAt[0].toLocaleDateString('ko-KR'),
@@ -203,18 +203,16 @@ export class BocalsService {
       isCommon: report.cadets.isCommon ? '공통' : '심화',
       startTime: report.mentoringLogs.meetingAt[0]
         .toLocaleTimeString('ko-KR')
-        .split(/오. /)[1]
         .slice(
-          0,
+          3,
           report.mentoringLogs.meetingAt[0]
             .toLocaleTimeString('ko-KR')
             .lastIndexOf(':'),
         ),
       endTime: report.mentoringLogs.meetingAt[1]
         .toLocaleTimeString('ko-KR')
-        .split(/오. /)[1]
         .slice(
-          0,
+          3,
           report.mentoringLogs.meetingAt[1]
             .toLocaleTimeString('ko-KR')
             .lastIndexOf(':'),
