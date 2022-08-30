@@ -14,6 +14,7 @@ import { KeywordCategories } from '../entities/keyword-categories.entity';
 import { Categories } from '../entities/categories.entity';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/service/email.service';
+import { KeywordsService } from '../categories/service/keywords.service';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { EmailService } from '../email/service/email.service';
     SearchMentorsService,
     MentoringsService,
     EmailService,
+    KeywordsService,
   ],
   exports: [MentorsService, MentoringsService],
 })
