@@ -14,6 +14,7 @@ import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
 import { MentorsListDto } from '../dto/categories/mentor-list.dto';
+import { CategoryDto } from '../dto/categories/categories.dto';
 
 @Controller()
 @ApiTags('Categories API')
@@ -37,6 +38,23 @@ export class CategoriesController {
   })
   getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
+  }
+
+  @Get('/category/keywords')
+  @ApiOperation({
+    summary: 'Get category object array',
+    description: '키워드를 포함한 모든 카테고리 객체 배열을 반환합니다.',
+  })
+  @ApiCreatedResponse({
+    description: '카테고리 객체 배열',
+    type: CategoryDto,
+    isArray: true,
+    status: 200,
+  })
+  async getCategoriesWithKeywords() {
+    const categories: Categories[] =
+      await this.categoriesService.getAllCategories();
+    return this.categoriesService.formatAllCategories(categories);
   }
 
   @Get('/:category/keywords')
