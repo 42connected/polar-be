@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
-import { IsBoolean, IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 import { AvailableTimeDto } from '../available-time.dto';
 
 export class UpdateMentorDatailDto {
@@ -43,6 +43,16 @@ export class UpdateMentorDatailDto {
     type: Boolean,
   })
   isActive?: boolean;
+
+  @IsArray()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: '멘토 태그',
+    required: false,
+    type: String,
+    isArray: true,
+  })
+  tags: string[];
 
   @IsString()
   @IsOptional()
