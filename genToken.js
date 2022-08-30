@@ -10,7 +10,7 @@ const generateCadetToken = async (secret, role) => {
   console.log(paylaod);
   console.log('');
   const token = jwt.sign(paylaod, secret, { expiresIn: '1d' });
-  console.log('bearer ' + token + '\n');
+  console.log(`${token}\n`);
 };
 
 if (process.argv[2]) {
