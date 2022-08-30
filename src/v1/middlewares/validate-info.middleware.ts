@@ -1,4 +1,4 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { HttpStatus, Injectable, NestMiddleware } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { CadetsService } from '../cadets/service/cadets.service';
@@ -24,11 +24,17 @@ export class ValidateInfoMiddleware implements NestMiddleware {
     const user: JwtUser = this.jwtService.verify(jwt.substring(7));
     if (user.role === 'mentor') {
       if ((await this.mentorsService.validateInfo(user.intraId)) === false) {
-        return res.redirect(`${process.env.FRONT_URL}/mentors/join`);
+        return res.redirect(
+          HttpStatus.SEE_OTHER,
+          `${process.env.FRONT_URL}/mentors/join`,
+        );
       }
     } else if (user.role === 'cadet') {
       if ((await this.cadetsService.validateInfo(user.intraId)) === false) {
-        return res.redirect(`${process.env.FRONT_URL}/cadets/join`);
+        return res.redirect(
+          HttpStatus.SEE_OTHER,
+          `${process.env.FRONT_URL}/cadets/join`,
+        );
       }
     }
     next();

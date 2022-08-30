@@ -111,12 +111,14 @@ export class MentorsService {
     intraId: string,
     infos: UpdateMentor,
   ): Promise<void> {
-    const { name, availableTime, slackId, isActive, markdownContent } = infos;
+    const { name, availableTime, slackId, isActive, markdownContent, tags } =
+      infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
     foundUser.slackId = slackId;
     foundUser.isActive = isActive;
     foundUser.markdownContent = markdownContent;
+    foundUser.tags = tags;
     if (isActive) {
       if (!availableTime) {
         throw new BadRequestException(
