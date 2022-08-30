@@ -113,6 +113,11 @@ export class CadetsService {
       cadet = await this.cadetsRepository.findOne({
         where: { id },
         relations: { mentoringLogs: { mentors: true } },
+        order: {
+          mentoringLogs: {
+            createdAt: 'DESC',
+          },
+        },
       });
     } catch (err) {
       throw new ConflictException(
