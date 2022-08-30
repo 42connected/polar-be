@@ -1,6 +1,6 @@
 export interface MentoringExcelData {
   mentorName: string;
-  metorIntraId: string;
+  mentorIntraId: string;
   mentorCompany: string;
   mentorDuty: string;
   date: string;
