@@ -28,6 +28,7 @@ import { PaginationDto } from '../dto/pagination.dto';
 import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
+import { KeywordsService } from '../categories/service/keywords.service';
 
 @Controller()
 @ApiTags('mentors API')
@@ -35,6 +36,7 @@ export class MentorsController {
   constructor(
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
+    private readonly keywordsService: KeywordsService,
   ) {}
 
   @Get('mentorings')
@@ -110,6 +112,31 @@ export class MentorsController {
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
     return this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
+  @Patch(':intraId/keywords')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Update mentor details',
+    description: '멘토 키워드를 수정합니다.',
+  })
+  async updateMentorKeywords(
+    @User() user: JwtUser,
+    @Param('intraId') intraId: string,
+    @Body('keywords') keywords: string[],
+  ): Promise<boolean> {
+    if (user.intraId !== intraId) {
+      throw new BadRequestException('수정 권한이 없습니다.');
+    }
+    const mentor = await this.mentorsService.findByIntra(intraId);
+    await this.keywordsService.deleteAllKeywords(mentor);
+    const keywordIds = await this.keywordsService.getKeywordIds(keywords);
+    keywordIds.forEach(async id => {
+      await this.keywordsService.saveMentorKeyword(mentor, id);
+    });
+    return true;
   }
 
   @Patch(':intraId')
