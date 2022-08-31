@@ -107,12 +107,17 @@ export class CadetsService {
     });
   }
 
-  async getMentoringLogs(id: string): Promise<MentoringInfoDto> {
+  async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
     let cadet: Cadets;
     try {
       cadet = await this.cadetsRepository.findOne({
-        where: { id },
+        where: { intraId },
         relations: { mentoringLogs: { mentors: true } },
+        order: {
+          mentoringLogs: {
+            createdAt: 'DESC',
+          },
+        },
       });
     } catch (err) {
       throw new ConflictException(
@@ -130,16 +135,11 @@ export class CadetsService {
     return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
-  async validateInfo(intraId: string): Promise<boolean> {
-    try {
-      const cadet: Cadets = await this.findCadetByIntraId(intraId);
-      if (!cadet.name) {
-        return false;
-      }
-      return true;
-    } catch (err) {
-      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+  validateInfo(cadet: Cadets): boolean {
+    if (!cadet.name) {
+      return false;
     }
+    return true;
   }
 
   async saveName(intraId: string, name: string): Promise<void> {

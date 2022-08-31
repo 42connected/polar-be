@@ -6,5 +6,6 @@ export interface UpdateMentor {
   isActive?: boolean;
   markdownContent?: string;
   name?: string;
+  tags?: string[];
   slackId?: string;
 }

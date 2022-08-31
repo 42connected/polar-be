@@ -11,7 +11,6 @@ import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
 import { UpdateMentor } from 'src/v1/interface/mentors/update-mentor.interface';
-import { MentorDto } from 'src/v1/dto/mentors/mentor.dto';
 
 @Injectable()
 export class MentorsService {
@@ -83,40 +82,37 @@ export class MentorsService {
     return mentor;
   }
 
-  async validateInfo(intraId: string): Promise<boolean> {
-    try {
-      const mentor: Mentors = await this.findMentorByIntraId(intraId);
-      if (!mentor.slackId || !mentor.email || !mentor.name) {
-        return false;
-      }
-      if (mentor.isActive) {
-        if (!mentor.availableTime) {
-          return false;
-        }
-        const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
-        week.forEach(day => {
-          if (day.length > 0) {
-            return true;
-          }
-        });
-        return false;
-      }
-      return true;
-    } catch (err) {
-      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+  validateInfo(mentor: Mentors): boolean {
+    if (!mentor.slackId || !mentor.email || !mentor.name) {
+      return false;
     }
+    if (mentor.isActive) {
+      if (!mentor.availableTime) {
+        return false;
+      }
+      const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+      week.forEach(day => {
+        if (day.length > 0) {
+          return true;
+        }
+      });
+      return false;
+    }
+    return true;
   }
 
   async updateMentorDetails(
     intraId: string,
     infos: UpdateMentor,
   ): Promise<void> {
-    const { name, availableTime, slackId, isActive, markdownContent } = infos;
+    const { name, availableTime, slackId, isActive, markdownContent, tags } =
+      infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
     foundUser.slackId = slackId;
     foundUser.isActive = isActive;
     foundUser.markdownContent = markdownContent;
+    foundUser.tags = tags;
     if (isActive) {
       if (!availableTime) {
         throw new BadRequestException(

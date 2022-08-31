@@ -26,7 +26,6 @@ export class LoginConsumer {
     try {
       const profile = await res.json();
       done(null, profile);
-      // return profile;
     } catch (err) {
       throw new ConflictException(
         err,
