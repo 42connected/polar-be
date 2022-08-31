@@ -11,10 +11,12 @@ export class AuthResponse {
     example: {
       intraId: 'nakkim',
       role: 'cadet',
+      join: true,
     },
   })
   user: {
     intraId: string;
     role: string;
+    join: boolean;
   };
 }
