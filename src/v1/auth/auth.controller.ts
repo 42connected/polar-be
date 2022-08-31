@@ -66,22 +66,21 @@ export class AuthController {
         result = await this.bocalsService.updateLogin(bocal, newData);
       }
     } else {
-      throw new ForbiddenException('카뎃은 사용이 불가합니다.');
-      // const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
-      // if (cursus.length < 2) {
-      //   throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
-      // }
-      // const newData: CreateCadetDto = {
-      //   intraId,
-      //   profileImage,
-      //   isCommon: isCommon === null ? true : false,
-      //   email,
-      // };
-      // if (!cadet) {
-      //   result = await this.cadetsService.createUser(newData);
-      // } else {
-      //   result = await this.cadetsService.updateLogin(cadet, newData);
-      // }
+      const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
+      if (cursus.length < 2) {
+        throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
+      }
+      const newData: CreateCadetDto = {
+        intraId,
+        profileImage,
+        isCommon: isCommon === null ? true : false,
+        email,
+      };
+      if (!cadet) {
+        result = await this.cadetsService.createUser(newData);
+      } else {
+        result = await this.cadetsService.updateLogin(cadet, newData);
+      }
     }
     const jwt = await this.jwtService.sign({
       sub: result.id,
