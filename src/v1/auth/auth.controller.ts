@@ -46,6 +46,7 @@ export class AuthController {
       email,
     } = profile;
     let result: JwtUser;
+    let join: boolean;
     if (profile.campus[0].name !== 'Seoul') {
       throw new ForbiddenException('서울 캠퍼스만 가입이 가능합니다.');
     }
@@ -54,10 +55,13 @@ export class AuthController {
       const newData: CreateMentorDto = { intraId, profileImage };
       if (!mentor) {
         result = await this.mentorsService.createUser(newData);
+        join = false;
       } else {
         result = await this.mentorsService.updateLogin(mentor, newData);
+        join = this.mentorsService.validateInfo(mentor);
       }
     } else if (profile['staff?']) {
+      join = true;
       const bocal: Bocals = await this.bocalsService.findByIntra(intraId);
       const newData: CreateBocalDto = { intraId };
       if (!bocal) {
@@ -66,7 +70,6 @@ export class AuthController {
         result = await this.bocalsService.updateLogin(bocal, newData);
       }
     } else {
-      //throw new ForbiddenException('카뎃은 사용이 불가합니다.');
       const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
       if (cursus.length < 2) {
         throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
@@ -79,8 +82,10 @@ export class AuthController {
       };
       if (!cadet) {
         result = await this.cadetsService.createUser(newData);
+        join = false;
       } else {
         result = await this.cadetsService.updateLogin(cadet, newData);
+        join = this.cadetsService.validateInfo(cadet);
       }
     }
     const jwt = await this.jwtService.sign({
@@ -88,6 +93,6 @@ export class AuthController {
       username: result.intraId,
       role: result.role,
     });
-    return { jwt, user: { intraId: result.intraId, role: result.role } };
+    return { jwt, user: { intraId: result.intraId, role: result.role, join } };
   }
 }

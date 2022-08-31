@@ -82,28 +82,23 @@ export class MentorsService {
     return mentor;
   }
 
-  async validateInfo(intraId: string): Promise<boolean> {
-    try {
-      const mentor: Mentors = await this.findMentorByIntraId(intraId);
-      if (!mentor.slackId || !mentor.email || !mentor.name) {
-        return false;
-      }
-      if (mentor.isActive) {
-        if (!mentor.availableTime) {
-          return false;
-        }
-        const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
-        week.forEach(day => {
-          if (day.length > 0) {
-            return true;
-          }
-        });
-        return false;
-      }
-      return true;
-    } catch (err) {
-      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+  validateInfo(mentor: Mentors): boolean {
+    if (!mentor.slackId || !mentor.email || !mentor.name) {
+      return false;
     }
+    if (mentor.isActive) {
+      if (!mentor.availableTime) {
+        return false;
+      }
+      const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+      week.forEach(day => {
+        if (day.length > 0) {
+          return true;
+        }
+      });
+      return false;
+    }
+    return true;
   }
 
   async updateMentorDetails(
