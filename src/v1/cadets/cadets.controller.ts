@@ -69,7 +69,7 @@ export class CadetsController {
     type: MentoringInfoDto,
   })
   async getMentoringLogs(@User() user: JwtUser): Promise<MentoringInfoDto> {
-    return await this.cadetsService.getMentoringLogs(user.id);
+    return await this.cadetsService.getMentoringLogs(user.intraId);
   }
 
   @Patch('join')
