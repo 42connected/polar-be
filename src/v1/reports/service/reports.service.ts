@@ -143,7 +143,7 @@ export class ReportsService {
     if (
       !report.cadets ||
       !report.mentors ||
-      !report.imageUrl ||
+      !report?.imageUrl?.length ||
       !report.signatureUrl ||
       !report.mentoringLogs ||
       !report.topic ||
