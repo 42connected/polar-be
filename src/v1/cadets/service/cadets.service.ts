@@ -107,11 +107,11 @@ export class CadetsService {
     });
   }
 
-  async getMentoringLogs(id: string): Promise<MentoringInfoDto> {
+  async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
     let cadet: Cadets;
     try {
       cadet = await this.cadetsRepository.findOne({
-        where: { id },
+        where: { intraId },
         relations: { mentoringLogs: { mentors: true } },
         order: {
           mentoringLogs: {
