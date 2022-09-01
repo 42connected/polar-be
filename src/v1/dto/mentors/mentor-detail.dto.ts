@@ -29,6 +29,15 @@ export class UpdateMentorDatailDto {
   @IsString()
   @IsOptional()
   @ApiPropertyOptional({
+    description: 'name',
+    required: false,
+    example: '김나경',
+  })
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
     description: 'introduction',
     required: false,
     example: '안녕하세요. 테스트 테스트 예시 데이터',
@@ -67,7 +76,7 @@ export class UpdateMentorDatailDto {
   @IsOptional()
   @ApiPropertyOptional({
     description: 'slackId',
-    required: true,
+    required: false,
     type: String,
     example: 'nakkim',
   })
