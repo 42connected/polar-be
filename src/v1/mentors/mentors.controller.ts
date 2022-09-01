@@ -29,6 +29,7 @@ import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 import { KeywordsService } from '../categories/service/keywords.service';
+import { Mentors } from '../entities/mentors.entity';
 
 @Controller()
 @ApiTags('mentors API')
@@ -112,6 +113,24 @@ export class MentorsController {
   })
   join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
     return this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
+  @Get('/:intraId/keywords')
+  @ApiOperation({
+    summary: 'Get mentor keywords',
+    description: '해당 멘토의 키워드를 반환합니다.',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 키워드',
+    type: String,
+    isArray: true,
+  })
+  async getKeywords(@Param('intraId') intraId: string) {
+    const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
+      intraId,
+    );
+    const keywords = await this.keywordsService.getMentorKeywords(mentor.id);
+    return keywords;
   }
 
   @Patch(':intraId/keywords')
