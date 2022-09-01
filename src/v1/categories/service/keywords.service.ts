@@ -67,4 +67,22 @@ export class KeywordsService {
       throw new ConflictException('데이터 저장 중 에러가 발생했습니다.');
     }
   }
+
+  async getKeywordIdsByMentorId(id: string): Promise<string[]> {
+    const results: MentorKeywords[] =
+      await this.mentorKeywordsRepository.findBy({ mentorId: id });
+    const keywordIds: string[] = results.map(obj => obj.keywordId);
+    return keywordIds;
+  }
+
+  async getMentorKeywords(id: string): Promise<string[]> {
+    const keywordIds: string[] = await this.getKeywordIdsByMentorId(id);
+    const keywords: string[] = (
+      await this.keywordsRepository
+        .createQueryBuilder('keywords')
+        .where('keywords.id IN (:...keywordIds)', { keywordIds })
+        .getMany()
+    ).map(obj => obj.name);
+    return keywords;
+  }
 }
