@@ -125,11 +125,13 @@ export class MentorsController {
     type: String,
     isArray: true,
   })
-  async getKeywords(@Param('intraId') intraId: string) {
+  async getKeywords(@Param('intraId') intraId: string): Promise<string[]> {
     const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
       intraId,
     );
-    const keywords = await this.keywordsService.getMentorKeywords(mentor.id);
+    const keywords: string[] = await this.keywordsService.getMentorKeywords(
+      mentor.id,
+    );
     return keywords;
   }
 
