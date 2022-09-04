@@ -199,7 +199,7 @@ export class ApplyService {
   }
 
   async checkDuplicatedTime(
-    originRequestTimes: Date[],
+    originRequestTimes: Date[][],
     createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
     const len: number = originRequestTimes.length;

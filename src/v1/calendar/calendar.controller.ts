@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -19,10 +19,14 @@ export class CalendarController {
   @ApiBearerAuth('access-token')
   @Roles('cadet', 'mentor')
   @UseGuards(JwtGuard, RolesGuard)
-  getRequestTimes(
+  async getRequestTimes(
     @Param('mentorIntraId') mentorIntraId: string,
-  ): Promise<Date[]> {
-    return this.calendarService.getRequestTimes(mentorIntraId);
+    @Query('date') date: string,
+  ): Promise<Date[][]> {
+    const requestTimes: Date[][] = await this.calendarService.getRequestTimes(
+      mentorIntraId,
+    );
+    return this.calendarService.filterDate(requestTimes, date);
   }
 
   @Get('/available-times/:mentorIntraId')
