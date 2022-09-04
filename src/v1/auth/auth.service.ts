@@ -6,8 +6,6 @@ import {
 import { LoginProducer } from 'src/bull-queue/login-producer';
 import { TokenResponse } from '../interface/token-response.interface';
 import fetch from 'node-fetch';
-import { AuthResponse } from '../dto/auth-response.dto';
-import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -18,24 +16,6 @@ export class AuthService {
       throw new ForbiddenException('접근 권한이 없습니다.');
     }
     return true;
-  }
-
-  setCookies(res: Response, infos: AuthResponse): void {
-    const maxAge = 1000 * 60 * 60 * 24;
-    res.cookie('info_join', infos.user.join, {
-      maxAge,
-    });
-    res.cookie('user_role', infos.user.role, { maxAge, secure: true });
-    res.cookie('intra_id', infos.user.intraId, {
-      maxAge,
-      secure: true,
-      sameSite: 'none',
-    });
-    res.cookie('access_token', infos.jwt, {
-      maxAge,
-      sameSite: 'none',
-      secure: true,
-    });
   }
 
   async getAccessToken(code: string): Promise<string> {
