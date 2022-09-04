@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class CalendarService {
@@ -41,6 +42,7 @@ export class CalendarService {
         },
         where: {
           mentors: { intraId: mentorIntraId },
+          status: In([MentoringLogStatus.Wait, MentoringLogStatus.Approve]),
         },
       });
       return await this.makeRequestTimesArray(found);
