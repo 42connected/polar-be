@@ -82,15 +82,9 @@ export class CadetsController {
     summary: 'Post join cadet',
     description: '카뎃의 필수 정보를 저장합니다.',
   })
-  join(
-    @Body() body: JoinCadetDto,
-    @User() user: JwtUser,
-    @Res({ passthrough: true }) res: Response,
-  ): boolean {
+  join(@Body() body: JoinCadetDto, @User() user: JwtUser): Promise<void> {
     const { name } = body;
-    this.cadetsService.saveName(user.intraId, name);
-    res.cookie('info_join', 'true');
-    return true;
+    return this.cadetsService.saveName(user.intraId, name);
   }
 
   @Post('mentorings/apply/:mentorIntraId')
