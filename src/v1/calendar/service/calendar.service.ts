@@ -75,6 +75,7 @@ export class CalendarService {
       if (element.requestTime2) result.push(element.requestTime2);
       if (element.requestTime3) result.push(element.requestTime3);
     });
+    result.sort();
     return result;
   }
 }
