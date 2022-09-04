@@ -8,6 +8,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmailService, MailType } from '../email/service/email.service';
+import { Batch } from '../entities/batch.entity';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
 import { MentoringLogStatus } from '../mentoring-logs/service/mentoring-logs.service';
 
@@ -18,9 +19,32 @@ export class BatchService {
   constructor(
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
+    @InjectRepository(Batch)
+    private batchRepository: Repository<Batch>,
     private schedulerRegistry: SchedulerRegistry,
     private emailService: EmailService,
   ) {}
+
+  async createBatchItem(logId: string): Promise<Batch> {
+    const created: Batch = this.batchRepository.create({
+      mentoringLogId: logId,
+      timestamp: Date.now().toString(),
+    });
+    try {
+      await this.batchRepository.save(created);
+    } catch (err) {
+      throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+    }
+    return created;
+  }
+
+  async removeBatchItem(logId: string): Promise<void> {
+    try {
+      await this.batchRepository.delete({ mentoringLogId: logId });
+    } catch (err) {
+      throw new ConflictException(err, '데이터 삭제 중 에러가 발생했습니다.');
+    }
+  }
 
   private async getMentoringLogsDB(
     mentoringsId: string,
@@ -31,13 +55,11 @@ export class BatchService {
         where: { id: mentoringsId },
       });
     } catch {
-      throw new ConflictException();
+      throw new ConflictException('데이터 검색 중 에러가 발생했습니다.');
     }
-
     if (mentoringLogsDb === null) {
-      throw new NotFoundException();
+      throw new NotFoundException('해당 id의 멘토링 로그를 찾을 수 없습니다.');
     }
-
     return mentoringLogsDb;
   }
 
@@ -48,55 +70,57 @@ export class BatchService {
     if (!mentoringsId) {
       return false;
     }
-    let mentoringLogsData: MentoringLogs = null;
-    try {
-      mentoringLogsData = await this.getMentoringLogsDB(mentoringsId);
-    } catch {
-      this.logger.log('DB에서 정보를 읽어오는데 실패했습니다');
-      return false;
-    }
+    const mentoringLogsData: MentoringLogs = await this.getMentoringLogsDB(
+      mentoringsId,
+    );
     if (mentoringLogsData.status !== MentoringLogStatus.Wait) {
       this.logger.log(
         '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
       );
     }
+    await this.createBatchItem(mentoringLogsData.id);
     await this.addTimeout(millisecondsTime, mentoringLogsData);
-
     return true;
   }
 
-  private async addTimeout(
+  async addTimeout(
     milliseconds: number,
     mentoringLogsData: MentoringLogs,
   ): Promise<void> {
     const { id: mentoringId } = mentoringLogsData;
-    const callback = () => {
-      mentoringLogsData.status = MentoringLogStatus.Cancel;
-      mentoringLogsData.rejectMessage =
-        '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
-      this.mentoringsLogsRepository
-        .save(mentoringLogsData)
-        .then(() =>
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 완료`,
-          ),
-        )
-        .catch(() =>
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 실패`,
-          ),
-        );
-      this.emailService
-        .sendMessage(mentoringId, MailType.Cancel)
-        .then(() => {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
+    const callback = async () => {
+      const log: MentoringLogs = await this.mentoringsLogsRepository.findOneBy({
+        id: mentoringId,
+      });
+      if (log.status === MentoringLogStatus.Wait) {
+        log.status = MentoringLogStatus.Cancel;
+        log.rejectMessage =
+          '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
+        this.mentoringsLogsRepository
+          .save(log)
+          .then(() =>
+            this.logger.log(
+              `autoCancel mentoringsLogs ${log.id} status 대기중 -> 거절 상태변경 완료`,
+            ),
+          )
+          .catch(() =>
+            this.logger.log(
+              `autoCancel mentoringsLogs ${log.id} status 대기중 -> 거절 상태변경 실패`,
+            ),
           );
-        })
-        .catch(error =>
-          this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
-        );
-      this.deleteTimeout(mentoringId);
+        this.emailService
+          .sendMessage(log.id, MailType.Cancel)
+          .then(() => {
+            this.logger.log(
+              `autoCancel mentoringsLogs ${log.id} 메일 전송 완료`,
+            );
+          })
+          .catch(error =>
+            this.logger.log(`autoCancel mentoringsLogs ${log.id} ${error}`),
+          );
+      }
+      this.deleteTimeout(log.id);
+      this.removeBatchItem(log.id);
     };
     const timeout = setTimeout(callback, milliseconds);
     const millisecondsToHours = milliseconds / 3600000;
@@ -119,5 +143,41 @@ export class BatchService {
   private deleteTimeout(uuid: string) {
     this.schedulerRegistry.deleteTimeout(uuid);
     this.logger.log(`autoCancel mentoringsLogs ${uuid} deleted!`);
+  }
+
+  async getBatches(): Promise<Batch[]> {
+    try {
+      const batches: Batch[] = await this.batchRepository.find();
+      return batches;
+    } catch (err) {
+      throw new ConflictException(err, '데이터 검색 중 에러가 발생했습니다.');
+    }
+  }
+
+  async registerBatches(): Promise<void> {
+    const twoDaytoMillseconds = 172800000;
+    const batches: Batch[] = await this.getBatches();
+    batches.forEach(async batch => {
+      const mentoringLog: MentoringLogs =
+        await this.mentoringsLogsRepository.findOneBy({
+          id: batch.mentoringLogId,
+        });
+      const deleteTime: number = +batch.timestamp + twoDaytoMillseconds;
+      if (mentoringLog.status !== MentoringLogStatus.Wait) {
+        this.removeBatchItem(mentoringLog.id);
+      } else if (Date.now() >= deleteTime) {
+        mentoringLog.status = MentoringLogStatus.Cancel;
+        mentoringLog.rejectMessage =
+          '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
+        this.mentoringsLogsRepository.save(mentoringLog);
+        this.logger.log(
+          `autoCancel mentoringsLogs ${mentoringLog.id} status 대기중 -> 거절 상태변경 완료`,
+        );
+        this.removeBatchItem(mentoringLog.id);
+      } else {
+        const remainTime: number = deleteTime - Date.now();
+        await this.addTimeout(remainTime, mentoringLog);
+      }
+    });
   }
 }
