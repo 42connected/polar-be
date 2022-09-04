@@ -1,6 +1,13 @@
-import { Controller, ForbiddenException, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { AuthResponse } from '../dto/auth-response.dto';
@@ -31,11 +38,10 @@ export class AuthController {
     description:
       'access token을 이용하여 사용자 프로필 정보를 가져와서 로그인 처리',
   })
-  @ApiCreatedResponse({
-    description: 'JWT, 사용자 정보',
-    type: AuthResponse,
-  })
-  async getProfile(@Query('code') code: string): Promise<AuthResponse> {
+  async getProfile(
+    @Query('code') code: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<boolean> {
     const accessToken = await this.authService.getAccessToken(code);
     const profile = await this.authService.getProfile(accessToken);
     const {
@@ -93,6 +99,12 @@ export class AuthController {
       username: result.intraId,
       role: result.role,
     });
-    return { jwt, user: { intraId: result.intraId, role: result.role, join } };
+    res.cookie;
+    const cookieInfos: AuthResponse = {
+      jwt,
+      user: { intraId: result.intraId, role: result.role, join },
+    };
+    this.authService.setCookies(res, cookieInfos);
+    return true;
   }
 }
