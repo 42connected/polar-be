@@ -21,11 +21,23 @@ export class AuthService {
   }
 
   setCookies(res: Response, infos: AuthResponse): void {
-    const maxAge = 60 * 60 * 24;
-    res.cookie('info_join', infos.user.join, { maxAge });
-    res.cookie('user_role', infos.user.role, { maxAge });
-    res.cookie('intra_id', infos.user.intraId, { maxAge });
-    res.cookie('access_token', infos.jwt, { maxAge });
+    const maxAge = 1000 * 60 * 60 * 24;
+    res.cookie('info_join', infos.user.join, {
+      maxAge,
+      domain: process.env.FRONT_URL,
+    });
+    res.cookie('user_role', infos.user.role, { maxAge, sameSite: 'none' });
+    res.cookie('intra_id', infos.user.intraId, {
+      maxAge,
+      domain: process.env.FRONT_URL,
+      sameSite: 'none',
+    });
+    res.cookie('access_token', infos.jwt, {
+      maxAge,
+      domain: process.env.FRONT_URL,
+      sameSite: 'none',
+      path: '/',
+    });
   }
 
   async getAccessToken(code: string): Promise<string> {
