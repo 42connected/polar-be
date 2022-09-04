@@ -7,7 +7,6 @@ import {
   Query,
   Patch,
   BadRequestException,
-  Res,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -31,7 +30,6 @@ import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 import { KeywordsService } from '../categories/service/keywords.service';
 import { Mentors } from '../entities/mentors.entity';
-import { Response } from 'express';
 
 @Controller()
 @ApiTags('mentors API')
@@ -113,14 +111,8 @@ export class MentorsController {
     description:
       '멘토 필수정보(이름, 이메일, 슬랙아이디, 가능시간, 멘토링 가능 상태)를 받아서 저장합니다.',
   })
-  join(
-    @Body() body: JoinMentorDto,
-    @User() user: JwtUser,
-    @Res({ passthrough: true }) res: Response,
-  ): boolean {
-    this.mentorsService.updateMentorDetails(user.intraId, body);
-    res.cookie('info_join', 'true');
-    return true;
+  join(@Body() body: JoinMentorDto, @User() user: JwtUser): Promise<void> {
+    return this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 
   @Get('/:intraId/keywords')
