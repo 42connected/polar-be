@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
@@ -28,6 +29,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MentoringInfoDto } from '../dto/cadets/mentoring-info.dto';
+import { Response } from 'express';
 
 @Controller()
 @ApiTags('cadets API')
@@ -80,9 +82,15 @@ export class CadetsController {
     summary: 'Post join cadet',
     description: '카뎃의 필수 정보를 저장합니다.',
   })
-  join(@Body() body: JoinCadetDto, @User() user: JwtUser): Promise<void> {
+  join(
+    @Body() body: JoinCadetDto,
+    @User() user: JwtUser,
+    @Res({ passthrough: true }) res: Response,
+  ): boolean {
     const { name } = body;
-    return this.cadetsService.saveName(user.intraId, name);
+    this.cadetsService.saveName(user.intraId, name);
+    res.cookie('info_join', 'true');
+    return true;
   }
 
   @Post('mentorings/apply/:mentorIntraId')
