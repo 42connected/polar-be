@@ -24,18 +24,21 @@ export class AuthService {
     const maxAge = 1000 * 60 * 60 * 24;
     res.cookie('info_join', infos.user.join, {
       maxAge,
-      domain: process.env.FRONT_URL,
+      // domain: process.env.FRONT_URL,
+      // secure: true,
     });
-    res.cookie('user_role', infos.user.role, { maxAge, sameSite: 'none' });
+    res.cookie('user_role', infos.user.role, { maxAge, secure: true });
     res.cookie('intra_id', infos.user.intraId, {
       maxAge,
-      domain: process.env.FRONT_URL,
-      sameSite: 'none',
+      // domain: process.env.FRONT_URL,
+      secure: true,
+      // sameSite: 'none',
     });
     res.cookie('access_token', infos.jwt, {
       maxAge,
       domain: process.env.FRONT_URL,
       sameSite: 'none',
+      secure: true,
       path: '/',
     });
   }
