@@ -32,7 +32,22 @@ export class CalendarService {
     return JSON.parse(found);
   }
 
-  async getRequestTimes(mentorIntraId: string): Promise<Date[]> {
+  filterDate(requestTimes: Date[][], date: string): Date[][] {
+    if (!date) {
+      return requestTimes;
+    }
+    const result: Date[][] = requestTimes.filter((time: Date[]) => {
+      const timeDate = `${time[0].getFullYear()}-${(time[0].getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}`;
+      if (timeDate === date) {
+        return true;
+      }
+    });
+    return result;
+  }
+
+  async getRequestTimes(mentorIntraId: string): Promise<Date[][]> {
     try {
       const found: MentoringLogs[] = await this.mentoringlogsRepository.find({
         select: {
@@ -51,7 +66,9 @@ export class CalendarService {
     }
   }
 
-  async makeRequestTimesArray(mentoringLogs: MentoringLogs[]): Promise<Date[]> {
+  async makeRequestTimesArray(
+    mentoringLogs: MentoringLogs[],
+  ): Promise<Date[][]> {
     const result = [];
     mentoringLogs.forEach(element => {
       result.push(element.requestTime1);
