@@ -141,14 +141,12 @@ export class ReportsService {
 
   async isEnteredReport(report: Reports): Promise<boolean> {
     if (
-      !report.cadets ||
-      !report.mentors ||
       !report?.imageUrl?.length ||
       !report.signatureUrl ||
-      !report.mentoringLogs ||
       !report.topic ||
       !report.place ||
       !report.content ||
+      !report.feedbackMessage ||
       !report.feedback1 ||
       !report.feedback2 ||
       !report.feedback3
