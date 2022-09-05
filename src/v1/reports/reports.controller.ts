@@ -60,7 +60,8 @@ export class ReportsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Delete report picture',
-    description: '레포트의 사진(서명, 증빙사진)을 삭제합니다.',
+    description: `레포트의 사진(서명, 증빙사진)을 삭제합니다.
+    서명(signature)은 값으로 아무거나 넣으면 되고, 증빙사진(image)는 인덱스(0 or 1)로 삭제 가능합니다.`,
   })
   async deletePicture(
     @Param('reportId') reportId: string,
@@ -83,7 +84,8 @@ export class ReportsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Update report picture',
-    description: '레포트에 사진(서명, 증빙사진)을 업로드합니다.',
+    description: `레포트에 사진(서명, 증빙사진)을 업로드합니다.
+    증빙사진의 경우 image로, 서명은 signature로 폼 요청`,
   })
   @UseInterceptors(
     FileFieldsInterceptor(
