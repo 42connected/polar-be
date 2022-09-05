@@ -67,7 +67,6 @@ export class ReportsController {
     @User() user: JwtUser,
     @Body() picture: PictureDto,
   ) {
-    console.log(picture);
     const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
       reportId,
     );
