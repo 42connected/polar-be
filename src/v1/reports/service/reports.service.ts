@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { PictureDto } from 'src/v1/dto/reports/picture.dto';
 import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -20,6 +20,13 @@ export const MONEY_PER_HOUR = 100000;
 
 @Injectable()
 export class ReportsService {
+  s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_S3_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET,
+    signatureVersion: 'v4',
+    region: 'ap-northeast-2',
+  });
+
   constructor(
     @InjectRepository(Reports)
     private readonly reportsRepository: Repository<Reports>,
@@ -40,6 +47,26 @@ export class ReportsService {
         select: {
           cadets: { intraId: true },
           mentors: { intraId: true },
+        },
+      });
+    } catch {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+    if (!report) {
+      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+    }
+    return report;
+  }
+
+  async findReportByIdWithAllInfo(reportId: string): Promise<Reports> {
+    let report: Reports;
+    try {
+      report = await this.reportsRepository.findOne({
+        where: { id: reportId },
+        relations: {
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
         },
       });
     } catch {
@@ -72,15 +99,9 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_S3_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET,
-      signatureVersion: 'v4',
-      region: 'ap-northeast-2',
-    });
     if (report.imageUrl) {
       report.imageUrl = report.imageUrl.map(key => {
-        return s3.getSignedUrl('getObject', {
+        return this.s3.getSignedUrl('getObject', {
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: key,
           Expires: 60 * 60,
@@ -88,7 +109,7 @@ export class ReportsService {
       });
     }
     if (report.signatureUrl) {
-      report.signatureUrl = s3.getSignedUrl('getObject', {
+      report.signatureUrl = this.s3.getSignedUrl('getObject', {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: report.signatureUrl,
         Expires: 60 * 60,
@@ -116,39 +137,14 @@ export class ReportsService {
     return mentoringLog;
   }
 
-  /*
-   * File path in Object to array
-   */
-  getImagesPath(files) {
-    const filePaths: string[] = [];
-    if (files?.image) {
-      files.image.map(img => {
-        filePaths.push(img.key);
-      });
-      return filePaths;
-    } else {
-      return undefined;
-    }
-  }
-
-  getSignaturePath(files) {
-    if (files?.signature) {
-      return files.signature[0]?.key;
-    } else {
-      return undefined;
-    }
-  }
-
   async isEnteredReport(report: Reports): Promise<boolean> {
     if (
-      !report.cadets ||
-      !report.mentors ||
       !report?.imageUrl?.length ||
       !report.signatureUrl ||
-      !report.mentoringLogs ||
       !report.topic ||
       !report.place ||
       !report.content ||
+      !report.feedbackMessage ||
       !report.feedback1 ||
       !report.feedback2 ||
       !report.feedback3
@@ -243,6 +239,7 @@ export class ReportsService {
       mentors: mentoringLog.mentors,
       mentoringLogs: mentoringLog,
       money: 0,
+      imageUrl: [],
     });
     report.status = '작성중';
     mentoringLog.reports = report;
@@ -257,40 +254,65 @@ export class ReportsService {
     return report.id;
   }
 
-  deleteCurrentImages(report: Reports): void {
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_S3_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET,
-      signatureVersion: 'v4',
-      region: 'ap-northeast-2',
-    });
-    if (report.imageUrl) {
-      report.imageUrl.forEach(key => {
-        s3.deleteObject(
-          {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: key,
-          },
-          (err, data) => {
-            if (err) {
-              console.log(err);
-            }
-          },
-        );
-      });
-    }
+  async uploadSignature(report: Reports, signatureKey: string): Promise<void> {
     if (report.signatureUrl) {
-      s3.deleteObject(
-        {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: report.signatureUrl,
-        },
-        (err, data) => {
-          if (err) {
-            console.log(err);
-          }
-        },
-      );
+      // 이미 저장된 사진이 있을 경우 삭제 후 새로 저장
+      this.deleteFromS3(report.signatureUrl);
+    }
+    report.signatureUrl = signatureKey;
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '서명 저장 중 에러가 발생했습니다.');
+    }
+  }
+
+  async uploadImage(report: Reports, imageKey: string): Promise<void> {
+    if (report.imageUrl.length < 2) {
+      report.imageUrl.push(imageKey);
+    } else {
+      // 이미 저장된 사진이 있을 경우 현재 s3에 업로드된 사진 삭제 후 새로 저장 x
+      this.deleteFromS3(imageKey);
+      return;
+    }
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '서명 저장 중 에러가 발생했습니다.');
+    }
+  }
+
+  deleteFromS3(key: string) {
+    this.s3.deleteObject(
+      {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+      },
+      (err, data) => {
+        if (err) {
+          throw new ConflictException(err, '사진 삭제 중 에러가 발생했습니다.');
+        }
+      },
+    );
+  }
+
+  async deletePicture(report: Reports, picture: PictureDto) {
+    if (
+      !isNaN(picture.image) &&
+      picture.image >= 0 &&
+      report.imageUrl.length > picture.image
+    ) {
+      this.deleteFromS3(report.imageUrl[picture.image]);
+      report.imageUrl.splice(picture.image, 1);
+    }
+    if (picture.signature && report.signatureUrl) {
+      this.deleteFromS3(report.signatureUrl);
+      report.signatureUrl = null;
+    }
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
     }
   }
 
@@ -300,24 +322,15 @@ export class ReportsService {
   async updateReport(
     report: Reports,
     mentorIntraId: string,
-    filePaths: string[],
-    signature: string,
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
-    if (report.mentors.intraId !== mentorIntraId) {
-      throw new ForbiddenException(
-        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
-      );
-    }
     try {
       this.reportsRepository.save({
         id: report.id,
-        imageUrl: filePaths || null,
-        signatureUrl: signature || null,
         place: body.place,
         topic: body.topic,
         content: body.content,
