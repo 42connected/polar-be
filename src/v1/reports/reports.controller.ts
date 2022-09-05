@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Get,
   Param,
@@ -29,6 +30,7 @@ import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
 import { ReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
+import { PictureDto } from '../dto/reports/picture.dto';
 config();
 
 @Controller()
@@ -50,6 +52,29 @@ export class ReportsController {
   })
   async getReport(@Param('reportId') reportId: string): Promise<ReportDto> {
     return await this.reportsService.getReport(reportId);
+  }
+
+  @Delete(':reportId/picture')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Delete report picture',
+    description: '레포트의 사진(서명, 증빙사진)을 삭제합니다.',
+  })
+  async deletePicture(
+    @Param('reportId') reportId: string,
+    @User() user: JwtUser,
+    @Body() picture: PictureDto,
+  ) {
+    console.log(picture);
+    const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
+      reportId,
+    );
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException('레포트 수정 권한이 없습니다.');
+    }
+    return this.reportsService.deletePicture(report, picture);
   }
 
   @Patch(':reportId/picture')
@@ -149,6 +174,11 @@ export class ReportsController {
   ): Promise<boolean> {
     const report: Reports =
       await this.reportsService.findReportWithMentoringLogsById(reportId);
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException(
+        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
+      );
+    }
     this.reportsService.deleteCurrentImages(report);
     return await this.reportsService.updateReport(report, user.intraId, body);
   }

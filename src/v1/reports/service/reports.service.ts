@@ -1,13 +1,13 @@
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   Injectable,
   MethodNotAllowedException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { PictureDto } from 'src/v1/dto/reports/picture.dto';
 import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
@@ -99,15 +99,9 @@ export class ReportsService {
     if (!report) {
       throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
     }
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_S3_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET,
-      signatureVersion: 'v4',
-      region: 'ap-northeast-2',
-    });
     if (report.imageUrl) {
       report.imageUrl = report.imageUrl.map(key => {
-        return s3.getSignedUrl('getObject', {
+        return this.s3.getSignedUrl('getObject', {
           Bucket: process.env.AWS_BUCKET_NAME,
           Key: key,
           Expires: 60 * 60,
@@ -115,7 +109,7 @@ export class ReportsService {
       });
     }
     if (report.signatureUrl) {
-      report.signatureUrl = s3.getSignedUrl('getObject', {
+      report.signatureUrl = this.s3.getSignedUrl('getObject', {
         Bucket: process.env.AWS_BUCKET_NAME,
         Key: report.signatureUrl,
         Expires: 60 * 60,
@@ -304,6 +298,23 @@ export class ReportsService {
     );
   }
 
+  async deletePicture(report: Reports, picture: PictureDto) {
+    if (picture.image !== undefined && report.imageUrl.length > picture.image) {
+      this.deleteFromS3(report.imageUrl[picture.image]);
+      // 0번 요소 삭제 시 1번만 남김, 1번 요소 삭제 시 0번만 남김
+      report.imageUrl = [report.imageUrl[+!picture.image]];
+    }
+    if (picture.signature && report.signatureUrl) {
+      this.deleteFromS3(report.signatureUrl);
+      report.signatureUrl = null;
+    }
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+    }
+  }
+
   deleteCurrentImages(report: Reports): void {
     if (report.imageUrl) {
       report.imageUrl.forEach(key => {
@@ -333,11 +344,6 @@ export class ReportsService {
     const rs: ReportStatus = new ReportStatus(report.status);
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
-    }
-    if (report.mentors.intraId !== mentorIntraId) {
-      throw new ForbiddenException(
-        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
-      );
     }
     try {
       this.reportsRepository.save({
