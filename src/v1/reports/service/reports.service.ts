@@ -298,7 +298,7 @@ export class ReportsService {
 
   async deletePicture(report: Reports, picture: PictureDto) {
     if (
-      picture.image !== undefined &&
+      !isNaN(picture.image) &&
       picture.image >= 0 &&
       report.imageUrl.length > picture.image
     ) {

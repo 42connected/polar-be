@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -30,7 +31,6 @@ import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
 import { ReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
-import { PictureDto } from '../dto/reports/picture.dto';
 config();
 
 @Controller()
@@ -65,7 +65,8 @@ export class ReportsController {
   async deletePicture(
     @Param('reportId') reportId: string,
     @User() user: JwtUser,
-    @Body() picture: PictureDto,
+    @Query('signature') signature: string,
+    @Query('image') image: number,
   ) {
     const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
       reportId,
@@ -73,7 +74,7 @@ export class ReportsController {
     if (report.mentors.intraId !== user.intraId) {
       throw new ForbiddenException('레포트 수정 권한이 없습니다.');
     }
-    return this.reportsService.deletePicture(report, picture);
+    return this.reportsService.deletePicture(report, { signature, image });
   }
 
   @Patch(':reportId/picture')
