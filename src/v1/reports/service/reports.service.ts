@@ -292,17 +292,20 @@ export class ReportsService {
       (err, data) => {
         if (err) {
           console.log(err);
-          throw new ConflictException('서명 삭제 중 에러가 발생했습니다.');
+          throw new ConflictException('사진 삭제 중 에러가 발생했습니다.');
         }
       },
     );
   }
 
   async deletePicture(report: Reports, picture: PictureDto) {
-    if (picture.image !== undefined && report.imageUrl.length > picture.image) {
+    if (
+      picture.image !== undefined &&
+      picture.image >= 0 &&
+      report.imageUrl.length > picture.image
+    ) {
       this.deleteFromS3(report.imageUrl[picture.image]);
-      // 0번 요소 삭제 시 1번만 남김, 1번 요소 삭제 시 0번만 남김
-      report.imageUrl = [report.imageUrl[+!picture.image]];
+      report.imageUrl.splice(picture.image, 1);
     }
     if (picture.signature && report.signatureUrl) {
       this.deleteFromS3(report.signatureUrl);
