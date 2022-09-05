@@ -256,9 +256,8 @@ export class ReportsService {
 
   async uploadSignature(report: Reports, signatureKey: string): Promise<void> {
     if (report.signatureUrl) {
-      // 이미 저장된 사진이 있을 경우 현재 s3에 업로드된 사진 삭제 후 새로 저장 x
-      this.deleteFromS3(signatureKey);
-      return;
+      // 이미 저장된 사진이 있을 경우 삭제 후 새로 저장
+      this.deleteFromS3(report.signatureUrl);
     }
     report.signatureUrl = signatureKey;
     try {
@@ -291,8 +290,7 @@ export class ReportsService {
       },
       (err, data) => {
         if (err) {
-          console.log(err);
-          throw new ConflictException('사진 삭제 중 에러가 발생했습니다.');
+          throw new ConflictException(err, '사진 삭제 중 에러가 발생했습니다.');
         }
       },
     );
@@ -315,24 +313,6 @@ export class ReportsService {
       await this.reportsRepository.save(report);
     } catch (err) {
       throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
-    }
-  }
-
-  deleteCurrentImages(report: Reports): void {
-    if (report.imageUrl) {
-      report.imageUrl.forEach(key => {
-        this.s3.deleteObject(
-          {
-            Bucket: process.env.AWS_BUCKET_NAME,
-            Key: key,
-          },
-          (err, data) => {
-            if (err) {
-              console.log(err);
-            }
-          },
-        );
-      });
     }
   }
 

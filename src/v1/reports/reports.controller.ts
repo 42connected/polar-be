@@ -175,10 +175,9 @@ export class ReportsController {
       await this.reportsService.findReportWithMentoringLogsById(reportId);
     if (report.mentors.intraId !== user.intraId) {
       throw new ForbiddenException(
-        `해당 레포트를 수정할 수 있는 권한이 없습니다`,
+        '해당 레포트를 수정할 수 있는 권한이 없습니다',
       );
     }
-    this.reportsService.deleteCurrentImages(report);
     return await this.reportsService.updateReport(report, user.intraId, body);
   }
 }
