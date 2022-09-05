@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   Param,
   Patch,
@@ -10,7 +11,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
@@ -52,40 +52,18 @@ export class ReportsController {
     return await this.reportsService.getReport(reportId);
   }
 
-  @Post(':mentoringLogId')
+  @Patch(':reportId/picture')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
-      storage: diskStorage({
-        destination: './uploads',
-      }),
-    }),
-  )
   @ApiOperation({
-    summary: 'Create report',
-    description:
-      '레포트 작성하기를 최초로 누르면 해당 멘토링 로그에 대한 레포트의 기본 정보가 DB에 생성된다.',
+    summary: 'Update report picture',
+    description: '레포트에 사진(서명, 증빙사진)을 업로드합니다.',
   })
-  @ApiCreatedResponse({
-    description: '생성된 레포트 아이디',
-    type: String,
-  })
-  async createReport(
-    @Param('mentoringLogId') mentoringLogId: string,
-  ): Promise<string> {
-    return await this.reportsService.createReport(mentoringLogId);
-  }
-
-  @Patch(':reportId')
-  @Roles('mentor')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
   @UseInterceptors(
     FileFieldsInterceptor(
       [
-        { name: 'image', maxCount: 5 },
+        { name: 'image', maxCount: 1 },
         { name: 'signature', maxCount: 1 },
       ],
       {
@@ -111,6 +89,55 @@ export class ReportsController {
       },
     ),
   )
+  async updatePicture(
+    @Param('reportId') reportId: string,
+    @User() user: JwtUser,
+    @UploadedFiles()
+    files: {
+      image: Express.Multer.File;
+      signature: Express.Multer.File;
+    },
+  ): Promise<boolean> {
+    const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
+      reportId,
+    );
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException('레포트 수정 권한이 없습니다.');
+    }
+    if (files?.signature) {
+      const signatureKey: string = files.signature[0].key;
+      this.reportsService.uploadSignature(report, signatureKey);
+    }
+    if (files?.image) {
+      const imageKey: string = files.image[0].key;
+      this.reportsService.uploadImage(report, imageKey);
+    }
+    return true;
+  }
+
+  @Post(':mentoringLogId')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Create report',
+    description:
+      '레포트 작성하기를 최초로 누르면 해당 멘토링 로그에 대한 레포트의 기본 정보가 DB에 생성된다.',
+  })
+  @ApiCreatedResponse({
+    description: '생성된 레포트 아이디',
+    type: String,
+  })
+  async createReport(
+    @Param('mentoringLogId') mentoringLogId: string,
+  ): Promise<string> {
+    return await this.reportsService.createReport(mentoringLogId);
+  }
+
+  @Patch(':reportId')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Update report',
     description: '레포트 정보를 수정합니다.',
@@ -119,23 +146,10 @@ export class ReportsController {
     @Param('reportId') reportId: string,
     @User() user: JwtUser,
     @Body() body: UpdateReportDto,
-    @UploadedFiles()
-    files: {
-      image: Express.Multer.File[];
-      signature: Express.Multer.File;
-    },
   ): Promise<boolean> {
-    const filePaths: string[] = this.reportsService.getImagesPath(files);
-    const signaturePaths: string = this.reportsService.getSignaturePath(files);
     const report: Reports =
       await this.reportsService.findReportWithMentoringLogsById(reportId);
     this.reportsService.deleteCurrentImages(report);
-    return await this.reportsService.updateReport(
-      report,
-      user.intraId,
-      filePaths,
-      signaturePaths,
-      body,
-    );
+    return await this.reportsService.updateReport(report, user.intraId, body);
   }
 }

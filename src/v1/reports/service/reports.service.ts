@@ -20,6 +20,13 @@ export const MONEY_PER_HOUR = 100000;
 
 @Injectable()
 export class ReportsService {
+  s3 = new AWS.S3({
+    accessKeyId: process.env.AWS_S3_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET,
+    signatureVersion: 'v4',
+    region: 'ap-northeast-2',
+  });
+
   constructor(
     @InjectRepository(Reports)
     private readonly reportsRepository: Repository<Reports>,
@@ -40,6 +47,26 @@ export class ReportsService {
         select: {
           cadets: { intraId: true },
           mentors: { intraId: true },
+        },
+      });
+    } catch {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+    if (!report) {
+      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+    }
+    return report;
+  }
+
+  async findReportByIdWithAllInfo(reportId: string): Promise<Reports> {
+    let report: Reports;
+    try {
+      report = await this.reportsRepository.findOne({
+        where: { id: reportId },
+        relations: {
+          cadets: true,
+          mentors: true,
+          mentoringLogs: true,
         },
       });
     } catch {
@@ -114,29 +141,6 @@ export class ReportsService {
       throw new NotFoundException(`해당 멘토링 로그를 찾을 수 없습니다`);
     }
     return mentoringLog;
-  }
-
-  /*
-   * File path in Object to array
-   */
-  getImagesPath(files) {
-    const filePaths: string[] = [];
-    if (files?.image) {
-      files.image.map(img => {
-        filePaths.push(img.key);
-      });
-      return filePaths;
-    } else {
-      return undefined;
-    }
-  }
-
-  getSignaturePath(files) {
-    if (files?.signature) {
-      return files.signature[0]?.key;
-    } else {
-      return undefined;
-    }
   }
 
   async isEnteredReport(report: Reports): Promise<boolean> {
@@ -241,6 +245,7 @@ export class ReportsService {
       mentors: mentoringLog.mentors,
       mentoringLogs: mentoringLog,
       money: 0,
+      imageUrl: [],
     });
     report.status = '작성중';
     mentoringLog.reports = report;
@@ -255,16 +260,54 @@ export class ReportsService {
     return report.id;
   }
 
+  async uploadSignature(report: Reports, signatureKey: string): Promise<void> {
+    if (report.signatureUrl) {
+      // 이미 저장된 사진이 있을 경우 현재 s3에 업로드된 사진 삭제 후 새로 저장 x
+      this.deleteFromS3(signatureKey);
+      return;
+    }
+    report.signatureUrl = signatureKey;
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '서명 저장 중 에러가 발생했습니다.');
+    }
+  }
+
+  async uploadImage(report: Reports, imageKey: string): Promise<void> {
+    if (report.imageUrl.length < 2) {
+      report.imageUrl.push(imageKey);
+    } else {
+      // 이미 저장된 사진이 있을 경우 현재 s3에 업로드된 사진 삭제 후 새로 저장 x
+      this.deleteFromS3(imageKey);
+      return;
+    }
+    try {
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      throw new ConflictException(err, '서명 저장 중 에러가 발생했습니다.');
+    }
+  }
+
+  deleteFromS3(key: string) {
+    this.s3.deleteObject(
+      {
+        Bucket: process.env.AWS_BUCKET_NAME,
+        Key: key,
+      },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          throw new ConflictException('서명 삭제 중 에러가 발생했습니다.');
+        }
+      },
+    );
+  }
+
   deleteCurrentImages(report: Reports): void {
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_S3_ID,
-      secretAccessKey: process.env.AWS_S3_SECRET,
-      signatureVersion: 'v4',
-      region: 'ap-northeast-2',
-    });
     if (report.imageUrl) {
       report.imageUrl.forEach(key => {
-        s3.deleteObject(
+        this.s3.deleteObject(
           {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: key,
@@ -277,19 +320,6 @@ export class ReportsService {
         );
       });
     }
-    if (report.signatureUrl) {
-      s3.deleteObject(
-        {
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: report.signatureUrl,
-        },
-        (err, data) => {
-          if (err) {
-            console.log(err);
-          }
-        },
-      );
-    }
   }
 
   /*
@@ -298,8 +328,6 @@ export class ReportsService {
   async updateReport(
     report: Reports,
     mentorIntraId: string,
-    filePaths: string[],
-    signature: string,
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
@@ -314,8 +342,6 @@ export class ReportsService {
     try {
       this.reportsRepository.save({
         id: report.id,
-        imageUrl: filePaths || null,
-        signatureUrl: signature || null,
         place: body.place,
         topic: body.topic,
         content: body.content,
