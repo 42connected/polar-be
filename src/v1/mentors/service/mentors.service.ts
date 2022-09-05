@@ -91,12 +91,13 @@ export class MentorsService {
         return false;
       }
       const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+      let join = false;
       week.forEach(day => {
         if (day.length > 0) {
-          return true;
+          join = true;
         }
       });
-      return false;
+      return join;
     }
     return true;
   }
