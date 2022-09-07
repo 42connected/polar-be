@@ -52,10 +52,10 @@ export class Mentors {
   @Column({ type: 'varchar', length: 10000, nullable: true })
   markdownContent: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @OneToMany(() => MentorKeywords, MentorKeywords => MentorKeywords.mentors)

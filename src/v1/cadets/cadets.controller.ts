@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
@@ -28,6 +29,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MentoringInfoDto } from '../dto/cadets/mentoring-info.dto';
+import { Response } from 'express';
 
 @Controller()
 @ApiTags('cadets API')

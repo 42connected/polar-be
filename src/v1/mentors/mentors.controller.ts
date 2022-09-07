@@ -111,7 +111,7 @@ export class MentorsController {
     description:
       '멘토 필수정보(이름, 이메일, 슬랙아이디, 가능시간, 멘토링 가능 상태)를 받아서 저장합니다.',
   })
-  join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+  join(@Body() body: JoinMentorDto, @User() user: JwtUser): Promise<void> {
     return this.mentorsService.updateMentorDetails(user.intraId, body);
   }
 

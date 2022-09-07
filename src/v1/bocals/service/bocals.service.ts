@@ -202,20 +202,16 @@ export class BocalsService {
       place: report.place,
       isCommon: report.cadets.isCommon ? '공통' : '심화',
       startTime: report.mentoringLogs.meetingAt[0]
-        .toLocaleTimeString('ko-KR')
+        .toTimeString()
         .slice(
-          3,
-          report.mentoringLogs.meetingAt[0]
-            .toLocaleTimeString('ko-KR')
-            .lastIndexOf(':'),
+          0,
+          report.mentoringLogs.meetingAt[0].toTimeString().lastIndexOf(':'),
         ),
       endTime: report.mentoringLogs.meetingAt[1]
-        .toLocaleTimeString('ko-KR')
+        .toTimeString()
         .slice(
-          3,
-          report.mentoringLogs.meetingAt[1]
-            .toLocaleTimeString('ko-KR')
-            .lastIndexOf(':'),
+          0,
+          report.mentoringLogs.meetingAt[0].toTimeString().lastIndexOf(':'),
         ),
       totalHour: report.money / MONEY_PER_HOUR,
       money: report.money,

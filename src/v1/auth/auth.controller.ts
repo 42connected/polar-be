@@ -32,7 +32,6 @@ export class AuthController {
       'access token을 이용하여 사용자 프로필 정보를 가져와서 로그인 처리',
   })
   @ApiCreatedResponse({
-    description: 'JWT, 사용자 정보',
     type: AuthResponse,
   })
   async getProfile(@Query('code') code: string): Promise<AuthResponse> {
@@ -93,6 +92,9 @@ export class AuthController {
       username: result.intraId,
       role: result.role,
     });
-    return { jwt, user: { intraId: result.intraId, role: result.role, join } };
+    return {
+      jwt,
+      user: { intraId: result.intraId, role: result.role, join },
+    };
   }
 }
