@@ -213,7 +213,7 @@ export class EmailService {
       throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
     }
 
-    if (!mentoringsLogsInfoDb === null) {
+    if (mentoringsLogsInfoDb === null) {
       throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
     }
     if (!mentoringsLogsInfoDb.mentors) {
