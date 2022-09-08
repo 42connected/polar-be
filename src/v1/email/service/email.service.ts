@@ -210,7 +210,11 @@ export class EmailService {
         mentoringsLogsId,
       );
     } catch (err) {
-      throw err;
+      throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
+    }
+
+    if (!mentoringsLogsInfoDb === null) {
+      throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
     }
     if (!mentoringsLogsInfoDb.mentors) {
       throw new NotFoundException('mentoringLogs 테이블에 mentors이 없습니다');
@@ -231,7 +235,7 @@ export class EmailService {
       case MailType.Reservation: {
         const reservationMessage: ReservationMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
-          mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
           topic: mentoringsLogsInfoDb.topic,
