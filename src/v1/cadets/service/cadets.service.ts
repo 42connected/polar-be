@@ -22,7 +22,7 @@ export class CadetsService {
 
   async updateLogin(cadet: Cadets, newData: CreateCadetDto): Promise<JwtUser> {
     cadet.intraId = newData.intraId;
-    cadet.profileImage = newData.intraId;
+    cadet.profileImage = newData.profileImage;
     cadet.isCommon = newData.isCommon;
     cadet.email = newData.email;
     await this.cadetsRepository.save(cadet);
