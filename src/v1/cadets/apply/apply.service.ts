@@ -26,15 +26,12 @@ export class ApplyService {
   ) {}
 
   checkDate(startDate: Date, endDate: Date): void {
-    const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
-    if (startDate.getFullYear() !== endDate.getFullYear()) {
-      throw new BadRequestException(errorMessage);
-    }
-    if (startDate.getMonth() !== endDate.getMonth()) {
-      throw new BadRequestException(errorMessage);
-    }
-    if (startDate.getDate() !== endDate.getDate()) {
-      throw new BadRequestException(errorMessage);
+    if (
+      startDate.getFullYear() !== endDate.getFullYear() ||
+      startDate.getMonth() !== endDate.getMonth() ||
+      startDate.getDate() !== endDate.getDate()
+    ) {
+      throw new BadRequestException('멘토링은 당일에 종료되어야 합니다.');
     }
   }
 

@@ -121,6 +121,40 @@ export class MentoringLogsService {
     return true;
   }
 
+  compareTime(t1: Date, t2: Date): boolean {
+    if (!t1 || !t2) {
+      return false;
+    }
+    if (t1.getTime() === t2.getTime()) {
+      return true;
+    }
+    return false;
+  }
+
+  compareTimeStartToEnd(t1: Date[], t2: Date[]): boolean {
+    const START_TIME_INDEX = 0;
+    const END_TIME_INDEX = 1;
+
+    if (
+      this.compareTime(t1?.[START_TIME_INDEX], t2?.[START_TIME_INDEX]) &&
+      this.compareTime(t1?.[END_TIME_INDEX], t2?.[END_TIME_INDEX])
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  isExistTimeOnLogs(requestMeetingAt: Date[], log: MentoringLogs) {
+    if (
+      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime1) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime2) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime3)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   async changeStatus(infos: ChangeStatus) {
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       infos.mentoringLogId,
@@ -131,6 +165,11 @@ export class MentoringLogsService {
     if (infos.status === MentoringLogStatus.Cancel) {
       foundLog.rejectMessage = infos.rejectMessage;
     } else if (infos.status === MentoringLogStatus.Approve) {
+      if (!this.isExistTimeOnLogs(infos.meetingAt, foundLog)) {
+        throw new BadRequestException(
+          '해당 시간은 멘토링 로그에 존재하지 않습니다.',
+        );
+      }
       this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];
