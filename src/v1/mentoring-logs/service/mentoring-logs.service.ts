@@ -119,11 +119,19 @@ export class MentoringLogsService {
     foundLog.status = infos.status;
     if (infos.status === MentoringLogStatus.Cancel) {
       foundLog.rejectMessage = infos.rejectMessage;
-    }
-    if (infos.status === MentoringLogStatus.Approve) {
+    } else if (infos.status === MentoringLogStatus.Approve) {
       this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];
+    } else if (infos.status === MentoringLogStatus.Done) {
+      const startMeetingAtIndex = 0;
+      const now = new Date();
+      now.setMinutes(now.getMinutes() + 30);
+      if (foundLog.meetingAt[startMeetingAtIndex] >= now) {
+        throw new BadRequestException(
+          '멘토링 시작 시간 기준 30분 이후부터\n멘토링을 완료할 수 있습니다.',
+        );
+      }
     }
     try {
       await this.mentoringLogsRepository.save(foundLog);
