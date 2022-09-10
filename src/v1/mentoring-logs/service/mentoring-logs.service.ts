@@ -110,6 +110,17 @@ export class MentoringLogsService {
     }
   }
 
+  isValidTimeForMakeDone(log: MentoringLogs): boolean {
+    const startMeetingAtIndex = 0;
+    const DONE_LIMIT_MIN = 30;
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + DONE_LIMIT_MIN);
+    if (log.meetingAt[startMeetingAtIndex] > now) {
+      return false;
+    }
+    return true;
+  }
+
   async changeStatus(infos: ChangeStatus) {
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       infos.mentoringLogId,
@@ -124,11 +135,7 @@ export class MentoringLogsService {
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];
     } else if (infos.status === MentoringLogStatus.Done) {
-      const startMeetingAtIndex = 0;
-      const DONE_LIMIT_MIN = 30;
-      const now = new Date();
-      now.setMinutes(now.getMinutes() + DONE_LIMIT_MIN);
-      if (foundLog.meetingAt[startMeetingAtIndex] > now) {
+      if (!this.isValidTimeForMakeDone(foundLog)) {
         throw new BadRequestException(
           '멘토링 시작 시간 기준 30분 이후부터\n멘토링을 완료할 수 있습니다.',
         );
