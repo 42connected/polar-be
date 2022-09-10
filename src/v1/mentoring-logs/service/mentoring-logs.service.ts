@@ -114,8 +114,8 @@ export class MentoringLogsService {
     const startMeetingAtIndex = 0;
     const DONE_LIMIT_MIN = 30;
     const now = new Date();
-    now.setMinutes(now.getMinutes() + DONE_LIMIT_MIN);
-    if (log.meetingAt[startMeetingAtIndex] > now) {
+    now.setMinutes(now.getMinutes() - DONE_LIMIT_MIN);
+    if (log.meetingAt[startMeetingAtIndex].getTime() > now.getTime()) {
       return false;
     }
     return true;
