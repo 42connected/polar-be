@@ -146,9 +146,9 @@ export class MentoringLogsService {
 
   isExistTimeOnLogs(requestMeetingAt: Date[], log: MentoringLogs) {
     if (
-      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime1) ||
-      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime2) ||
-      this.compareTimeStartToEnd(requestMeetingAt, log.requestTime3)
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime1) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime2) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime3)
     ) {
       return true;
     }
