@@ -6,4 +6,5 @@ export interface MentorRawSimpleInfo {
   tags: string[];
   profileimage: string;
   introduction: string;
+  isactive: boolean;
 }
