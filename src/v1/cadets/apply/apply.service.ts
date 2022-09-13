@@ -26,14 +26,17 @@ export class ApplyService {
   ) {}
 
   checkDate(startDate: Date, endDate: Date): void {
+    const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
+    const startKr = new Date(startDate.getTime() + KR_TIME_DIFF);
+    const endKr = new Date(endDate.getTime() + KR_TIME_DIFF);
     const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
-    if (startDate.getFullYear() !== endDate.getFullYear()) {
+    if (startKr.getUTCFullYear() !== endKr.getUTCFullYear()) {
       throw new BadRequestException(errorMessage);
     }
-    if (startDate.getMonth() !== endDate.getMonth()) {
+    if (startKr.getUTCMonth() !== endKr.getUTCMonth()) {
       throw new BadRequestException(errorMessage);
     }
-    if (startDate.getDate() !== endDate.getDate()) {
+    if (startKr.getUTCDate() !== endKr.getUTCDate()) {
       throw new BadRequestException(errorMessage);
     }
   }
