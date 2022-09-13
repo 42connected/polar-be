@@ -58,10 +58,10 @@ export class UpdateMentorDatailDto {
   @ApiPropertyOptional({
     description: '멘토 태그',
     required: false,
-    type: String,
+    type: Array,
     isArray: true,
   })
-  tags: string[];
+  tags?: string[];
 
   @IsString()
   @IsOptional()

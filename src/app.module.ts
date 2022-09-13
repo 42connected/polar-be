@@ -24,6 +24,7 @@ import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 import { EmailVerificationModule } from './v1/email-verifications/email-verifications.module';
 import { AllExceptionsFilter } from './http-exception.filter';
 import { RegisterBatches } from './v1/batch/register';
+import { MentoringLogScheduler } from './v1/batch/mentoring-logs-scheduler';
 
 @Module({
   imports: [
@@ -129,6 +130,7 @@ import { RegisterBatches } from './v1/batch/register';
       useClass: AllExceptionsFilter,
     },
     RegisterBatches,
+    MentoringLogScheduler,
   ],
 })
 export class AppModule {}
