@@ -195,6 +195,13 @@ export class BatchService {
 
     mentoringLogs
       .filter(e => {
+        const twoDaytoMillseconds = 172800000;
+        if (e.createdAt.getTime() + twoDaytoMillseconds <= now.getTime()) {
+          e.status = MentoringLogStatus.Cancel;
+          e.rejectMessage =
+            '48시간 동안 멘토링 상태가 확정으로 바뀌지 않아 자동취소 되었습니다';
+          return true;
+        }
         if (
           e?.requestTime1?.[startIndex] &&
           e.requestTime1[startIndex].getTime() < now.getTime()
@@ -214,8 +221,10 @@ export class BatchService {
       })
       .forEach(async e => {
         e.status = MentoringLogStatus.Cancel;
-        e.rejectMessage =
-          '선택할 수 있는 멘토링 요청 시간이 존재하지 않아 자동 취소되었습니다';
+        if (!e.rejectMessage) {
+          e.rejectMessage =
+            '현재 시간 기준 유효하지 않은 멘토링 요청이므로 자동 취소되었습니다';
+        }
         this.logger.log(`Mentoring log's time is over => ${e.id}`);
 
         try {
