@@ -147,7 +147,7 @@ export class EmailService {
         );
         /* reservation2, 3의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          subject: 'New mentoring request',
+          subject: `42POLAR ${messageDto.cadetSlackId}의 멘토링 요청이 대기 중입니다`,
           template: 'ReservationMessage.hbs',
           context: {
             mentorSlackId: messageDto.mentorSlackId,
@@ -172,7 +172,11 @@ export class EmailService {
         );
         /* meetingAt의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          subject: 'Mentoring Approved',
+          subject: `42POLAR
+          ${messageDto.cadetSlackId}
+          -
+          ${messageDto.mentorSlackId}
+          멘토링 요청이 확정되었습니다`,
           template: 'ApproveMessage.hbs',
           context: {
             cadetSlackId: messageDto.cadetSlackId,
@@ -184,7 +188,7 @@ export class EmailService {
       }
       case MailType.Cancel: {
         return {
-          subject: 'Mentoring canceled',
+          subject: `42POLAR ${messageDto.cadetSlackId}}의 멘토링 요청이 취소 되었습니다`,
           template: 'CancelMessage.hbs',
           context: {
             cadetSlackId: messageDto.cadetSlackId,
