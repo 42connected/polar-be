@@ -9,7 +9,6 @@ import { Repository } from 'typeorm';
 import { CreateApplyDto } from '../../dto/cadets/create-apply.dto';
 import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
-import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
@@ -18,22 +17,15 @@ export class ApplyService {
   constructor(
     @InjectRepository(MentoringLogs)
     private readonly mentoringlogsRepository: Repository<MentoringLogs>,
-    @InjectRepository(Mentors)
-    private readonly mentorsRepository: Repository<Mentors>,
-    @InjectRepository(Cadets)
-    private readonly cadetsRepository: Repository<Cadets>,
     private calendarService: CalendarService,
   ) {}
 
   checkDate(startDate: Date, endDate: Date): void {
-    const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
-    const startKr = new Date(startDate.getTime() + KR_TIME_DIFF);
-    const endKr = new Date(endDate.getTime() + KR_TIME_DIFF);
     const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
     if (
-      startKr.getUTCFullYear() !== endKr.getUTCFullYear() ||
-      startKr.getUTCMonth() !== endKr.getUTCMonth() ||
-      startKr.getUTCDate() !== endKr.getUTCDate()
+      startDate.getUTCFullYear() !== endDate.getUTCFullYear() ||
+      startDate.getUTCMonth() !== endDate.getUTCMonth() ||
+      startDate.getUTCDate() !== endDate.getUTCDate()
     ) {
       throw new BadRequestException(errorMessage);
     }
@@ -44,10 +36,10 @@ export class ApplyService {
     if (startDate > endDate) {
       throw new BadRequestException(errorMessage);
     }
-    const startHour: number = startDate.getHours();
-    const startMinute: number = startDate.getMinutes();
-    const endHour: number = endDate.getHours();
-    const endMinute: number = endDate.getMinutes();
+    const startHour: number = startDate.getUTCHours();
+    const startMinute: number = startDate.getUTCMinutes();
+    const endHour: number = endDate.getUTCHours();
+    const endMinute: number = endDate.getUTCMinutes();
     if (
       (startMinute !== 0 && startMinute !== 30) ||
       (endMinute !== 0 && endMinute !== 30)
@@ -92,93 +84,55 @@ export class ApplyService {
     }
   }
 
-  checkAvailableTime(createApplyDto: CreateApplyDto): void {
-    this.checkTime(
-      createApplyDto.requestTime1[0],
-      createApplyDto.requestTime1[1],
-    );
-    if (createApplyDto.requestTime2) {
-      this.checkTime(
-        createApplyDto.requestTime2[0],
-        createApplyDto.requestTime2[1],
-      );
-      this.checkSameTime(
-        createApplyDto.requestTime1,
-        createApplyDto.requestTime2,
-      );
-      if (createApplyDto.requestTime3) {
-        this.checkTime(
-          createApplyDto.requestTime3[0],
-          createApplyDto.requestTime3[1],
-        );
-        this.checkSameTime(
-          createApplyDto.requestTime1,
-          createApplyDto.requestTime3,
-        );
-        this.checkSameTime(
-          createApplyDto.requestTime2,
-          createApplyDto.requestTime3,
-        );
+  checkAvailableTime(requestTimesKST: Date[][]): void {
+    this.checkTime(requestTimesKST[0][0], requestTimesKST[0][1]);
+    if (requestTimesKST[1]) {
+      this.checkTime(requestTimesKST[1][0], requestTimesKST[1][1]);
+      this.checkSameTime(requestTimesKST[0], requestTimesKST[1]);
+      if (requestTimesKST[2]) {
+        this.checkTime(requestTimesKST[2][0], requestTimesKST[2][1]);
+        this.checkSameTime(requestTimesKST[0], requestTimesKST[2]);
+        this.checkSameTime(requestTimesKST[1], requestTimesKST[2]);
       }
     }
   }
 
+  getKSTDate(utc: Date): Date {
+    const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
+    const kst = new Date(utc.getTime() + KR_TIME_DIFF);
+    return kst;
+  }
+
+  formatRequestTimes(createApplyDto: CreateApplyDto): Date[][] {
+    const requestTimesKST: Date[][] = [];
+    requestTimesKST.push([
+      this.getKSTDate(createApplyDto.requestTime1[0]),
+      this.getKSTDate(createApplyDto.requestTime1[1]),
+    ]);
+    if (createApplyDto.requestTime2) {
+      requestTimesKST.push([
+        this.getKSTDate(createApplyDto.requestTime2[0]),
+        this.getKSTDate(createApplyDto.requestTime2[1]),
+      ]);
+      if (createApplyDto.requestTime3) {
+        requestTimesKST.push([
+          this.getKSTDate(createApplyDto.requestTime3[0]),
+          this.getKSTDate(createApplyDto.requestTime3[1]),
+        ]);
+      }
+    }
+    return requestTimesKST;
+  }
+
   async create(
-    cadet: JwtUser,
-    mentorId: string,
+    cadet: Cadets,
+    mentor: Mentors,
     createApplyDto: CreateApplyDto,
   ): Promise<MentoringLogs> {
-    let findMentor: Mentors;
-    let findCadet: Cadets;
-    let createdLog: MentoringLogs;
-    try {
-      findMentor = await this.mentorsRepository.findOne({
-        where: { intraId: mentorId },
-      });
-    } catch {
-      throw new ConflictException(
-        `${mentorId}값을 가져오는 도중 오류가 발생했습니다.`,
-      );
-    }
-    if (!findMentor) {
-      throw new ConflictException(`${mentorId}의 멘토링을 찾을 수 없습니다.`);
-    }
-    try {
-      findCadet = await this.cadetsRepository.findOne({
-        where: { id: cadet.id },
-      });
-    } catch {
-      throw new ConflictException(
-        `${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`,
-      );
-    }
-    if (!findCadet) {
-      throw new ConflictException(
-        `${cadet.intraId}값을 가져오는 도중 오류가 발생했습니다.`,
-      );
-    }
-    this.checkAvailableTime(createApplyDto);
-    try {
-      createdLog = this.mentoringlogsRepository.create({
-        cadets: findCadet,
-        mentors: findMentor,
-        createdAt: new Date(),
-        meetingAt: null,
-        topic: createApplyDto.topic,
-        content: createApplyDto.content,
-        status: MentoringLogStatus.Wait,
-        rejectMessage: null,
-        requestTime1: createApplyDto.requestTime1,
-        requestTime2: createApplyDto.requestTime2,
-        requestTime3: createApplyDto.requestTime3,
-      });
-    } catch {
-      throw new ConflictException(
-        '값을 repository에 생성하는 도중 오류가 발생했습니다.',
-      );
-    }
+    const requestTimesKST: Date[][] = this.formatRequestTimes(createApplyDto);
+    this.checkAvailableTime(requestTimesKST);
     const originRequestTimes = await this.calendarService.getRequestTimes(
-      mentorId,
+      mentor.intraId,
     );
     if (originRequestTimes) {
       const result = await this.checkDuplicatedTime(
@@ -190,13 +144,26 @@ export class ApplyService {
       }
     }
     try {
+      const createdLog: MentoringLogs = this.mentoringlogsRepository.create({
+        cadets: cadet,
+        mentors: mentor,
+        createdAt: new Date(),
+        meetingAt: null,
+        topic: createApplyDto.topic,
+        content: createApplyDto.content,
+        status: MentoringLogStatus.Wait,
+        rejectMessage: null,
+        requestTime1: createApplyDto.requestTime1,
+        requestTime2: createApplyDto.requestTime2,
+        requestTime3: createApplyDto.requestTime3,
+      });
       await this.mentoringlogsRepository.save(createdLog);
+      return createdLog;
     } catch {
       throw new ConflictException(
         '값을 repository에 저장하는 도중 오류가 발생했습니다.',
       );
     }
-    return createdLog;
   }
 
   async checkDuplicatedTime(

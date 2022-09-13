@@ -12,11 +12,11 @@ import { Mentors } from '../entities/mentors.entity';
 import { ApplyService } from './apply/apply.service';
 import { CadetsController } from './cadets.controller';
 import { CadetsService } from './service/cadets.service';
-import { Batch } from '../entities/batch.entity';
+import { MentorsService } from '../mentors/service/mentors.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Cadets, MentoringLogs, Mentors, Batch]),
+    TypeOrmModule.forFeature([Cadets, MentoringLogs, Mentors]),
     AuthModule,
     BatchModule,
     EmailModule,
@@ -28,6 +28,7 @@ import { Batch } from '../entities/batch.entity';
     CalendarService,
     BatchService,
     EmailService,
+    MentorsService,
   ],
   exports: [CadetsService, ApplyService],
 })
