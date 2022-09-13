@@ -29,6 +29,7 @@ import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 import { KeywordsService } from '../categories/service/keywords.service';
+import { Mentors } from '../entities/mentors.entity';
 
 @Controller()
 @ApiTags('mentors API')
@@ -110,8 +111,24 @@ export class MentorsController {
     description:
       '멘토 필수정보(이름, 이메일, 슬랙아이디, 가능시간, 멘토링 가능 상태)를 받아서 저장합니다.',
   })
-  join(@Body() body: JoinMentorDto, @User() user: JwtUser) {
+  join(@Body() body: JoinMentorDto, @User() user: JwtUser): Promise<void> {
     return this.mentorsService.updateMentorDetails(user.intraId, body);
+  }
+
+  @Get('/:intraId/keywords')
+  @ApiOperation({
+    summary: 'Get mentor keywords',
+    description: '해당 멘토의 키워드를 반환합니다.',
+  })
+  @ApiCreatedResponse({
+    description: '멘토 키워드',
+    type: String,
+    isArray: true,
+  })
+  async getKeywords(@Param('intraId') intraId: string): Promise<string[]> {
+    const keywords: string[] =
+      await this.keywordsService.getMentorKeywordsTunned(intraId);
+    return keywords;
   }
 
   @Patch(':intraId/keywords')

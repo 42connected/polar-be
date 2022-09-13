@@ -91,12 +91,13 @@ export class MentorsService {
         return false;
       }
       const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+      let join = false;
       week.forEach(day => {
         if (day.length > 0) {
-          return true;
+          join = true;
         }
       });
-      return false;
+      return join;
     }
     return true;
   }
@@ -105,14 +106,22 @@ export class MentorsService {
     intraId: string,
     infos: UpdateMentor,
   ): Promise<void> {
-    const { name, availableTime, slackId, isActive, markdownContent, tags } =
-      infos;
+    const {
+      name,
+      availableTime,
+      slackId,
+      isActive,
+      markdownContent,
+      introduction,
+      tags,
+    } = infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
     foundUser.slackId = slackId;
     foundUser.isActive = isActive;
     foundUser.markdownContent = markdownContent;
     foundUser.tags = tags;
+    foundUser.introduction = introduction;
     if (isActive) {
       if (!availableTime) {
         throw new BadRequestException(

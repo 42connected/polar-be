@@ -1,9 +1,10 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { map } from 'rxjs';
 import { Keywords } from 'src/v1/entities/keywords.entity';
 import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 
 @Injectable()
 export class KeywordsService {
@@ -12,6 +13,8 @@ export class KeywordsService {
     private keywordsRepository: Repository<Keywords>,
     @InjectRepository(MentorKeywords)
     private mentorKeywordsRepository: Repository<MentorKeywords>,
+    @InjectRepository(Mentors)
+    private mentorsRepository: Repository<Mentors>,
   ) {}
 
   async getKeywordIds(keywords: string[]): Promise<string[]> | null {
@@ -66,5 +69,26 @@ export class KeywordsService {
     } catch (err) {
       throw new ConflictException('데이터 저장 중 에러가 발생했습니다.');
     }
+  }
+
+  async getKeywordIdsByMentorId(id: string): Promise<string[]> {
+    const results: MentorKeywords[] =
+      await this.mentorKeywordsRepository.findBy({ mentorId: id });
+    const keywordIds: string[] = results.map(obj => obj.keywordId);
+    return keywordIds;
+  }
+
+  async getMentorKeywordsTunned(intraId: string) {
+    const keywords: string[] = [];
+    const found = await this.mentorKeywordsRepository.find({
+      relations: { mentors: true, keywords: true },
+      select: {
+        mentors: {},
+        keywords: { name: true },
+      },
+      where: { mentors: { intraId: intraId } },
+    });
+    found.map(async e => keywords.push(e.keywords.name));
+    return keywords;
   }
 }

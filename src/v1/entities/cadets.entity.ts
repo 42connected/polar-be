@@ -33,10 +33,10 @@ export class Cadets {
   @Column({ type: 'varchar', length: 100 })
   email: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @OneToMany(() => Comments, Comments => Comments.cadets)
