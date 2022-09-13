@@ -115,8 +115,6 @@ export class CadetsController {
       createApplyDto,
     );
     this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
-    const twoDaytoMillseconds = 172800000;
-    this.batchSevice.addAutoCancel(mentoringLogs.id, twoDaytoMillseconds);
     return true;
   }
 }
