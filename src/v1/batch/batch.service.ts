@@ -163,8 +163,8 @@ export class BatchService {
           id: batch.mentoringLogId,
         });
       const deleteTime: number = +batch.timestamp + twoDaytoMillseconds;
-      if (mentoringLog.status !== MentoringLogStatus.Wait) {
-        this.removeBatchItem(mentoringLog.id);
+      if (mentoringLog?.status !== MentoringLogStatus.Wait) {
+        this.removeBatchItem(batch.mentoringLogId);
       } else if (Date.now() >= deleteTime) {
         mentoringLog.status = MentoringLogStatus.Cancel;
         mentoringLog.rejectMessage =

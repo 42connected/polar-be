@@ -164,6 +164,7 @@ export class MentoringLogsService {
     foundLog.status = infos.status;
     if (infos.status === MentoringLogStatus.Cancel) {
       foundLog.rejectMessage = infos.rejectMessage;
+      foundLog.meetingAt = [];
     } else if (infos.status === MentoringLogStatus.Approve) {
       if (!this.isExistTimeOnLogs(infos.meetingAt, foundLog)) {
         throw new BadRequestException(
