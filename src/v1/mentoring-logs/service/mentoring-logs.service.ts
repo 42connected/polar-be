@@ -119,6 +119,7 @@ export class MentoringLogsService {
     foundLog.status = infos.status;
     if (infos.status === MentoringLogStatus.Cancel) {
       foundLog.rejectMessage = infos.rejectMessage;
+      foundLog.meetingAt = [];
     }
     if (infos.status === MentoringLogStatus.Approve) {
       this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
