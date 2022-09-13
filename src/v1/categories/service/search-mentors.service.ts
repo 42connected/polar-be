@@ -152,6 +152,7 @@ export class SearchMentorsService {
         tags: rawInfo.tags,
         profileImage: rawInfo.profileimage || null,
         introduction: rawInfo.introduction,
+        isActive: rawInfo.isactive,
       });
     });
     return matchMentors;
@@ -176,6 +177,7 @@ export class SearchMentorsService {
           'mentors.profileImage AS profileimage',
           'mentors.tags AS tags',
           'mentors.introduction AS introduction',
+          'mentors.isActive AS isactive',
         ])
         .where('mentorKeywords.keywordId IN (:...keywordsId)', {
           keywordsId: keywordsId,
@@ -207,6 +209,7 @@ export class SearchMentorsService {
           tags: rawInfo.tags,
           profileImage: rawInfo.profileimage || null,
           introduction: rawInfo.introduction,
+          isActive: rawInfo.isactive,
         });
     });
     return matchMentors;

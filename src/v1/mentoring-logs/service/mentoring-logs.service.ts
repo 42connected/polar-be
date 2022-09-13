@@ -110,6 +110,51 @@ export class MentoringLogsService {
     }
   }
 
+  isValidTimeForMakeDone(log: MentoringLogs): boolean {
+    const startMeetingAtIndex = 0;
+    const DONE_LIMIT_MIN = 30;
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - DONE_LIMIT_MIN);
+    if (log.meetingAt[startMeetingAtIndex].getTime() > now.getTime()) {
+      return false;
+    }
+    return true;
+  }
+
+  compareTime(t1: Date, t2: Date): boolean {
+    if (!t1 || !t2) {
+      return false;
+    }
+    if (t1.getTime() === t2.getTime()) {
+      return true;
+    }
+    return false;
+  }
+
+  compareTimeStartToEnd(t1: Date[], t2: Date[]): boolean {
+    const START_TIME_INDEX = 0;
+    const END_TIME_INDEX = 1;
+
+    if (
+      this.compareTime(t1?.[START_TIME_INDEX], t2?.[START_TIME_INDEX]) &&
+      this.compareTime(t1?.[END_TIME_INDEX], t2?.[END_TIME_INDEX])
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  isExistTimeOnLogs(requestMeetingAt: Date[], log: MentoringLogs) {
+    if (
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime1) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime2) ||
+      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime3)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   async changeStatus(infos: ChangeStatus) {
     const foundLog: MentoringLogs = await this.findMentoringLogWithRelations(
       infos.mentoringLogId,
@@ -119,11 +164,22 @@ export class MentoringLogsService {
     foundLog.status = infos.status;
     if (infos.status === MentoringLogStatus.Cancel) {
       foundLog.rejectMessage = infos.rejectMessage;
-    }
-    if (infos.status === MentoringLogStatus.Approve) {
+      foundLog.meetingAt = [];
+    } else if (infos.status === MentoringLogStatus.Approve) {
+      if (!this.isExistTimeOnLogs(infos.meetingAt, foundLog)) {
+        throw new BadRequestException(
+          '해당 시간은 멘토링 로그에 존재하지 않습니다.',
+        );
+      }
       this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];
+    } else if (infos.status === MentoringLogStatus.Done) {
+      if (!this.isValidTimeForMakeDone(foundLog)) {
+        throw new BadRequestException(
+          '멘토링 시작 시간 기준 30분 이후부터\n멘토링을 완료할 수 있습니다.',
+        );
+      }
     }
     try {
       await this.mentoringLogsRepository.save(foundLog);
