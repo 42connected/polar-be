@@ -13,6 +13,7 @@ import { ApplyService } from './apply/apply.service';
 import { CadetsController } from './cadets.controller';
 import { CadetsService } from './service/cadets.service';
 import { Batch } from '../entities/batch.entity';
+import { MentorsService } from '../mentors/service/mentors.service';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { Batch } from '../entities/batch.entity';
     CalendarService,
     BatchService,
     EmailService,
+    MentorsService,
   ],
   exports: [CadetsService, ApplyService],
 })
