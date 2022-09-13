@@ -30,13 +30,11 @@ export class ApplyService {
     const startKr = new Date(startDate.getTime() + KR_TIME_DIFF);
     const endKr = new Date(endDate.getTime() + KR_TIME_DIFF);
     const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
-    if (startKr.getUTCFullYear() !== endKr.getUTCFullYear()) {
-      throw new BadRequestException(errorMessage);
-    }
-    if (startKr.getUTCMonth() !== endKr.getUTCMonth()) {
-      throw new BadRequestException(errorMessage);
-    }
-    if (startKr.getUTCDate() !== endKr.getUTCDate()) {
+    if (
+      startKr.getUTCFullYear() !== endKr.getUTCFullYear() ||
+      startKr.getUTCMonth() !== endKr.getUTCMonth() ||
+      startKr.getUTCDate() !== endKr.getUTCDate()
+    ) {
       throw new BadRequestException(errorMessage);
     }
   }
