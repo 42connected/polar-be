@@ -84,6 +84,7 @@ export class MentoringsService {
             meetingAt: true,
             topic: true,
             status: true,
+            meetingStart: true,
           },
           where: {
             mentors: { intraId: mentorIntraId },
@@ -91,11 +92,11 @@ export class MentoringsService {
           },
           take: paginationDto.take,
           skip: paginationDto.take * (paginationDto.page - 1),
-          order: { createdAt: 'DESC' },
+          order: { meetingStart: 'DESC' },
         });
       return simpleLogs;
     } catch (e) {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+      throw new ConflictException(e, '예기치 못한 에러가 발생하였습니다');
     }
   }
 }

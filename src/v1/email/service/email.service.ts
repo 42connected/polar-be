@@ -188,7 +188,7 @@ export class EmailService {
       }
       case MailType.Cancel: {
         return {
-          subject: `42POLAR ${messageDto.cadetSlackId}}의 멘토링 요청이 취소 되었습니다`,
+          subject: `42POLAR ${messageDto.cadetSlackId}의 멘토링 요청이 취소 되었습니다`,
           template: 'CancelMessage.hbs',
           context: {
             cadetSlackId: messageDto.cadetSlackId,
