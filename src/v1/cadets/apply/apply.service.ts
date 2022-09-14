@@ -166,46 +166,33 @@ export class ApplyService {
     }
   }
 
+  checkTimeOverlap(requestTime: Date[], originTime: Date[]) {
+    if (!requestTime) {
+      return true;
+    }
+    if (
+      requestTime[0].getTime() >= originTime[1].getTime() ||
+      requestTime[1].getTime() <= originTime[0].getTime()
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   async checkDuplicatedTime(
     originRequestTimes: Date[][],
     createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
-    const len: number = originRequestTimes.length;
-    const requestTime1Start = createApplyDto.requestTime1[0].getTime();
-    const requestTime1End = createApplyDto.requestTime1[1].getTime();
-    let requestTime2Start = 0;
-    let requestTime2End = 0;
-    let requestTime3Start = 0;
-    let requestTime3End = 0;
-    if (createApplyDto.requestTime2) {
-      requestTime2Start = createApplyDto.requestTime2[0].getTime();
-      requestTime2End = createApplyDto.requestTime2[1].getTime();
-      if (createApplyDto.requestTime3) {
-        requestTime3Start = createApplyDto.requestTime3[0].getTime();
-        requestTime3End = createApplyDto.requestTime3[1].getTime();
-      }
-    }
-    for (let i = 0; i < len; i++) {
+    const results: boolean[] = originRequestTimes.map(originTime => {
       if (
-        requestTime1Start >= originRequestTimes[i][0].getTime() &&
-        requestTime1End <= originRequestTimes[i][1].getTime()
+        !this.checkTimeOverlap(createApplyDto.requestTime1, originTime) ||
+        !this.checkTimeOverlap(createApplyDto.requestTime2, originTime) ||
+        !this.checkTimeOverlap(createApplyDto.requestTime3, originTime)
       ) {
         return false;
       }
-      if (
-        createApplyDto.requestTime2 &&
-        requestTime2Start >= originRequestTimes[i][0].getTime() &&
-        requestTime2End <= originRequestTimes[i][1].getTime()
-      )
-        return false;
-      if (
-        createApplyDto.requestTime3 &&
-        createApplyDto.requestTime2 &&
-        requestTime3Start >= originRequestTimes[i][0].getTime() &&
-        requestTime3End <= originRequestTimes[i][1].getTime()
-      )
-        return false;
-    }
-    return true;
+      return true;
+    });
+    return results.every(result => result);
   }
 }
