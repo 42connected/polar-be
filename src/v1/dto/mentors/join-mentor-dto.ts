@@ -54,4 +54,24 @@ export class JoinMentorDto {
     type: Boolean,
   })
   isActive: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'company',
+    required: false,
+    type: String,
+    example: '야후꾸러기',
+  })
+  company: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'duty',
+    required: false,
+    type: String,
+    example: 'CTO',
+  })
+  duty: string;
 }
