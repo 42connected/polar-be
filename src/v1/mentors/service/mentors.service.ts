@@ -68,7 +68,13 @@ export class MentorsService {
   }
 
   validateInfo(mentor: Mentors): boolean {
-    if (!mentor.slackId || !mentor.email || !mentor.name) {
+    if (
+      !mentor.slackId ||
+      !mentor.email ||
+      !mentor.name ||
+      !mentor.duty ||
+      !mentor.company
+    ) {
       return false;
     }
     if (mentor.isActive) {
@@ -99,6 +105,8 @@ export class MentorsService {
       markdownContent,
       introduction,
       tags,
+      company,
+      duty,
     } = infos;
     const foundUser: Mentors = await this.findMentorByIntraId(intraId);
     foundUser.name = name;
@@ -107,6 +115,8 @@ export class MentorsService {
     foundUser.markdownContent = markdownContent;
     foundUser.tags = tags;
     foundUser.introduction = introduction;
+    foundUser.company = company;
+    foundUser.duty = duty;
     if (isActive) {
       if (!availableTime) {
         throw new BadRequestException(
