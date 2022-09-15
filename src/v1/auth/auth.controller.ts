@@ -6,7 +6,6 @@ import { CadetsService } from '../cadets/service/cadets.service';
 import { AuthResponse } from '../dto/auth-response.dto';
 import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
-import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
 import { Bocals } from '../entities/bocals.entity';
 import { Cadets } from '../entities/cadets.entity';
 import { Mentors } from '../entities/mentors.entity';
@@ -51,12 +50,11 @@ export class AuthController {
     }
     if (intraId.startsWith('m-')) {
       const mentor: Mentors = await this.mentorsService.findByIntra(intraId);
-      const newData: CreateMentorDto = { intraId, profileImage };
       if (!mentor) {
-        result = await this.mentorsService.createUser(newData);
+        result = await this.mentorsService.createUser(intraId);
         join = false;
       } else {
-        result = await this.mentorsService.updateLogin(mentor, newData);
+        result = { id: mentor.id, intraId: mentor.intraId, role: 'mentor' };
         join = this.mentorsService.validateInfo(mentor);
       }
     } else if (profile['staff?']) {
