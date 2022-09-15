@@ -8,4 +8,6 @@ export interface UpdateMentor {
   name?: string;
   tags?: string[];
   slackId?: string;
+  company?: string;
+  duty?: string;
 }

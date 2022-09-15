@@ -81,4 +81,24 @@ export class UpdateMentorDatailDto {
     example: 'nakkim',
   })
   slackId?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'company',
+    required: false,
+    type: String,
+    example: '야후꾸러기',
+  })
+  company?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: 'duty',
+    required: false,
+    type: String,
+    example: 'CTO',
+  })
+  duty?: string;
 }
