@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
-import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
@@ -19,23 +18,9 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async updateLogin(
-    mentor: Mentors,
-    newData: CreateMentorDto,
-  ): Promise<JwtUser> {
-    mentor.intraId = newData.intraId;
-    mentor.profileImage = newData.profileImage;
-    await this.mentorsRepository.save(mentor);
-    return {
-      id: mentor.id,
-      intraId: mentor.intraId,
-      role: 'mentor',
-    };
-  }
-
-  async createUser(newData: CreateMentorDto): Promise<JwtUser> {
+  async createUser(intraId: string): Promise<JwtUser> {
     try {
-      const createdUser: Mentors = this.mentorsRepository.create(newData);
+      const createdUser: Mentors = this.mentorsRepository.create({ intraId });
       createdUser.isActive = false;
       await this.mentorsRepository.save(createdUser);
       return {
