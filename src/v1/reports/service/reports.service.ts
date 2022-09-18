@@ -206,10 +206,9 @@ export class ReportsService {
     });
 
     if (mentoringTimePerDay >= 4 || mentoringTimePerMonth >= 10) return 0;
-    else if (mentoringTimePerMonth + result >= 10)
+    if (mentoringTimePerMonth + result >= 10)
       result = 10 - mentoringTimePerMonth;
-    else if (mentoringTimePerDay + result >= 4)
-      result = 4 - mentoringTimePerDay;
+    if (mentoringTimePerDay + result >= 4) result = 4 - mentoringTimePerDay;
 
     return result;
   }
