@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
@@ -106,6 +106,9 @@ export class CadetsController {
     const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
       mentorId,
     );
+    if (!mentor.isActive) {
+      throw new BadRequestException('해당 멘토는 멘토링 신청이 불가능합니다.');
+    }
     const cadet: Cadets = await this.cadetsService.findCadetByIntraId(
       user.intraId,
     );
