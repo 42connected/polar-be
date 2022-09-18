@@ -330,7 +330,7 @@ export class ReportsService {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     try {
-      this.reportsRepository.save({
+      await this.reportsRepository.save({
         id: report.id,
         place: body.place,
         topic: body.topic,
