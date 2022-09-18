@@ -171,15 +171,19 @@ export class ReportsService {
       finishedMentorings = await this.mentoringLogsRepository.find({
         select: { meetingAt: true },
         where: { status: MentoringLogStatus.Done, mentors: { id: mentorId } },
-        relations: { mentors: true },
+        relations: { mentors: true, reports: true },
       });
     } catch {
       throw new ConflictException('멘토링 시간을 찾는 중 오류가 발생했습니다.');
     }
 
     finishedMentorings.map(mentoring => {
-      if (mentoring.meetingAt[0].getMonth() === start.getMonth())
+      if (
+        mentoring.meetingAt[0].getMonth() === start.getMonth() &&
+        mentoring.meetingAt[0].getTime() !== start.getTime()
+      ) {
         finishedMentoringsInMonth.push(mentoring);
+      }
     });
 
     finishedMentoringsInMonth.map(mentoring => {
@@ -189,25 +193,22 @@ export class ReportsService {
 
     let mentoringTimePerDay = 0;
     finishedMentoringsInDay.forEach(mentoring => {
-      mentoringTimePerDay += Math.floor(
-        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
-          (1000 * 60 * 60),
-      );
+      if (mentoring?.reports?.money) {
+        mentoringTimePerDay += mentoring.reports.money / MONEY_PER_HOUR;
+      }
     });
-    if (mentoringTimePerDay >= 4) return 0;
-    else if (mentoringTimePerDay + result >= 4)
-      result = 4 - mentoringTimePerDay;
 
     let mentoringTimePerMonth = 0;
     finishedMentoringsInMonth.forEach(mentoring => {
-      mentoringTimePerMonth += Math.floor(
-        (mentoring.meetingAt[1].getTime() - mentoring.meetingAt[0].getTime()) /
-          (1000 * 60 * 60),
-      );
+      if (mentoring?.reports?.money) {
+        mentoringTimePerMonth += mentoring.reports.money / MONEY_PER_HOUR;
+      }
     });
-    if (mentoringTimePerMonth >= 10) return 0;
-    else if (mentoringTimePerMonth + result >= 10)
-      result = 10 - mentoringTimePerDay;
+
+    if (mentoringTimePerDay >= 4 || mentoringTimePerMonth >= 10) return 0;
+    if (mentoringTimePerMonth + result >= 10)
+      result = 10 - mentoringTimePerMonth;
+    if (mentoringTimePerDay + result >= 4) result = 4 - mentoringTimePerDay;
 
     return result;
   }
