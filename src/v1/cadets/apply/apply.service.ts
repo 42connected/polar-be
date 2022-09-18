@@ -11,6 +11,7 @@ import { Cadets } from '../../entities/cadets.entity';
 import { Mentors } from '../../entities/mentors.entity';
 import { CalendarService } from 'src/v1/calendar/service/calendar.service';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
+import { getKSTDate } from 'src/util/utils';
 
 @Injectable()
 export class ApplyService {
@@ -97,27 +98,21 @@ export class ApplyService {
     }
   }
 
-  getKSTDate(utc: Date): Date {
-    const KR_TIME_DIFF = 9 * 60 * 60 * 1000;
-    const kst = new Date(utc.getTime() + KR_TIME_DIFF);
-    return kst;
-  }
-
   formatRequestTimes(createApplyDto: CreateApplyDto): Date[][] {
     const requestTimesKST: Date[][] = [];
     requestTimesKST.push([
-      this.getKSTDate(createApplyDto.requestTime1[0]),
-      this.getKSTDate(createApplyDto.requestTime1[1]),
+      getKSTDate(createApplyDto.requestTime1[0]),
+      getKSTDate(createApplyDto.requestTime1[1]),
     ]);
     if (createApplyDto.requestTime2) {
       requestTimesKST.push([
-        this.getKSTDate(createApplyDto.requestTime2[0]),
-        this.getKSTDate(createApplyDto.requestTime2[1]),
+        getKSTDate(createApplyDto.requestTime2[0]),
+        getKSTDate(createApplyDto.requestTime2[1]),
       ]);
       if (createApplyDto.requestTime3) {
         requestTimesKST.push([
-          this.getKSTDate(createApplyDto.requestTime3[0]),
-          this.getKSTDate(createApplyDto.requestTime3[1]),
+          getKSTDate(createApplyDto.requestTime3[0]),
+          getKSTDate(createApplyDto.requestTime3[1]),
         ]);
       }
     }
