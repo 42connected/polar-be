@@ -39,7 +39,7 @@ export class DataRoomService {
           mentoringLogs: {
             meetingStart: Between(from, to),
           },
-          status: '완료',
+          status: '작성완료',
         },
         relations: {
           mentoringLogs: true,
