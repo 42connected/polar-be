@@ -6,6 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getKSTDate } from 'src/util/utils';
 import { ApplyService } from 'src/v1/cadets/apply/apply.service';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { ChangeStatus } from 'src/v1/interface/mentoring-log/change-status.interface';
@@ -172,8 +173,8 @@ export class MentoringLogsService {
         );
       }
       this.applyService.checkDate(
-        this.applyService.getKSTDate(infos.meetingAt[0]),
-        this.applyService.getKSTDate(infos.meetingAt[1]),
+        getKSTDate(infos.meetingAt[0]),
+        getKSTDate(infos.meetingAt[1]),
       );
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];

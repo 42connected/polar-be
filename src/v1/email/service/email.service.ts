@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getKSTDate } from 'src/util/utils';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { ApproveMessage } from 'src/v1/interface/email/approve-message.interface';
 import { CancelMessage } from 'src/v1/interface/email/cancel-message.interface';
@@ -125,21 +126,21 @@ export class EmailService {
           ? '공통과정'
           : '심화과정';
         const requestTime1: string = await this.reserveTimeToString(
-          messageDto.reservationTime1[0],
+          getKSTDate(messageDto.reservationTime1[0]),
           this.getMentoringHours(
             messageDto.reservationTime1[0],
             messageDto.reservationTime1[1],
           ),
         );
         const requestTime2: string = await this.reserveTimeToString(
-          messageDto.reservationTime2[0],
+          getKSTDate(messageDto.reservationTime2[0]),
           this.getMentoringHours(
             messageDto.reservationTime2[0],
             messageDto.reservationTime2[1],
           ),
         );
         const requestTime3: string = await this.reserveTimeToString(
-          messageDto.reservationTime3[0],
+          getKSTDate(messageDto.reservationTime3[0]),
           this.getMentoringHours(
             messageDto.reservationTime3[0],
             messageDto.reservationTime3[1],
@@ -164,7 +165,7 @@ export class EmailService {
       }
       case MailType.Approve: {
         const reservationTimeToString = await this.reserveTimeToString(
-          messageDto.meetingAt[0],
+          getKSTDate(messageDto.meetingAt[0]),
           this.getMentoringHours(
             messageDto.meetingAt[0],
             messageDto.meetingAt[1],
