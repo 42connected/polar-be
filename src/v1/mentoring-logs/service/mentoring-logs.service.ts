@@ -171,7 +171,10 @@ export class MentoringLogsService {
           '해당 시간은 멘토링 로그에 존재하지 않습니다.',
         );
       }
-      this.applyService.checkDate(infos.meetingAt[0], infos.meetingAt[1]);
+      this.applyService.checkDate(
+        this.applyService.getKSTDate(infos.meetingAt[0]),
+        this.applyService.getKSTDate(infos.meetingAt[1]),
+      );
       foundLog.meetingAt = infos.meetingAt;
       foundLog.meetingStart = infos.meetingAt[0];
     } else if (infos.status === MentoringLogStatus.Done) {
