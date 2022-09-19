@@ -143,7 +143,7 @@ export class ApplyService {
         cadets: cadet,
         mentors: mentor,
         createdAt: new Date(),
-        meetingAt: [],
+        meetingAt: null,
         topic: createApplyDto.topic,
         content: createApplyDto.content,
         status: MentoringLogStatus.Wait,
