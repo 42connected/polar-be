@@ -39,7 +39,7 @@ export class AuthController {
     const {
       login: intraId,
       image_url: profileImage,
-      alumnized_at: isCommon,
+      'alumni?': isAlumni,
       cursus_users: cursus,
       email,
     } = profile;
@@ -71,7 +71,7 @@ export class AuthController {
         throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
       }
       if (
-        isCommon &&
+        !isAlumni &&
         (cursus[1].end_at ||
           new Date(cursus[1].blackholed_at).getTime() <= Date.now())
       ) {
@@ -81,7 +81,7 @@ export class AuthController {
       const newData: CreateCadetDto = {
         intraId,
         profileImage,
-        isCommon: isCommon === null ? true : false,
+        isCommon: !isAlumni,
         email,
       };
       if (!cadet) {
