@@ -71,8 +71,9 @@ export class AuthController {
         throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
       }
       if (
-        cursus[1].end_at ||
-        new Date(cursus[1].blackholed_at).getTime() <= Date.now()
+        isCommon &&
+        (cursus[1].end_at ||
+          new Date(cursus[1].blackholed_at).getTime() <= Date.now())
       ) {
         throw new ForbiddenException('블랙홀에 빠진 카뎃은 이용이 불가합니다.');
       }

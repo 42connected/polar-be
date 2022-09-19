@@ -133,11 +133,11 @@ export class ReportsController {
     }
     if (files?.signature) {
       const signatureKey: string = files.signature[0].key;
-      this.reportsService.uploadSignature(report, signatureKey);
+      await this.reportsService.uploadSignature(report, signatureKey);
     }
     if (files?.image) {
       const imageKey: string = files.image[0].key;
-      this.reportsService.uploadImage(report, imageKey);
+      await this.reportsService.uploadImage(report, imageKey);
     }
     return true;
   }
