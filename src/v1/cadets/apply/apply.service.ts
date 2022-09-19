@@ -22,13 +22,17 @@ export class ApplyService {
   ) {}
 
   checkDate(startDate: Date, endDate: Date): void {
-    const errorMessage = '멘토링은 당일에 종료되어야 합니다.';
     if (
       startDate.getUTCFullYear() !== endDate.getUTCFullYear() ||
       startDate.getUTCMonth() !== endDate.getUTCMonth() ||
       startDate.getUTCDate() !== endDate.getUTCDate()
     ) {
-      throw new BadRequestException(errorMessage);
+      throw new BadRequestException('멘토링은 당일에 종료되어야 합니다.');
+    }
+    if (endDate.getTime() - startDate.getTime() > 1000 * 60 * 60 * 3) {
+      throw new BadRequestException(
+        '멘토링은 한번에 최대 3시간까지 신청 가능합니다.',
+      );
     }
   }
 
