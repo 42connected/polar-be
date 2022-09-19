@@ -314,26 +314,20 @@ export class EmailService {
     if (mentoringTime === 0) {
       return '';
     }
-
-    const reservationTimeTmp: string = reservationTime.toDateString();
-    const tmp: string[] = reservationTimeTmp.split(' ');
-    let mentoringMinute: string;
-    if (reservationTime.getMinutes() < 10)
-      mentoringMinute = reservationTime.getMinutes() + '0';
-    else mentoringMinute = reservationTime.getMinutes().toString();
-    const reservationTimeToString =
-      tmp[1] +
-      ' ' +
-      tmp[2] +
-      ', ' +
-      tmp[3] +
-      ' ' +
-      reservationTime.getHours() +
-      ':' +
-      mentoringMinute +
-      ' for ' +
-      mentoringTime +
-      ' hours';
+    const reservationTimeToString = `${reservationTime.getUTCFullYear()}.${(
+      reservationTime.getUTCMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}.${reservationTime
+      .getUTCDate()
+      .toString()
+      .padStart(2, '0')} ${reservationTime
+      .getUTCHours()
+      .toString()
+      .padStart(2, '0')}:${reservationTime
+      .getUTCMinutes()
+      .toString()
+      .padStart(2, '0')} (${mentoringTime}시간)`;
     return reservationTimeToString;
   }
 
