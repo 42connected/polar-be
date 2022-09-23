@@ -12,10 +12,7 @@ async function bootstrap() {
     dsn: process.env.SENTRY_DSN,
     debug: true,
   });
-  const transform = Sentry.startTransaction({
-    op: 'test',
-    name: 'My First Test Transaction',
-  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
