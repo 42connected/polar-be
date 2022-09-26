@@ -15,7 +15,6 @@ import { Repository } from 'typeorm';
 import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { ReportStatus, REPORT_STATUS_STR } from 'src/v1/reports/ReportStatus';
 
 @Injectable()
 export class CadetsService {
@@ -112,9 +111,7 @@ export class CadetsService {
     });
   }
 
-  async addFeedbackMsgToLogs(
-    formatLogs: CadetMentoringLogs[],
-  ): Promise<CadetMentoringLogs[]> {
+  async addFeedbackMsgToLogs(formatLogs: CadetMentoringLogs[]) {
     for (const [i, logs] of formatLogs.entries()) {
       if (logs.status === MentoringLogStatus.Done) {
         const report = await this.reportsRepository.findOne({
@@ -125,7 +122,6 @@ export class CadetsService {
         }
       }
     }
-    return formatLogs;
   }
 
   async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
@@ -149,11 +145,11 @@ export class CadetsService {
     if (cadet === null) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
-    let mentorings: CadetMentoringLogs[] = this.formatMentorings(
+    const mentorings: CadetMentoringLogs[] = this.formatMentorings(
       cadet.mentoringLogs,
       cadet.isCommon,
     );
-    mentorings = await this.addFeedbackMsgToLogs(mentorings);
+    await this.addFeedbackMsgToLogs(mentorings);
     return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
