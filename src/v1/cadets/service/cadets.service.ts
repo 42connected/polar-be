@@ -13,11 +13,14 @@ import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
 import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
+import { Reports } from 'src/v1/entities/reports.entity';
 
 @Injectable()
 export class CadetsService {
   constructor(
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
+    @InjectRepository(Reports) private reportsRepository: Repository<Reports>,
   ) {}
 
   async updateLogin(cadet: Cadets, newData: CreateCadetDto): Promise<JwtUser> {
@@ -102,9 +105,26 @@ export class CadetsService {
           ],
           meetingAt: mentoring.meetingAt,
           rejectMessage: mentoring.rejectMessage,
+          feedbackMessage: null,
         },
       };
     });
+  }
+
+  async addFeedbackMessageToMentoringLogs(
+    formatLogs: CadetMentoringLogs[],
+  ): Promise<CadetMentoringLogs[]> {
+    for (const [i, logs] of formatLogs.entries()) {
+      if (logs.status === MentoringLogStatus.Done) {
+        const report = await this.reportsRepository.findOne({
+          where: { mentoringLogs: { id: logs.id } },
+        });
+        if (report?.feedbackMessage) {
+          formatLogs[i].meta.feedbackMessage = report.feedbackMessage;
+        }
+      }
+    }
+    return formatLogs;
   }
 
   async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
@@ -128,10 +148,11 @@ export class CadetsService {
     if (cadet === null) {
       throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
-    const mentorings: CadetMentoringLogs[] = this.formatMentorings(
+    let mentorings: CadetMentoringLogs[] = this.formatMentorings(
       cadet.mentoringLogs,
       cadet.isCommon,
     );
+    mentorings = await this.addFeedbackMessageToMentoringLogs(mentorings);
     return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
