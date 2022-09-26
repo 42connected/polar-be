@@ -15,6 +15,7 @@ import { Repository } from 'typeorm';
 import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Reports } from 'src/v1/entities/reports.entity';
+import { ReportStatus, REPORT_STATUS_STR } from 'src/v1/reports/ReportStatus';
 
 @Injectable()
 export class CadetsService {
@@ -111,7 +112,7 @@ export class CadetsService {
     });
   }
 
-  async addFeedbackMessageToMentoringLogs(
+  async addFeedbackMsgToLogs(
     formatLogs: CadetMentoringLogs[],
   ): Promise<CadetMentoringLogs[]> {
     for (const [i, logs] of formatLogs.entries()) {
@@ -119,7 +120,7 @@ export class CadetsService {
         const report = await this.reportsRepository.findOne({
           where: { mentoringLogs: { id: logs.id } },
         });
-        if (report?.feedbackMessage) {
+        if (report?.status === '작성완료' && report?.feedbackMessage) {
           formatLogs[i].meta.feedbackMessage = report.feedbackMessage;
         }
       }
@@ -152,7 +153,7 @@ export class CadetsService {
       cadet.mentoringLogs,
       cadet.isCommon,
     );
-    mentorings = await this.addFeedbackMessageToMentoringLogs(mentorings);
+    mentorings = await this.addFeedbackMsgToLogs(mentorings);
     return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
