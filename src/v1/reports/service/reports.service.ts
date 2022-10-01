@@ -89,7 +89,7 @@ export class ReportsService {
           mentoringLogs: true,
         },
         select: {
-          cadets: { name: true, isCommon: true },
+          cadets: { name: true, isCommon: true, intraId: true },
           mentors: { name: true },
         },
       });
@@ -332,6 +332,7 @@ export class ReportsService {
     try {
       await this.reportsRepository.save({
         id: report.id,
+        extraCadets: body.extraCadets,
         place: body.place,
         topic: body.topic,
         content: body.content,
