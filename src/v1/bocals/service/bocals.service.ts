@@ -144,12 +144,6 @@ export class BocalsService {
         width: 10,
         style: { alignment: { horizontal: 'center' } },
       },
-      {
-        header: '멘티인트라',
-        key: 'cadetIntraId',
-        width: 10,
-        style: { alignment: { horizontal: 'center' } },
-      },
     ];
 
     worksheet.getRow(1).eachCell(cell => {
@@ -215,8 +209,7 @@ export class BocalsService {
         ),
       totalHour: report.money / MONEY_PER_HOUR,
       money: report.money,
-      cadetName: report.cadets.name,
-      cadetIntraId: report.cadets.intraId,
+      cadetName: `${report.cadets.name}(${report.cadets.intraId}, ${report.extraCadets})`,
     };
     return result;
   }
