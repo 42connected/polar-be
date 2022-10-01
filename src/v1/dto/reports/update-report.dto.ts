@@ -12,6 +12,15 @@ import {
 export class UpdateReportDto {
   @IsString()
   @IsOptional()
+  @Length(0, 500)
+  @ApiPropertyOptional({
+    description: '신청 카뎃 제외 멘토링 참여 카뎃 이름(들)',
+    required: false,
+  })
+  extraCadets: string;
+
+  @IsString()
+  @IsOptional()
   @Length(0, 100)
   @ApiPropertyOptional({
     description: '멘토링 진행 장소',

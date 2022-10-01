@@ -43,6 +43,7 @@ export class MentoringLogDto {
       ],
       meetingAt: ['2022-08-18T10:00:00.000Z', '2022-08-18T11:30:00.000Z'],
       rejectMessage: null,
+      feedbackMessage: null,
     },
   })
   meta: {
@@ -51,5 +52,6 @@ export class MentoringLogDto {
     requestTime: Date[][];
     meetingAt: Date[];
     rejectMessage: string;
+    feedbackMessage: string | null;
   };
 }

@@ -13,5 +13,6 @@ export interface CadetMentoringLogs {
     requestTime: Date[][];
     meetingAt: Date[];
     rejectMessage: string;
+    feedbackMessage: string | null;
   };
 }

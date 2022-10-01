@@ -11,5 +11,4 @@ export interface MentoringExcelData {
   totalHour: number;
   money: number;
   cadetName: string;
-  cadetIntraId: string;
 }
