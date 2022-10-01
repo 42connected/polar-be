@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cadets } from '../entities/cadets.entity';
 import { MentoringLogs } from '../entities/mentoring-logs.entity';
@@ -15,9 +15,16 @@ import { Categories } from '../entities/categories.entity';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/service/email.service';
 import { KeywordsService } from '../categories/service/keywords.service';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Module({
   imports: [
+    CacheModule.register({
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+      ttl: 0,
+    }),
     TypeOrmModule.forFeature([
       Mentors,
       MentorKeywords,
