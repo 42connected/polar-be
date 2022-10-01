@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Length, Max } from 'class-validator';
+import { Length } from 'class-validator';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
 export class ReportDto {
@@ -13,10 +13,16 @@ export class ReportDto {
   mentors: { name: string };
 
   @ApiProperty({
-    description: '카뎃 정보',
-    example: { name: '김나경', isCommon: true },
+    description: '신청 카뎃 정보',
+    example: { name: '김나경', isCommon: true, intraId: 'nakkim' },
   })
-  cadets: { name: string; isCommon: boolean };
+  cadets: { name: string; isCommon: boolean; intraId: string };
+
+  @ApiProperty({
+    description: '신청 카뎃 제외 참여자들',
+    example: '사람1(asdf), 사람2(qwer)',
+  })
+  extraCadets: string;
 
   @ApiProperty()
   @Length(0, 100)

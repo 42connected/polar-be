@@ -5,10 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailService } from '../email/service/email.service';
 import { Mentors } from '../entities/mentors.entity';
 import { Cadets } from '../entities/cadets.entity';
-import { Batch } from '../entities/batch.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MentoringLogs, Mentors, Cadets, Batch])],
+  imports: [TypeOrmModule.forFeature([MentoringLogs, Mentors, Cadets])],
   providers: [BatchService, EmailService],
   exports: [BatchService],
 })

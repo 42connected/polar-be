@@ -114,6 +114,15 @@ export class SearchMentorsService {
     );
     result.mentors = mentorList;
     result.mentorCount = mentorList?.length;
+    result.mentors.sort((a, b) => {
+      if (a.mentor.isActive) {
+        if (b.mentor.isActive) return 0;
+        return -1;
+      } else {
+        if (b.mentor.isActive) return 1;
+        return 0;
+      }
+    });
     return result;
   }
 

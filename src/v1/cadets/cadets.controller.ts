@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -6,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  Res,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
@@ -29,7 +29,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { MentoringInfoDto } from '../dto/cadets/mentoring-info.dto';
-import { Response } from 'express';
+import { MentorsService } from '../mentors/service/mentors.service';
+import { Mentors } from '../entities/mentors.entity';
+import { Cadets } from '../entities/cadets.entity';
 
 @Controller()
 @ApiTags('cadets API')
@@ -41,6 +43,7 @@ export class CadetsController {
     private applyService: ApplyService,
     private batchSevice: BatchService,
     private emailService: EmailService,
+    private mentorsService: MentorsService,
   ) {}
 
   @Post()
@@ -100,27 +103,21 @@ export class CadetsController {
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
-    let mentoringLogs: MentoringLogs;
-    try {
-      mentoringLogs = await this.applyService.create(
-        user,
-        mentorId,
-        createApplyDto,
-      );
-      try {
-        this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
-      } catch {
-        this.logger.warn('메일 전송 실패: ReservationToMentor');
-      }
-      try {
-        const twoDaytoMillseconds = 172800000;
-        this.batchSevice.addAutoCancel(mentoringLogs.id, twoDaytoMillseconds);
-      } catch {
-        this.logger.warn('자동 취소 등록 실패: autoCancel after 48hours');
-      }
-      return true;
-    } catch (err) {
-      throw err;
+    const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
+      mentorId,
+    );
+    if (!mentor.isActive) {
+      throw new BadRequestException('해당 멘토는 멘토링 신청이 불가능합니다.');
     }
+    const cadet: Cadets = await this.cadetsService.findCadetByIntraId(
+      user.intraId,
+    );
+    const mentoringLogs: MentoringLogs = await this.applyService.create(
+      cadet,
+      mentor,
+      createApplyDto,
+    );
+    this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
+    return true;
   }
 }

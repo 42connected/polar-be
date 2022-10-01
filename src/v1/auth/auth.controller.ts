@@ -6,7 +6,6 @@ import { CadetsService } from '../cadets/service/cadets.service';
 import { AuthResponse } from '../dto/auth-response.dto';
 import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
-import { CreateMentorDto } from '../dto/mentors/create-mentor.dto';
 import { Bocals } from '../entities/bocals.entity';
 import { Cadets } from '../entities/cadets.entity';
 import { Mentors } from '../entities/mentors.entity';
@@ -40,7 +39,6 @@ export class AuthController {
     const {
       login: intraId,
       image_url: profileImage,
-      alumnized_at: isCommon,
       cursus_users: cursus,
       email,
     } = profile;
@@ -51,12 +49,11 @@ export class AuthController {
     }
     if (intraId.startsWith('m-')) {
       const mentor: Mentors = await this.mentorsService.findByIntra(intraId);
-      const newData: CreateMentorDto = { intraId, profileImage };
       if (!mentor) {
-        result = await this.mentorsService.createUser(newData);
+        result = await this.mentorsService.createUser(intraId);
         join = false;
       } else {
-        result = await this.mentorsService.updateLogin(mentor, newData);
+        result = { id: mentor.id, intraId: mentor.intraId, role: 'mentor' };
         join = this.mentorsService.validateInfo(mentor);
       }
     } else if (profile['staff?']) {
@@ -69,14 +66,21 @@ export class AuthController {
         result = await this.bocalsService.updateLogin(bocal, newData);
       }
     } else {
-      const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
       if (cursus.length < 2) {
         throw new ForbiddenException('본과정 카뎃만 가입이 가능합니다.');
       }
+      if (
+        cursus[1].grade === 'Learner' &&
+        (cursus[1].end_at ||
+          new Date(cursus[1].blackholed_at).getTime() <= Date.now())
+      ) {
+        throw new ForbiddenException('블랙홀에 빠진 카뎃은 이용이 불가합니다.');
+      }
+      const cadet: Cadets = await this.cadetsService.findByIntra(intraId);
       const newData: CreateCadetDto = {
         intraId,
         profileImage,
-        isCommon: isCommon === null ? true : false,
+        isCommon: cursus[1].grade === 'Learner',
         email,
       };
       if (!cadet) {

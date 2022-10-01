@@ -13,11 +13,14 @@ import { Cadets } from 'src/v1/entities/cadets.entity';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Repository } from 'typeorm';
 import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
+import { Reports } from 'src/v1/entities/reports.entity';
 
 @Injectable()
 export class CadetsService {
   constructor(
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
+    @InjectRepository(Reports) private reportsRepository: Repository<Reports>,
   ) {}
 
   async updateLogin(cadet: Cadets, newData: CreateCadetDto): Promise<JwtUser> {
@@ -102,9 +105,23 @@ export class CadetsService {
           ],
           meetingAt: mentoring.meetingAt,
           rejectMessage: mentoring.rejectMessage,
+          feedbackMessage: null,
         },
       };
     });
+  }
+
+  async addFeedbackMsgToLogs(formatLogs: CadetMentoringLogs[]) {
+    for (const [i, logs] of formatLogs.entries()) {
+      if (logs.status === MentoringLogStatus.Done) {
+        const report = await this.reportsRepository.findOne({
+          where: { mentoringLogs: { id: logs.id } },
+        });
+        if (report?.status === '작성완료' && report?.feedbackMessage) {
+          formatLogs[i].meta.feedbackMessage = report.feedbackMessage;
+        }
+      }
+    }
   }
 
   async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
@@ -132,6 +149,7 @@ export class CadetsService {
       cadet.mentoringLogs,
       cadet.isCommon,
     );
+    await this.addFeedbackMsgToLogs(mentorings);
     return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
   }
 
