@@ -48,6 +48,7 @@ export class DataRoomService {
         },
         select: {
           id: true,
+          extraCadets: true,
           place: true,
           createdAt: true,
           signatureUrl: true,
