@@ -9,6 +9,9 @@ import {
   BadRequestException,
   Inject,
   CACHE_MANAGER,
+  CacheTTL,
+  UseInterceptors,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -76,6 +79,8 @@ export class MentorsController {
   }
 
   @Get('simplelogs/:mentorIntraId')
+  @CacheTTL(60 * 60)
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get mentoring simple log',
     description: '멘토링 로그 pagination',
@@ -124,6 +129,7 @@ export class MentorsController {
   }
 
   @Get('/:intraId/keywords')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get mentor keywords',
     description: '해당 멘토의 키워드를 반환합니다.',
@@ -134,15 +140,7 @@ export class MentorsController {
     isArray: true,
   })
   async getKeywords(@Param('intraId') intraId: string): Promise<string[]> {
-    const cacheKey = `/api/v1/mentors/${intraId}/keywords`;
-    const cache: string[] = await this.cacheManager.get<string[]>(cacheKey);
-    if (!cache) {
-      const keywords: string[] =
-        await this.keywordsService.getMentorKeywordsTunned(intraId);
-      await this.cacheManager.set(cacheKey, keywords);
-      return keywords;
-    }
-    return cache;
+    return this.keywordsService.getMentorKeywordsTunned(intraId);
   }
 
   @Patch(':intraId/keywords')
@@ -195,6 +193,7 @@ export class MentorsController {
   }
 
   @Get(':intraId')
+  @UseInterceptors(CacheInterceptor)
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Get mentor details',
@@ -207,14 +206,6 @@ export class MentorsController {
   async getMentorDetails(
     @Param('intraId') intraId: string,
   ): Promise<MentorDto> {
-    const cacheKey = `/api/v1/mentors/${intraId}`;
-    const cache: MentorDto = await this.cacheManager.get<MentorDto>(cacheKey);
-    if (!cache) {
-      const mentorInfo: MentorDto =
-        await this.mentorsService.findMentorByIntraId(intraId);
-      await this.cacheManager.set(cacheKey, mentorInfo);
-      return mentorInfo;
-    }
-    return cache;
+    return this.mentorsService.findMentorByIntraId(intraId);
   }
 }
