@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  CacheTTL,
   Controller,
   Get,
   Param,
@@ -36,7 +37,7 @@ export class CategoriesController {
     isArray: true,
     status: 200,
   })
-  getCategories(): Promise<GetCategoriesDto[]> {
+  async getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
   }
 
@@ -51,7 +52,7 @@ export class CategoriesController {
     isArray: true,
     status: 200,
   })
-  async getCategoriesWithKeywords() {
+  async getCategoriesWithKeywords(): Promise<CategoryDto[]> {
     const categories: Categories[] =
       await this.categoriesService.getAllCategories();
     return this.categoriesService.formatAllCategories(categories);
@@ -78,6 +79,7 @@ export class CategoriesController {
   }
 
   @Get(':category')
+  @CacheTTL(6)
   @ApiOperation({
     summary: 'Get mentor list',
     description:
