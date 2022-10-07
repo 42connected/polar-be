@@ -5,14 +5,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
-import { MentorMentoringInfo } from 'src/v1/interface/mentors/mentor-mentoring-info.interface';
-import { UpdateMentoringDto } from 'src/v1/dto/mentors/update-mentoring.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
-import { MentorMentoringLogs } from 'src/v1/interface/mentors/mentor-mentoring-logs.interface';
 import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
+import { MentoringInfoDto } from 'src/v1/dto/mentors/mentoring-info.dto';
+import { MentoringLogsDto } from 'src/v1/dto/mentors/mentoring-logs.dto';
+import { SimpleLogDto } from '../../dto/mentoring-logs/simple-log.dto';
 
 @Injectable()
 export class MentoringsService {
@@ -22,82 +22,81 @@ export class MentoringsService {
     @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async getMentoringsLists(user: JwtUser): Promise<MentorMentoringInfo> {
-    const mentorIntraId = user.intraId;
-    let mentorDb = null;
+  formatMentoringLog(log: MentoringLogs): MentoringLogsDto {
+    return {
+      id: log.id,
+      createdAt: log.createdAt,
+      meetingAt: log.meetingAt,
+      cadet: {
+        name: log.cadets.name,
+        intraId: log.cadets.intraId,
+        resumeUrl: log.cadets.resumeUrl,
+        isCommon: log.cadets.isCommon,
+      },
+      topic: log.topic,
+      status: log.status,
+      report: {
+        id: log.reports ? log.reports.id : null,
+        status: log.reports ? log.reports.status : null,
+      },
+      meta: {
+        requestTime: [log.requestTime1, log.requestTime2, log.requestTime3],
+        rejectMessage: log.rejectMessage,
+        content: log.content,
+      },
+    };
+  }
 
+  async getMentoringsLists(
+    intraId: string,
+    pagination: PaginationDto,
+  ): Promise<MentoringInfoDto> {
+    let result: [MentoringLogs[], number];
     try {
-      mentorDb = await this.mentorsRepository.findOne({
-        where: { intraId: mentorIntraId },
-        relations: {
-          mentoringLogs: { cadets: true },
+      result = await this.mentoringsLogsRepository.findAndCount({
+        relations: { cadets: true, reports: true },
+        where: {
+          mentors: { intraId },
         },
-        order: {
-          mentoringLogs: {
-            createdAt: 'DESC',
-          },
-        },
+        take: pagination.take,
+        skip: pagination.take * (pagination.page - 1),
+        order: { createdAt: 'DESC' },
       });
     } catch {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+      throw new ConflictException('데이터 검색 중 에러가 발생했습니다.');
     }
-
-    if (mentorDb === null)
-      throw new NotFoundException('데이터를 찾을 수 없습니다');
-
-    const mentoringLogs: MentorMentoringLogs[] = mentorDb.mentoringLogs.map(
-      mentoring => {
-        return {
-          id: mentoring.id,
-          createdAt: mentoring.createdAt,
-          meetingAt: mentoring.meetingAt,
-          cadet: {
-            name: mentoring.cadets.name,
-            intraId: mentoring.cadets.intraId,
-            resumeUrl: mentoring.cadets.resumeUrl,
-          },
-          topic: mentoring.topic,
-          status: mentoring.status,
-          meta: {
-            requestTime: [
-              mentoring.requestTime1,
-              mentoring.requestTime2,
-              mentoring.requestTime3,
-            ],
-            isCommon: mentoring.cadets.isCommon,
-            rejectMessage: mentoring.rejectMessage,
-            content: mentoring.content,
-          },
-        };
-      },
-    );
-    return { intraId: mentorIntraId, mentoringLogs };
+    const logs: MentoringLogsDto[] = result[0].map(log => {
+      return this.formatMentoringLog(log);
+    });
+    return { logs, total: result[1] };
   }
 
   async getSimpleLogsPagination(
     mentorIntraId: string,
     paginationDto: PaginationDto,
-  ): Promise<[MentoringLogs[], number]> {
+  ): Promise<[SimpleLogDto[], number]> {
     try {
-      const simpleLogs = await this.mentoringsLogsRepository.findAndCount({
-        select: {
-          id: true,
-          createdAt: true,
-          meetingAt: true,
-          topic: true,
-          status: true,
-        },
-        where: {
-          mentors: { intraId: mentorIntraId },
-          status: MentoringLogStatus.Done,
-        },
-        take: paginationDto.take,
-        skip: paginationDto.take * (paginationDto.page - 1),
-        order: { createdAt: 'DESC' },
-      });
+      const simpleLogs: [SimpleLogDto[], number] =
+        await this.mentoringsLogsRepository.findAndCount({
+          select: {
+            id: true,
+            createdAt: true,
+            meetingAt: true,
+            topic: true,
+            status: true,
+            meetingStart: true,
+          },
+          where: {
+            mentors: { intraId: mentorIntraId },
+            status: MentoringLogStatus.Done,
+          },
+          take: paginationDto.take,
+          skip: paginationDto.take * (paginationDto.page - 1),
+          order: { meetingStart: 'DESC' },
+        });
       return simpleLogs;
     } catch (e) {
-      throw new ConflictException('예기치 못한 에러가 발생하였습니다');
+      throw new ConflictException(e, '예기치 못한 에러가 발생하였습니다');
     }
   }
 }

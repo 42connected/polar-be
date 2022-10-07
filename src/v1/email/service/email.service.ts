@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getKSTDate } from 'src/util/utils';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { ApproveMessage } from 'src/v1/interface/email/approve-message.interface';
 import { CancelMessage } from 'src/v1/interface/email/cancel-message.interface';
@@ -125,21 +126,21 @@ export class EmailService {
           ? '공통과정'
           : '심화과정';
         const requestTime1: string = await this.reserveTimeToString(
-          messageDto.reservationTime1[0],
+          getKSTDate(messageDto.reservationTime1[0]),
           this.getMentoringHours(
             messageDto.reservationTime1[0],
             messageDto.reservationTime1[1],
           ),
         );
         const requestTime2: string = await this.reserveTimeToString(
-          messageDto.reservationTime2[0],
+          getKSTDate(messageDto.reservationTime2[0]),
           this.getMentoringHours(
             messageDto.reservationTime2[0],
             messageDto.reservationTime2[1],
           ),
         );
         const requestTime3: string = await this.reserveTimeToString(
-          messageDto.reservationTime3[0],
+          getKSTDate(messageDto.reservationTime3[0]),
           this.getMentoringHours(
             messageDto.reservationTime3[0],
             messageDto.reservationTime3[1],
@@ -147,11 +148,12 @@ export class EmailService {
         );
         /* reservation2, 3의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          subject: 'New mentoring request',
+          subject: '[42POLAR] 멘토링 요청이 대기 중입니다',
           template: 'ReservationMessage.hbs',
           context: {
             mentorSlackId: messageDto.mentorSlackId,
             cadetSlackId: messageDto.cadetSlackId,
+            topic: messageDto.topic,
             intraProfileUrl:
               'https://profile.intra.42.fr/users/' + messageDto.cadetSlackId,
             commonType: commonType,
@@ -163,7 +165,7 @@ export class EmailService {
       }
       case MailType.Approve: {
         const reservationTimeToString = await this.reserveTimeToString(
-          messageDto.meetingAt[0],
+          getKSTDate(messageDto.meetingAt[0]),
           this.getMentoringHours(
             messageDto.meetingAt[0],
             messageDto.meetingAt[1],
@@ -171,22 +173,24 @@ export class EmailService {
         );
         /* meetingAt의 멘토링 시간이 0일 때 '' 전송 */
         return {
-          subject: 'Mentoring Approved',
+          subject: '[42POLAR] 멘토링 요청이 확정되었습니다',
           template: 'ApproveMessage.hbs',
           context: {
             cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
+            topic: messageDto.topic,
             reservationTimeToString: reservationTimeToString,
           },
         };
       }
       case MailType.Cancel: {
         return {
-          subject: 'Mentoring canceled',
+          subject: '[42POLAR] 멘토링 요청이 취소되었습니다',
           template: 'CancelMessage.hbs',
           context: {
             cadetSlackId: messageDto.cadetSlackId,
             mentorSlackId: messageDto.mentorSlackId,
+            topic: messageDto.topic,
             rejectMessage: messageDto.rejectMessage,
           },
         };
@@ -207,7 +211,11 @@ export class EmailService {
         mentoringsLogsId,
       );
     } catch (err) {
-      throw err;
+      throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
+    }
+
+    if (mentoringsLogsInfoDb === null) {
+      throw new NotFoundException('해당하는 멘토링 로그를 찾을 수 없습니다');
     }
     if (!mentoringsLogsInfoDb.mentors) {
       throw new NotFoundException('mentoringLogs 테이블에 mentors이 없습니다');
@@ -228,9 +236,10 @@ export class EmailService {
       case MailType.Reservation: {
         const reservationMessage: ReservationMessage = {
           mentorEmail: mentoringsLogsInfoDb.mentors.email,
-          mentorSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           reservationTime1: mentoringsLogsInfoDb.requestTime1,
           reservationTime2: mentoringsLogsInfoDb.requestTime2,
           reservationTime3: mentoringsLogsInfoDb.requestTime3,
@@ -244,6 +253,7 @@ export class EmailService {
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           meetingAt: mentoringsLogsInfoDb.meetingAt,
         };
         return approveMessage;
@@ -254,6 +264,7 @@ export class EmailService {
           mentorSlackId: mentoringsLogsInfoDb.mentors.intraId,
           cadetEmail: mentoringsLogsInfoDb.cadets.email,
           cadetSlackId: mentoringsLogsInfoDb.cadets.intraId,
+          topic: mentoringsLogsInfoDb.topic,
           rejectMessage: mentoringsLogsInfoDb.rejectMessage,
         };
         return cancelMessage;
@@ -303,26 +314,20 @@ export class EmailService {
     if (mentoringTime === 0) {
       return '';
     }
-
-    const reservationTimeTmp: string = reservationTime.toDateString();
-    const tmp: string[] = reservationTimeTmp.split(' ');
-    let mentoringMinute: string;
-    if (reservationTime.getMinutes() < 10)
-      mentoringMinute = reservationTime.getMinutes() + '0';
-    else mentoringMinute = reservationTime.getMinutes().toString();
-    const reservationTimeToString =
-      tmp[1] +
-      ' ' +
-      tmp[2] +
-      ', ' +
-      tmp[3] +
-      ' ' +
-      reservationTime.getHours() +
-      ':' +
-      mentoringMinute +
-      ' for ' +
-      mentoringTime +
-      ' hours';
+    const reservationTimeToString = `${reservationTime.getUTCFullYear()}.${(
+      reservationTime.getUTCMonth() + 1
+    )
+      .toString()
+      .padStart(2, '0')}.${reservationTime
+      .getUTCDate()
+      .toString()
+      .padStart(2, '0')} ${reservationTime
+      .getUTCHours()
+      .toString()
+      .padStart(2, '0')}:${reservationTime
+      .getUTCMinutes()
+      .toString()
+      .padStart(2, '0')} (${mentoringTime}시간)`;
     return reservationTimeToString;
   }
 

@@ -23,6 +23,7 @@ import { CalendarModule } from './v1/calendar/calendar.module';
 import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 import { EmailVerificationModule } from './v1/email-verifications/email-verifications.module';
 import { AllExceptionsFilter } from './http-exception.filter';
+import { MentoringLogScheduler } from './v1/batch/mentoring-logs-scheduler';
 
 @Module({
   imports: [
@@ -62,6 +63,7 @@ import { AllExceptionsFilter } from './http-exception.filter';
     }),
     BullQueueModule,
     V1Module,
+    BatchModule,
     RouterModule.register([
       {
         path: 'api/v1',
@@ -126,6 +128,7 @@ import { AllExceptionsFilter } from './http-exception.filter';
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,
     },
+    MentoringLogScheduler,
   ],
 })
 export class AppModule {}

@@ -10,11 +10,11 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
-import { Reports } from '../entities/reports.entity';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
+import { PaginationReportDto } from '../dto/reports/pagination-report.dto';
 
 @ApiTags('bocals API')
 @Controller()
@@ -25,22 +25,23 @@ export class BocalsController {
   ) {}
 
   @ApiOperation({
-    summary: 'getMentoringExcelFile API',
-    description: 'mentoringLogId를 이용해 해당 멘토링로그 엑셀 파일을 다운받음',
+    summary: 'Download report',
+    description:
+      'body의 reportIds 배열을 이용하여 레포트를 찾아서 엑셀 파일로 다운받음',
   })
   @Post('data-room/excel')
   @Roles('bocal')
-  @ApiBearerAuth('access-token')
   @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   async getMentoringExcelFile(
-    @Body('mentoringLogId') mentoringLogsId: string[],
+    @Body('reportIds') reportIds: string[],
     @Res({ passthrough: true }) response,
   ): Promise<void> {
-    if (typeof mentoringLogsId === 'string') {
-      mentoringLogsId = [mentoringLogsId];
+    if (typeof reportIds === 'string') {
+      reportIds = [reportIds];
     }
     return await this.bocalsService.createMentoringExcelFile(
-      mentoringLogsId,
+      reportIds,
       response,
     );
   }
@@ -48,7 +49,7 @@ export class BocalsController {
   @ApiOperation({
     summary: 'getAllRports API',
     description:
-      '모든 보고서를 pagenation해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
+      '모든 보고서를 pagination해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
   })
   @Get('data-room')
   @Roles('bocal')
@@ -56,7 +57,7 @@ export class BocalsController {
   @ApiBearerAuth('access-token')
   async getReportPagination(
     @Query() getDataRoomDto: GetDataRoomDto,
-  ): Promise<[Reports[], number]> {
+  ): Promise<PaginationReportDto> {
     return await this.dataRoomService.getReportPagination(getDataRoomDto);
   }
 }

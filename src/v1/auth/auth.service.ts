@@ -1,7 +1,7 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { LoginProducer } from 'src/bull-queue/login-producer';
 import { TokenResponse } from '../interface/token-response.interface';
@@ -12,7 +12,10 @@ export class AuthService {
   constructor(private loginProducer: LoginProducer) {}
 
   matchRoles(roles: string[], userRole: string) {
-    return roles.includes(userRole);
+    if (!roles.includes(userRole)) {
+      throw new ForbiddenException('접근 권한이 없습니다.');
+    }
+    return true;
   }
 
   async getAccessToken(code: string): Promise<string> {
@@ -23,8 +26,8 @@ export class AuthService {
     } catch (err) {
       throw new ConflictException(err, 'fetch 작업 중 에러가 발생했습니다.');
     }
-    if (res.status !== 200) {
-      throw new UnauthorizedException('Access Token을 받아올 수 없습니다.');
+    if (res.status >= 400) {
+      throw new ConflictException('Access Token을 받아올 수 없습니다.');
     }
     try {
       const data: TokenResponse = await res.json();

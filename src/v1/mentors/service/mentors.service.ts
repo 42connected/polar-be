@@ -6,12 +6,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
-import { UpdateMentorDatailDto } from 'src/v1/dto/mentors/mentor-detail.dto';
-import { CreateMentorDto } from 'src/v1/dto/mentors/create-mentor.dto';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { AvailableTimeDto } from 'src/v1/dto/available-time.dto';
-import { JoinMentorDto } from 'src/v1/dto/mentors/join-mentor-dto';
+import { UpdateMentor } from 'src/v1/interface/mentors/update-mentor.interface';
 
 @Injectable()
 export class MentorsService {
@@ -20,9 +18,9 @@ export class MentorsService {
     private readonly mentorsRepository: Repository<Mentors>,
   ) {}
 
-  async createUser(user: CreateMentorDto): Promise<JwtUser> {
+  async createUser(intraId: string): Promise<JwtUser> {
     try {
-      const createdUser: Mentors = this.mentorsRepository.create(user);
+      const createdUser: Mentors = this.mentorsRepository.create({ intraId });
       createdUser.isActive = false;
       await this.mentorsRepository.save(createdUser);
       return {
@@ -38,12 +36,12 @@ export class MentorsService {
     }
   }
 
-  async findByIntra(intraId: string): Promise<JwtUser> {
+  async findByIntra(intraId: string): Promise<Mentors> {
     try {
       const foundUser: Mentors = await this.mentorsRepository.findOneBy({
         intraId,
       });
-      return { id: foundUser?.id, intraId: foundUser?.intraId, role: 'mentor' };
+      return foundUser;
     } catch (err) {
       throw new ConflictException(
         err,
@@ -69,56 +67,67 @@ export class MentorsService {
     return mentor;
   }
 
-  async updateMentorDetails(intraId: string, body: UpdateMentorDatailDto) {
-    const mentor: Mentors = await this.findMentorByIntraId(intraId);
-    if (body.availableTime) {
-      mentor.availableTime = JSON.stringify(
-        this.validateAvailableTime(body.availableTime),
-      );
+  validateInfo(mentor: Mentors): boolean {
+    if (
+      !mentor.slackId ||
+      !mentor.email ||
+      !mentor.name ||
+      !mentor.duty ||
+      !mentor.company
+    ) {
+      return false;
     }
-    mentor.introduction = body.introduction;
-    mentor.markdownContent = body.markdownContent;
-    mentor.email = body.email;
-    mentor.isActive = body.isActive;
-    try {
-      await this.mentorsRepository.save(mentor);
-      return true;
-    } catch {
-      throw new ConflictException('데이터 저장 중 에러가 발생하였습니다');
-    }
-  }
-
-  async validateInfo(intraId: string): Promise<boolean> {
-    try {
-      const mentor: Mentors = await this.findMentorByIntraId(intraId);
-      if (mentor.name === null) {
+    if (mentor.isActive) {
+      if (!mentor.availableTime) {
         return false;
       }
       const week: AvailableTimeDto[][] = JSON.parse(mentor.availableTime);
+      let join = false;
       week.forEach(day => {
         if (day.length > 0) {
-          return true;
+          join = true;
         }
       });
-      return false;
-    } catch (err) {
-      throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
+      return join;
     }
+    return true;
   }
 
-  async saveInfos(intraId: string, infos: JoinMentorDto): Promise<void> {
-    const { name, email, availableTime, slackId, isActive } = infos;
-    try {
-      const foundUser: Mentors = await this.findMentorByIntraId(intraId);
-      foundUser.name = name;
-      foundUser.email = email;
-      foundUser.slackId = slackId;
-      if (availableTime) {
-        foundUser.availableTime = JSON.stringify(
-          this.validateAvailableTime(availableTime),
+  async updateMentorDetails(
+    intraId: string,
+    infos: UpdateMentor,
+  ): Promise<void> {
+    const {
+      name,
+      availableTime,
+      slackId,
+      isActive,
+      markdownContent,
+      introduction,
+      tags,
+      company,
+      duty,
+    } = infos;
+    const foundUser: Mentors = await this.findMentorByIntraId(intraId);
+    foundUser.name = name;
+    foundUser.slackId = slackId;
+    foundUser.isActive = isActive;
+    foundUser.markdownContent = markdownContent;
+    foundUser.tags = tags;
+    foundUser.introduction = introduction;
+    foundUser.company = company;
+    foundUser.duty = duty;
+    if (isActive) {
+      if (!availableTime) {
+        throw new BadRequestException(
+          '멘토링 가능으로 설정 시 가능시간을 입력해야 합니다.',
         );
       }
-      foundUser.isActive = isActive;
+      foundUser.availableTime = JSON.stringify(
+        this.validateAvailableTime(availableTime),
+      );
+    }
+    try {
       await this.mentorsRepository.save(foundUser);
     } catch (err) {
       throw new ConflictException(err, '예기치 못한 에러가 발생하였습니다');
@@ -152,7 +161,7 @@ export class MentorsService {
     if (
       time1.endHour === time2.startHour &&
       time1.endMinute === 30 &&
-      time2.endMinute === 0
+      time2.startMinute === 0
     ) {
       throw new BadRequestException('시간 사이에 중복이 존재합니다.');
     }

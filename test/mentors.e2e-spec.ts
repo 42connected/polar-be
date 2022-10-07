@@ -75,7 +75,7 @@ describe('MentorsController (e2e)', () => {
       .useValue({
         canActivate: (context: ExecutionContext) => {
           const req = context.switchToHttp().getRequest();
-          req.user = { intraId: 'm-dada', role: 'mentor' };
+          req.user = { intraId: 'm-tedkim', role: 'mentor' };
           return true;
         },
       })
@@ -96,30 +96,18 @@ describe('MentorsController (e2e)', () => {
   });
 
   it('GET /mentorings', () => {
-    return request(app.getHttpServer()).get('/mentorings').expect(200);
-  });
-
-  it('Get /simplelogs/:mentorIntraId', () => {
     return request(app.getHttpServer())
-      .get('/simplelogs/m-dada?take=10&page=1')
+      .get('/mentorings?take=2&page=1')
       .expect(200);
   });
 
-  it('POST /', () => {
-    const availableTime: AvailableTimeDto = {
-      startHour: 8,
-      startMinute: 30,
-      endHour: 10,
-      endMinute: 0,
-    };
-    const body: Partial<UpdateMentorDatailDto> = {
-      availableTime: [[availableTime], [], [], [], [availableTime], [], []],
-      introduction: '테스트중',
-    };
-    return request(app.getHttpServer()).post('/').send(body).expect(201);
+  it('GET /simplelogs/:mentorIntraId', () => {
+    return request(app.getHttpServer())
+      .get('/simplelogs/m-engeng?take=10&page=1')
+      .expect(200);
   });
 
-  it('POST /join', () => {
+  it('PATCH /join', () => {
     const availableTime: AvailableTimeDto = {
       startHour: 10,
       startMinute: 30,
@@ -128,20 +116,38 @@ describe('MentorsController (e2e)', () => {
     };
     const body: JoinMentorDto = {
       name: '테스트',
-      email: 'test@gmail.com',
+      isActive: true,
       availableTime: [[availableTime], [], [], [], [availableTime], [], []],
+      slackId: 'm-tedkim',
     };
-    return request(app.getHttpServer()).post('/join').send(body).expect(201);
+    return request(app.getHttpServer()).patch('/join').send(body).expect(200);
   });
 
   it('GET /:intraId', () => {
-    return request(app.getHttpServer()).get('/m-dada').expect(200);
+    return request(app.getHttpServer()).get('/m-engeng').expect(200);
   });
 
-  it('PATCH /:intraId/introduction', () => {
+  it('PATCH /:intraId', () => {
+    const availableTime: AvailableTimeDto = {
+      startHour: 11,
+      startMinute: 30,
+      endHour: 14,
+      endMinute: 0,
+    };
+    const body: UpdateMentorDatailDto = {
+      availableTime: [
+        [availableTime],
+        [],
+        [availableTime],
+        [],
+        [availableTime],
+        [],
+        [],
+      ],
+    };
     return request(app.getHttpServer())
-      .patch('/m-dada/introduction')
-      .send({ introduction: 'update testing...' })
+      .patch('/m-tedkim')
+      .send(body)
       .expect(200);
   });
 

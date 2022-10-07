@@ -5,8 +5,9 @@ export class JoinCadetDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
-    description: 'name',
+    description: '본명',
     required: true,
+    example: '김나경',
   })
   name: string;
 }

@@ -1,10 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
-import { SchedulerRegistry } from '@nestjs/schedule';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmailService, MailType } from '../email/service/email.service';
@@ -18,110 +12,65 @@ export class BatchService {
   constructor(
     @InjectRepository(MentoringLogs)
     private mentoringsLogsRepository: Repository<MentoringLogs>,
-    private schedulerRegistry: SchedulerRegistry,
     private emailService: EmailService,
   ) {}
 
-  private async getMentoringLogsDB(
-    mentoringsId: string,
-  ): Promise<MentoringLogs> {
-    let mentoringLogsDb: MentoringLogs = null;
-    try {
-      mentoringLogsDb = await this.mentoringsLogsRepository.findOne({
-        where: { id: mentoringsId },
-      });
-    } catch {
-      throw new ConflictException();
-    }
+  async manageMentoringLogsEveryMinute(): Promise<void> {
+    const startIndex = 0;
+    const LIMIT_MIN = 10;
+    const mentoringLogs = await this.mentoringsLogsRepository.find({
+      where: {
+        status: '대기중',
+      },
+    });
+    const now = new Date();
+    this.logger.log(`${now} => Manage Mentoring Logs`);
+    now.setMinutes(now.getMinutes() + LIMIT_MIN);
 
-    if (mentoringLogsDb === null) {
-      throw new NotFoundException();
-    }
-
-    return mentoringLogsDb;
-  }
-
-  async addAutoCancel(
-    mentoringsId: string,
-    millisecondsTime: number,
-  ): Promise<boolean> {
-    if (!mentoringsId) {
-      return false;
-    }
-    let mentoringLogsData: MentoringLogs = null;
-    try {
-      mentoringLogsData = await this.getMentoringLogsDB(mentoringsId);
-    } catch {
-      this.logger.log('DB에서 정보를 읽어오는데 실패했습니다');
-      return false;
-    }
-    if (mentoringLogsData.status !== MentoringLogStatus.Wait) {
-      this.logger.log(
-        '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
-      );
-      // TODO: 로그를 예외로 변경
-      // throw new BadRequestException(
-      //   '멘토링 로그의 상태가 대기중일 경우만 자동 취소 등록이 가능합니다.',
-      // );
-    }
-    await this.addTimeout(millisecondsTime, mentoringLogsData);
-
-    return true;
-  }
-
-  private async addTimeout(
-    milliseconds: number,
-    mentoringLogsData: MentoringLogs,
-  ): Promise<void> {
-    const { id: mentoringId } = mentoringLogsData;
-    const callback = () => {
-      mentoringLogsData.status = MentoringLogStatus.Cancel;
-      mentoringLogsData.rejectMessage =
-        '48시간 동안 멘토링 확정으로 바뀌지 않아 자동취소 되었습니다';
-      this.mentoringsLogsRepository
-        .save(mentoringLogsData)
-        .then(() =>
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 완료`,
-          ),
+    mentoringLogs
+      .filter(e => {
+        const twoDaytoMillseconds = 172800000;
+        if (e.createdAt.getTime() + twoDaytoMillseconds <= now.getTime()) {
+          e.status = MentoringLogStatus.Cancel;
+          e.rejectMessage =
+            '48시간 동안 멘토링 상태가 확정으로 바뀌지 않아 자동취소 되었습니다';
+          return true;
+        }
+        if (
+          e?.requestTime1?.[startIndex] &&
+          e.requestTime1[startIndex].getTime() < now.getTime()
         )
-        .catch(() =>
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} status 대기중 -> 거절 상태변경 실패`,
-          ),
-        );
-      this.emailService
-        .sendMessage(mentoringId, MailType.Cancel)
-        .then(() => {
-          this.logger.log(
-            `autoCancel mentoringsLogs ${mentoringId} 메일 전송 완료`,
-          );
-        })
-        .catch(error =>
-          this.logger.log(`autoCancel mentoringsLogs ${mentoringId} ${error}`),
-        );
-      this.deleteTimeout(mentoringId);
-    };
-    const timeout = setTimeout(callback, milliseconds);
-    const millisecondsToHours = milliseconds / 3600000;
-    try {
-      this.schedulerRegistry.addTimeout(mentoringId, timeout);
-    } catch {
-      this.deleteTimeout(mentoringId);
-      this.schedulerRegistry.addTimeout(mentoringId, timeout);
-    }
-    this.logger.log(
-      `autoCancel mentoringsLogs after ${millisecondsToHours}hours, ${mentoringId} added!`,
-    );
-  }
+          return true;
+        if (
+          e?.requestTime2?.[startIndex] &&
+          e.requestTime2[startIndex].getTime() < now.getTime()
+        )
+          return true;
+        if (
+          e?.requestTime3?.[startIndex] &&
+          e.requestTime3[startIndex].getTime() < now.getTime()
+        )
+          return true;
+        return false;
+      })
+      .forEach(async e => {
+        e.status = MentoringLogStatus.Cancel;
+        if (!e.rejectMessage) {
+          e.rejectMessage =
+            '현재 시간 기준 유효하지 않은 멘토링 요청이므로 자동 취소되었습니다';
+        }
+        this.logger.log(`Mentoring log's time is over => ${e.id}`);
 
-  getTimeoutlists() {
-    const timeouts = this.schedulerRegistry.getTimeouts();
-    timeouts.forEach(name => this.logger.log(`autoCancel: ${name}`));
-  }
+        try {
+          await this.mentoringsLogsRepository.save(e);
+        } catch {
+          this.logger.log(`Can't save mentoring status => ${e.id}`);
+        }
 
-  private deleteTimeout(uuid: string) {
-    this.schedulerRegistry.deleteTimeout(uuid);
-    this.logger.log(`autoCancel mentoringsLogs ${uuid} deleted!`);
+        this.logger.log(`Send Mail => ${e.id}`);
+        this.emailService
+          .sendMessage(e.id, MailType.Cancel)
+          .catch(error => this.logger.log(error));
+      });
   }
 }

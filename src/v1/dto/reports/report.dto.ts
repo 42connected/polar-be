@@ -1,86 +1,81 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsBoolean,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { Length } from 'class-validator';
+import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 
-export class UpdateReportDto {
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional({
-    description: 'place',
-    required: false,
+export class ReportDto {
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty({
+    description: '멘토 정보',
+    example: { name: '김나경' },
   })
+  mentors: { name: string };
+
+  @ApiProperty({
+    description: '신청 카뎃 정보',
+    example: { name: '김나경', isCommon: true, intraId: 'nakkim' },
+  })
+  cadets: { name: string; isCommon: boolean; intraId: string };
+
+  @ApiProperty({
+    description: '신청 카뎃 제외 참여자들',
+    example: '사람1(asdf), 사람2(qwer)',
+  })
+  extraCadets: string;
+
+  @ApiProperty()
+  @Length(0, 100)
   place: string;
 
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional({
-    description: 'topic',
-    required: false,
-  })
+  @ApiProperty()
+  @Length(0, 150)
   topic: string;
 
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional({
-    description: 'content',
-    required: false,
-  })
+  @ApiProperty()
+  @Length(0, 5000)
   content: string;
 
-  @IsString()
-  @IsOptional()
-  @ApiPropertyOptional({
-    description: 'feedbackMessage',
-    required: false,
+  @ApiProperty({
+    type: String,
+    isArray: true,
   })
+  imageUrl: string[];
+
+  @ApiProperty()
+  signatureUrl: string;
+
+  @ApiProperty()
+  @Length(0, 3000)
   feedbackMessage: string;
 
-  @IsNumber()
-  @IsOptional()
-  @Min(1)
-  @Max(5)
-  @ApiPropertyOptional({
-    description: 'feedback1',
-    required: false,
-    type: Number,
-  })
+  @ApiProperty()
   feedback1: number;
 
-  @IsNumber()
-  @IsOptional()
-  @Min(1)
-  @Max(5)
-  @ApiPropertyOptional({
-    description: 'feedback2',
-    required: false,
-    type: Number,
-  })
+  @ApiProperty()
   feedback2: number;
 
-  @IsNumber()
-  @IsOptional()
-  @Min(1)
-  @Max(5)
-  @ApiPropertyOptional({
-    description: 'feedback3',
-    required: false,
-    type: Number,
-  })
+  @ApiProperty()
   feedback3: number;
 
-  @IsBoolean()
-  @IsOptional()
-  @ApiPropertyOptional({
-    description: 'isDone',
-    required: false,
-    type: Boolean,
+  @ApiProperty()
+  money: number;
+
+  @ApiProperty({
+    description: '레포트 상태',
+    example: '작성중',
   })
-  isDone: boolean;
+  @Length(0, 10)
+  status: string;
+
+  @ApiProperty({
+    type: MentoringLogs,
+  })
+  mentoringLogs: MentoringLogs;
+
+  @ApiProperty()
+  updatedAt: Date;
+
+  @ApiProperty()
+  createdAt: Date;
 }

@@ -16,7 +16,7 @@ import { CategoriesModule } from 'src/v1/categories/categories.module';
 
 describe('CategoriesController (e2e)', () => {
   let app: INestApplication;
-  const mentorIntraId = 'm-dada';
+  const mentorIntraId = 'm-engeng';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -76,7 +76,13 @@ describe('CategoriesController (e2e)', () => {
   });
 
   it('GET /:category', () => {
-    return request(app.getHttpServer()).get('/test').expect(200);
+    return request(app.getHttpServer()).get(encodeURI('/개발')).expect(200);
+  });
+
+  it('GET /:category/keywords', () => {
+    return request(app.getHttpServer())
+      .get(encodeURI('/개발/keywords'))
+      .expect(200);
   });
 
   afterAll(async () => {

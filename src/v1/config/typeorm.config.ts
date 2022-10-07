@@ -15,7 +15,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
       database: process.env.POSTGRES_DATABASE,
       entities: [process.env.TYPEORM_ENTITIES || ' '],
       logging: false,
-      synchronize: true,
+      synchronize: false,
       namingStrategy: new SnakeNamingStrategy(),
     };
   }

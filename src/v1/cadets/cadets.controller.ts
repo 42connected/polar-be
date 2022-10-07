@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -10,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
-import { CadetMentoringInfo } from '../dto/cadet-mentoring-info.interface';
 import { CreateApplyDto } from '../dto/cadets/create-apply.dto';
 import { JwtUser } from '../interface/jwt-user.interface';
 import { JwtGuard } from '../guards/jwt.guard';
@@ -28,6 +28,10 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
+import { MentoringInfoDto } from '../dto/cadets/mentoring-info.dto';
+import { MentorsService } from '../mentors/service/mentors.service';
+import { Mentors } from '../entities/mentors.entity';
+import { Cadets } from '../entities/cadets.entity';
 
 @Controller()
 @ApiTags('cadets API')
@@ -39,38 +43,21 @@ export class CadetsController {
     private applyService: ApplyService,
     private batchSevice: BatchService,
     private emailService: EmailService,
+    private mentorsService: MentorsService,
   ) {}
-
-  @Get('test')
-  @Roles('cadet')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'cadet login test API',
-    description: '카뎃 로그인 정보 가져오기 test페이지',
-  })
-  @ApiCreatedResponse({
-    description: '카뎃 로그인 정보 받아오기 성공',
-    type: String,
-  })
-  hello(@User() user: JwtUser) {
-    console.log('guard test', user);
-    return 'hi';
-  }
 
   @Post()
   @Roles('cadet')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'updateCadet API',
-    description: '카뎃 로그인 정보 생성하기',
+    summary: 'Update cadet details',
+    description: '카뎃 정보 수정하기',
   })
-  @ApiCreatedResponse({
-    description: '카뎃 로그인 정보 생성 성공',
-    type: Promise<string>,
-  })
-  UpdateCadet(@User() user: JwtUser, @Body() updateCadetDto: UpdateCadetDto) {
+  UpdateCadet(
+    @User() user: JwtUser,
+    @Body() updateCadetDto: UpdateCadetDto,
+  ): Promise<void> {
     return this.cadetsService.updateCadet(user.intraId, updateCadetDto);
   }
 
@@ -79,15 +66,15 @@ export class CadetsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getMentoringLogs for cardet API',
-    description: '카뎃이 신청한 멘토링로그 정보 가져오기.',
+    summary: "Get cadet's mentoring logs",
+    description: '카뎃이 신청했던 멘토링 로그 정보를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: '멘토링로그 정보 받아오기 성공',
-    type: Promise<CadetMentoringInfo>,
+    description: '멘토링 로그 정보',
+    type: MentoringInfoDto,
   })
-  async getMentoringLogs(@User() user: JwtUser): Promise<CadetMentoringInfo> {
-    return await this.cadetsService.getMentoringLogs(user.id);
+  async getMentoringLogs(@User() user: JwtUser): Promise<MentoringInfoDto> {
+    return await this.cadetsService.getMentoringLogs(user.intraId);
   }
 
   @Patch('join')
@@ -95,14 +82,10 @@ export class CadetsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'cadet join post API',
-    description: '카뎃 join api',
+    summary: 'Post join cadet',
+    description: '카뎃의 필수 정보를 저장합니다.',
   })
-  @ApiCreatedResponse({
-    description: '카뎃 join 성공',
-    type: Promise<void>,
-  })
-  join(@Body() body: JoinCadetDto, @User() user: JwtUser) {
+  join(@Body() body: JoinCadetDto, @User() user: JwtUser): Promise<void> {
     const { name } = body;
     return this.cadetsService.saveName(user.intraId, name);
   }
@@ -112,42 +95,29 @@ export class CadetsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'cadet mentoring apply API',
-    description: '멘토링 신청 api',
-  })
-  @ApiCreatedResponse({
-    description: '멘토링 신청 정보 생성 성공',
-    type: Promise<boolean>,
+    summary: 'Apply mentoring',
+    description: '해당 멘토에게 멘토링을 신청합니다.',
   })
   async create(
     @Param('mentorIntraId') mentorId: string,
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
-    let mentoringLogs: MentoringLogs;
-    try {
-      mentoringLogs = await this.applyService.create(
-        user,
-        mentorId,
-        createApplyDto,
-      );
-
-      try {
-        this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
-      } catch {
-        this.logger.warn('메일 전송 실패: ReservationToMentor');
-      }
-
-      try {
-        const twoDaytoMillseconds = 172800000;
-        this.batchSevice.addAutoCancel(mentoringLogs.id, twoDaytoMillseconds);
-      } catch {
-        this.logger.warn('자동 취소 등록 실패: autoCancel after 48hours');
-      }
-
-      return true;
-    } catch (err) {
-      throw err;
+    const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
+      mentorId,
+    );
+    if (!mentor.isActive) {
+      throw new BadRequestException('해당 멘토는 멘토링 신청이 불가능합니다.');
     }
+    const cadet: Cadets = await this.cadetsService.findCadetByIntraId(
+      user.intraId,
+    );
+    const mentoringLogs: MentoringLogs = await this.applyService.create(
+      cadet,
+      mentor,
+      createApplyDto,
+    );
+    this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
+    return true;
   }
 }

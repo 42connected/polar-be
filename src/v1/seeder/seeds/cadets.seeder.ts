@@ -11,6 +11,7 @@ export class CadetsSeeder implements Seeder {
     const cadetRepository = dataSource.getRepository(Cadets);
     console.log('Seeding cadets...');
 
+    // --- 테스트용 ---
     const cadetData: CadetsInterface = {
       intraId: 'nakkim',
       name: '주종현',
@@ -27,6 +28,7 @@ export class CadetsSeeder implements Seeder {
       const newUser = cadetRepository.create(cadetData);
       await cadetRepository.save(newUser);
     }
+    // ------------
 
     const cadetsFactory = await factoryManager.get(Cadets);
     await cadetsFactory.saveMany(3);

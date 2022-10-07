@@ -40,7 +40,8 @@ export class MentoringLogsController {
       status: MentoringLogStatus.Approve,
       meetingAt: body.meetingAt,
     });
-    return this.emailService.sendMessage(log.id, MailType.Approve);
+    this.emailService.sendMessage(log.id, MailType.Approve);
+    return true;
   }
 
   @Patch('reject')
@@ -61,7 +62,8 @@ export class MentoringLogsController {
       status: MentoringLogStatus.Cancel,
       rejectMessage: body.rejectMessage,
     });
-    return this.emailService.sendMessage(log.id, MailType.Cancel);
+    this.emailService.sendMessage(log.id, MailType.Cancel);
+    return true;
   }
 
   @Patch('done')

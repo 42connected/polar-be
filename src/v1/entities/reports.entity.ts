@@ -23,13 +23,16 @@ export class Reports {
   @ManyToOne(() => Cadets, Cadets => Cadets.reports)
   cadets: Cadets;
 
+  @Column({ type: 'varchar', length: 500, nullable: true })
+  extraCadets: string;
+
   @Column({ type: 'varchar', length: 100, nullable: true })
   place: string;
 
   @Column({ type: 'varchar', length: 150, nullable: true })
   topic: string;
 
-  @Column({ type: 'varchar', length: 5000, nullable: true })
+  @Column({ type: 'varchar', length: 800, nullable: true })
   content: string;
 
   @Column({
@@ -44,7 +47,7 @@ export class Reports {
   @Column({ type: 'varchar', length: 1000, nullable: true })
   signatureUrl: string;
 
-  @Column({ type: 'varchar', length: 3000, nullable: true })
+  @Column({ type: 'varchar', length: 800, nullable: true })
   feedbackMessage: string;
 
   @Column({ type: 'smallint', nullable: true })
@@ -66,9 +69,9 @@ export class Reports {
   @JoinColumn()
   mentoringLogs: MentoringLogs;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 }

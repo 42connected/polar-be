@@ -6,12 +6,13 @@ export interface CadetMentoringLogs {
   };
   createdAt: Date;
   status: string;
-  content: string;
+  topic: string;
   meta: {
     isCommon: boolean;
-    topic: string;
+    content: string;
     requestTime: Date[][];
     meetingAt: Date[];
     rejectMessage: string;
+    feedbackMessage: string | null;
   };
 }

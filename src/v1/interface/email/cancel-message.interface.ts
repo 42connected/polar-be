@@ -3,5 +3,6 @@ export interface CancelMessage {
   mentorSlackId: string;
   cadetEmail: string;
   cadetSlackId: string;
+  topic: string;
   rejectMessage: string;
 }

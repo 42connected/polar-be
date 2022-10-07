@@ -58,11 +58,6 @@ export class SearchMentorsService {
         );
       }
     }
-    if (matchMentors.length === 0) {
-      throw new NotFoundException(
-        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     return matchMentors;
   }
 
@@ -119,6 +114,15 @@ export class SearchMentorsService {
     );
     result.mentors = mentorList;
     result.mentorCount = mentorList?.length;
+    result.mentors.sort((a, b) => {
+      if (a.mentor.isActive) {
+        if (b.mentor.isActive) return 0;
+        return -1;
+      } else {
+        if (b.mentor.isActive) return 1;
+        return 0;
+      }
+    });
     return result;
   }
 
@@ -157,6 +161,7 @@ export class SearchMentorsService {
         tags: rawInfo.tags,
         profileImage: rawInfo.profileimage || null,
         introduction: rawInfo.introduction,
+        isActive: rawInfo.isactive,
       });
     });
     return matchMentors;
@@ -165,11 +170,6 @@ export class SearchMentorsService {
   async getRawMentorsInfoByKeywords(
     keywordsId: string[],
   ): Promise<MentorRawSimpleInfo[]> {
-    if (keywordsId.length === 0) {
-      throw new NotFoundException(
-        '키워드와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     let rawMentorInfos: MentorRawSimpleInfo[];
     try {
       rawMentorInfos = await this.mentorKeywordsRepository
@@ -186,6 +186,7 @@ export class SearchMentorsService {
           'mentors.profileImage AS profileimage',
           'mentors.tags AS tags',
           'mentors.introduction AS introduction',
+          'mentors.isActive AS isactive',
         ])
         .where('mentorKeywords.keywordId IN (:...keywordsId)', {
           keywordsId: keywordsId,
@@ -196,11 +197,6 @@ export class SearchMentorsService {
     } catch {
       throw new ConflictException(
         '멘토 정보를 가져오는 도중 오류가 발생했습니다!',
-      );
-    }
-    if (!rawMentorInfos) {
-      throw new NotFoundException(
-        '키워드와 일치하는 멘토가 존재하지 않습니다.',
       );
     }
     return rawMentorInfos;
@@ -222,13 +218,9 @@ export class SearchMentorsService {
           tags: rawInfo.tags,
           profileImage: rawInfo.profileimage || null,
           introduction: rawInfo.introduction,
+          isActive: rawInfo.isactive,
         });
     });
-    if (matchMentors.length === 0) {
-      throw new NotFoundException(
-        '검색 정보와 일치하는 멘토가 존재하지 않습니다.',
-      );
-    }
     return matchMentors;
   }
 

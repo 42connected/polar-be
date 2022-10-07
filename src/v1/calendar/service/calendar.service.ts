@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { MentoringLogs } from '../../entities/mentoring-logs.entity';
+import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 
 @Injectable()
 export class CalendarService {
@@ -31,7 +32,22 @@ export class CalendarService {
     return JSON.parse(found);
   }
 
-  async getRequestTimes(mentorIntraId: string): Promise<Date[]> {
+  filterDate(requestTimes: Date[][], date: string): Date[][] {
+    if (!date) {
+      return requestTimes;
+    }
+    const result: Date[][] = requestTimes.filter((time: Date[]) => {
+      const timeDate = `${time[0].getFullYear()}-${(time[0].getMonth() + 1)
+        .toString()
+        .padStart(2, '0')}`;
+      if (timeDate === date) {
+        return true;
+      }
+    });
+    return result;
+  }
+
+  async getRequestTimes(mentorIntraId: string): Promise<Date[][]> {
     try {
       const found: MentoringLogs[] = await this.mentoringlogsRepository.find({
         select: {
@@ -41,6 +57,7 @@ export class CalendarService {
         },
         where: {
           mentors: { intraId: mentorIntraId },
+          status: In([MentoringLogStatus.Wait, MentoringLogStatus.Approve]),
         },
       });
       return await this.makeRequestTimesArray(found);
@@ -49,7 +66,9 @@ export class CalendarService {
     }
   }
 
-  async makeRequestTimesArray(mentoringLogs: MentoringLogs[]): Promise<Date[]> {
+  async makeRequestTimesArray(
+    mentoringLogs: MentoringLogs[],
+  ): Promise<Date[][]> {
     const result = [];
     mentoringLogs.forEach(element => {
       result.push(element.requestTime1);

@@ -1,21 +1,22 @@
 import {
   Body,
   Controller,
+  Delete,
+  ForbiddenException,
   Get,
   Param,
   Patch,
   Post,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
 import { JwtUser } from '../interface/jwt-user.interface';
-import { UpdateReportDto } from '../dto/reports/report.dto';
-import { Reports } from '../entities/reports.entity';
+import { UpdateReportDto } from '../dto/reports/update-report.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { ReportsService } from './service/reports.service';
@@ -28,6 +29,8 @@ import {
 import * as multerS3 from 'multer-s3';
 import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
+import { ReportDto } from '../dto/reports/report.dto';
+import { Reports } from '../entities/reports.entity';
 config();
 
 @Controller()
@@ -40,50 +43,54 @@ export class ReportsController {
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'getReport API',
-    description: 'Report 받아오는 api',
+    summary: 'Get report information',
+    description: '레포트의 모든 정보를 반환합니다.',
   })
   @ApiCreatedResponse({
-    description: 'Report 정보 받아오기 성공',
-    type: Promise<Reports>,
+    description: '레포트 정보',
+    type: ReportDto,
   })
-  async getReport(@Param('reportId') reportId: string): Promise<Reports> {
+  async getReport(@Param('reportId') reportId: string): Promise<ReportDto> {
     return await this.reportsService.getReport(reportId);
   }
 
-  @Post(':mentoringLogId')
+  @Delete(':reportId/picture')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'image', maxCount: 5 }], {
-      storage: diskStorage({
-        destination: './uploads',
-      }),
-    }),
-  )
   @ApiOperation({
-    summary: 'createReport API',
-    description: 'Report 생성하는 api',
+    summary: 'Delete report picture',
+    description: `레포트의 사진(서명, 증빙사진)을 삭제합니다.
+    서명(signature)은 값으로 아무거나 넣으면 되고, 증빙사진(image)는 인덱스(0 or 1)로 삭제 가능합니다.`,
   })
-  @ApiCreatedResponse({
-    description: 'Report 생성 성공',
-    type: Promise<string>,
-  })
-  async createReport(
-    @Param('mentoringLogId') mentoringLogId: string,
-  ): Promise<boolean> {
-    return await this.reportsService.createReport(mentoringLogId);
+  async deletePicture(
+    @Param('reportId') reportId: string,
+    @User() user: JwtUser,
+    @Query('signature') signature: string,
+    @Query('image') image: number,
+  ) {
+    const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
+      reportId,
+    );
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException('레포트 수정 권한이 없습니다.');
+    }
+    return this.reportsService.deletePicture(report, { signature, image });
   }
 
-  @Patch(':reportId')
+  @Patch(':reportId/picture')
   @Roles('mentor')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Update report picture',
+    description: `레포트에 사진(서명, 증빙사진)을 업로드합니다.
+    증빙사진의 경우 image로, 서명은 signature로 폼 요청`,
+  })
   @UseInterceptors(
     FileFieldsInterceptor(
       [
-        { name: 'image', maxCount: 5 },
+        { name: 'image', maxCount: 1 },
         { name: 'signature', maxCount: 1 },
       ],
       {
@@ -109,32 +116,71 @@ export class ReportsController {
       },
     ),
   )
+  async updatePicture(
+    @Param('reportId') reportId: string,
+    @User() user: JwtUser,
+    @UploadedFiles()
+    files: {
+      image: Express.Multer.File;
+      signature: Express.Multer.File;
+    },
+  ): Promise<boolean> {
+    const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
+      reportId,
+    );
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException('레포트 수정 권한이 없습니다.');
+    }
+    if (files?.signature) {
+      const signatureKey: string = files.signature[0].key;
+      await this.reportsService.uploadSignature(report, signatureKey);
+    }
+    if (files?.image) {
+      const imageKey: string = files.image[0].key;
+      await this.reportsService.uploadImage(report, imageKey);
+    }
+    return true;
+  }
+
+  @Post(':mentoringLogId')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @ApiOperation({
-    summary: 'updateReport API',
-    description: 'Report 수정하는 api',
+    summary: 'Create report',
+    description:
+      '레포트 작성하기를 최초로 누르면 해당 멘토링 로그에 대한 레포트의 기본 정보가 DB에 생성된다.',
   })
   @ApiCreatedResponse({
-    description: 'Report 수정 성공',
-    type: Promise<string>,
+    description: '생성된 레포트 아이디',
+    type: String,
+  })
+  async createReport(
+    @Param('mentoringLogId') mentoringLogId: string,
+  ): Promise<string> {
+    return await this.reportsService.createReport(mentoringLogId);
+  }
+
+  @Patch(':reportId')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Update report',
+    description: '레포트 정보를 수정합니다.',
   })
   async updateReport(
     @Param('reportId') reportId: string,
     @User() user: JwtUser,
     @Body() body: UpdateReportDto,
-    @UploadedFiles()
-    files: {
-      image: Express.Multer.File[];
-      signature: Express.Multer.File;
-    },
   ): Promise<boolean> {
-    const filePaths: string[] = this.reportsService.getImagesPath(files);
-    const signaturePaths: string = this.reportsService.getSignaturePath(files);
-    return await this.reportsService.updateReport(
-      reportId,
-      user.intraId,
-      filePaths,
-      signaturePaths,
-      body,
-    );
+    const report: Reports =
+      await this.reportsService.findReportWithMentoringLogsById(reportId);
+    if (report.mentors.intraId !== user.intraId) {
+      throw new ForbiddenException(
+        '해당 레포트를 수정할 수 있는 권한이 없습니다',
+      );
+    }
+    return await this.reportsService.updateReport(report, user.intraId, body);
   }
 }

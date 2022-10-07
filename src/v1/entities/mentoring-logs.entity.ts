@@ -21,13 +21,13 @@ export class MentoringLogs {
   @ManyToOne(() => Cadets, Cadets => Cadets.mentoringLogs)
   cadets: Cadets;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({ type: 'timestamp', nullable: true, array: true })
+  @Column({ type: 'timestamptz', nullable: true, array: true })
   meetingAt: Date[];
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ type: 'timestamptz', nullable: true })
   meetingStart: Date;
 
   @Column({ type: 'varchar', length: 100 })
@@ -42,13 +42,13 @@ export class MentoringLogs {
   @Column({ type: 'varchar', length: 500, nullable: true })
   rejectMessage: string;
 
-  @Column({ type: 'timestamp', array: true })
+  @Column({ type: 'timestamptz', array: true })
   requestTime1: Date[];
 
-  @Column({ type: 'timestamp', nullable: true, array: true })
+  @Column({ type: 'timestamptz', nullable: true, array: true })
   requestTime2: Date[];
 
-  @Column({ type: 'timestamp', nullable: true, array: true })
+  @Column({ type: 'timestamptz', nullable: true, array: true })
   requestTime3: Date[];
 
   @OneToOne(() => Reports, Reports => Reports.mentoringLogs)

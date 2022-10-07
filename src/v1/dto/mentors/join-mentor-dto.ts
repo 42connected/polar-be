@@ -10,17 +10,9 @@ export class JoinMentorDto {
     description: 'name',
     required: true,
     type: String,
+    example: '김나경',
   })
   name: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'email',
-    required: true,
-    type: String,
-  })
-  email: string;
 
   @IsString()
   @IsNotEmpty()
@@ -28,6 +20,7 @@ export class JoinMentorDto {
     description: 'slackId',
     required: true,
     type: String,
+    example: 'nakkim',
   })
   slackId: string;
 
@@ -38,6 +31,18 @@ export class JoinMentorDto {
     description: 'availableTime',
     required: true,
     type: [[AvailableTimeDto]],
+    example: [
+      [],
+      [
+        { startHour: 6, startMinute: 0, endHour: 10, endMinute: 0 },
+        { startHour: 10, startMinute: 0, endHour: 11, endMinute: 0 },
+      ],
+      [],
+      [],
+      [{ startHour: 6, startMinute: 30, endHour: 9, endMinute: 0 }],
+      [],
+      [{ startHour: 6, startMinute: 30, endHour: 9, endMinute: 0 }],
+    ],
   })
   availableTime?: AvailableTimeDto[][];
 
@@ -49,4 +54,24 @@ export class JoinMentorDto {
     type: Boolean,
   })
   isActive: boolean;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'company',
+    required: false,
+    type: String,
+    example: '야후꾸러기',
+  })
+  company: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'duty',
+    required: false,
+    type: String,
+    example: 'CTO',
+  })
+  duty: string;
 }
