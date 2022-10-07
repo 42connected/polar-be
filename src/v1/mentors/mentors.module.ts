@@ -16,14 +16,22 @@ import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/service/email.service';
 import { KeywordsService } from '../categories/service/keywords.service';
 import * as redisStore from 'cache-manager-redis-store';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    CacheModule.register({
-      store: redisStore,
-      host: 'localhost',
-      port: 6379,
-      ttl: 0,
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return {
+          store: redisStore,
+          host: configService.get('REDIS_HOST'),
+          port: configService.get<number>('REDIS_PORT'),
+          password: configService.get('REDIS_PASSWORD'),
+          ttl: 0,
+        };
+      },
     }),
     TypeOrmModule.forFeature([
       Mentors,
