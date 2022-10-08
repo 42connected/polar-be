@@ -7,6 +7,11 @@ import {
   Query,
   Patch,
   BadRequestException,
+  Inject,
+  CACHE_MANAGER,
+  CacheTTL,
+  UseInterceptors,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -29,12 +34,13 @@ import { MentoringInfoDto } from '../dto/mentors/mentoring-info.dto';
 import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 import { KeywordsService } from '../categories/service/keywords.service';
-import { Mentors } from '../entities/mentors.entity';
+import { Cache } from 'cache-manager';
 
 @Controller()
 @ApiTags('mentors API')
 export class MentorsController {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly mentorsService: MentorsService,
     private readonly mentoringsService: MentoringsService,
     private readonly keywordsService: KeywordsService,
@@ -73,6 +79,8 @@ export class MentorsController {
   }
 
   @Get('simplelogs/:mentorIntraId')
+  @CacheTTL(60 * 60)
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get mentoring simple log',
     description: '멘토링 로그 pagination',
@@ -111,11 +119,17 @@ export class MentorsController {
     description:
       '멘토 필수정보(이름, 이메일, 슬랙아이디, 가능시간, 멘토링 가능 상태, 회사, 직급)를 받아서 저장합니다.',
   })
-  join(@Body() body: JoinMentorDto, @User() user: JwtUser): Promise<void> {
-    return this.mentorsService.updateMentorDetails(user.intraId, body);
+  async join(
+    @Body() body: JoinMentorDto,
+    @User() user: JwtUser,
+  ): Promise<boolean> {
+    await this.mentorsService.updateMentorDetails(user.intraId, body);
+    await this.cacheManager.del(`/api/v1/mentors/${user.intraId}`);
+    return true;
   }
 
   @Get('/:intraId/keywords')
+  @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get mentor keywords',
     description: '해당 멘토의 키워드를 반환합니다.',
@@ -126,9 +140,7 @@ export class MentorsController {
     isArray: true,
   })
   async getKeywords(@Param('intraId') intraId: string): Promise<string[]> {
-    const keywords: string[] =
-      await this.keywordsService.getMentorKeywordsTunned(intraId);
-    return keywords;
+    return this.keywordsService.getMentorKeywordsTunned(intraId);
   }
 
   @Patch(':intraId/keywords')
@@ -153,6 +165,8 @@ export class MentorsController {
     keywordIds.forEach(async id => {
       await this.keywordsService.saveMentorKeyword(mentor, id);
     });
+    const cacheKey = `/api/v1/mentors/${intraId}/keywords`;
+    await this.cacheManager.del(cacheKey);
     return true;
   }
 
@@ -168,14 +182,18 @@ export class MentorsController {
     @User() user: JwtUser,
     @Param('intraId') intraId: string,
     @Body() body: UpdateMentorDatailDto,
-  ): Promise<void> {
+  ): Promise<boolean> {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
-    return await this.mentorsService.updateMentorDetails(user.intraId, body);
+    await this.mentorsService.updateMentorDetails('m-engeng', body);
+    const cacheKey = `/api/v1/mentors/${user.intraId}`;
+    await this.cacheManager.del(cacheKey);
+    return true;
   }
 
   @Get(':intraId')
+  @UseInterceptors(CacheInterceptor)
   @ApiBearerAuth('access-token')
   @ApiOperation({
     summary: 'Get mentor details',
@@ -188,6 +206,6 @@ export class MentorsController {
   async getMentorDetails(
     @Param('intraId') intraId: string,
   ): Promise<MentorDto> {
-    return await this.mentorsService.findMentorByIntraId(intraId);
+    return this.mentorsService.findMentorByIntraId(intraId);
   }
 }
