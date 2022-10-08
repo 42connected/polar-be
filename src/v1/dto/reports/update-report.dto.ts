@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsNumber,
@@ -96,4 +97,15 @@ export class UpdateReportDto {
     type: Boolean,
   })
   isDone: boolean;
+
+  @Type(() => Date)
+  @IsOptional()
+  @ApiPropertyOptional({
+    description: '멘토링 진행 시간',
+    required: false,
+    type: Date,
+    isArray: true,
+    example: ['2022-08-23T06:45:16.593Z', '2022-08-23T06:45:16.593Z'],
+  })
+  meetingAt: Date[];
 }
