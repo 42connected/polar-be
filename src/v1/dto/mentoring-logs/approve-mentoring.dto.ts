@@ -1,12 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  ArrayMaxSize,
-  ArrayMinSize,
-  IsArray,
-  IsNotEmpty,
-  IsUUID,
-} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsUUID, Max, Min } from 'class-validator';
 
 export class ApproveMentoringDto {
   @IsUUID()
@@ -18,14 +11,12 @@ export class ApproveMentoringDto {
   })
   mentoringLogId: string;
 
-  @IsArray()
-  @ArrayMinSize(2)
-  @ArrayMaxSize(2)
-  @Type(() => Date)
+  @IsNumber()
+  @Min(0)
+  @Max(2)
   @ApiPropertyOptional({
     description: 'meetingAt',
     required: true,
-    type: [Date],
   })
-  meetingAt: Date[];
+  meetingAtIndex: number;
 }

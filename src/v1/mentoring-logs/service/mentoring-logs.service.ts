@@ -122,38 +122,23 @@ export class MentoringLogsService {
     return true;
   }
 
-  compareTime(t1: Date, t2: Date): boolean {
-    if (!t1 || !t2) {
-      return false;
+  /**
+   * 멘토링 로그와 리퀘스트 타임 인덱스로 해당 인덱스의 Date[]를 가져옴.
+   * @param logs 멘토링 로그
+   * @param index 리퀘스트 타임 인덱스
+   * @returns 멘토링 로그 리퀘스트 타임[인덱스] OR NULL
+   */
+  getRequestTimeOrNull(logs: MentoringLogs, index: number): Date[] {
+    switch (index) {
+      case 0:
+        return logs.requestTime1;
+      case 1:
+        return logs.requestTime2;
+      case 2:
+        return logs.requestTime3;
+      default:
+        return null;
     }
-    if (t1.getTime() === t2.getTime()) {
-      return true;
-    }
-    return false;
-  }
-
-  compareTimeStartToEnd(t1: Date[], t2: Date[]): boolean {
-    const START_TIME_INDEX = 0;
-    const END_TIME_INDEX = 1;
-
-    if (
-      this.compareTime(t1?.[START_TIME_INDEX], t2?.[START_TIME_INDEX]) &&
-      this.compareTime(t1?.[END_TIME_INDEX], t2?.[END_TIME_INDEX])
-    ) {
-      return true;
-    }
-    return false;
-  }
-
-  isExistTimeOnLogs(requestMeetingAt: Date[], log: MentoringLogs) {
-    if (
-      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime1) ||
-      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime2) ||
-      this.compareTimeStartToEnd(requestMeetingAt, log?.requestTime3)
-    ) {
-      return true;
-    }
-    return false;
   }
 
   async changeStatus(infos: ChangeStatus) {
@@ -167,17 +152,21 @@ export class MentoringLogsService {
       foundLog.rejectMessage = infos.rejectMessage;
       foundLog.meetingAt = [];
     } else if (infos.status === MentoringLogStatus.Approve) {
-      if (!this.isExistTimeOnLogs(infos.meetingAt, foundLog)) {
+      const requestedTime = this.getRequestTimeOrNull(
+        foundLog,
+        infos.meetingAtIndex,
+      );
+      if (!requestedTime) {
         throw new BadRequestException(
           '해당 시간은 멘토링 로그에 존재하지 않습니다.',
         );
       }
       this.applyService.checkDate(
-        getKSTDate(infos.meetingAt[0]),
-        getKSTDate(infos.meetingAt[1]),
+        getKSTDate(requestedTime[0]),
+        getKSTDate(requestedTime[1]),
       );
-      foundLog.meetingAt = infos.meetingAt;
-      foundLog.meetingStart = infos.meetingAt[0];
+      foundLog.meetingAt = requestedTime;
+      foundLog.meetingStart = requestedTime[0];
     } else if (infos.status === MentoringLogStatus.Done) {
       if (!this.isValidTimeForMakeDone(foundLog)) {
         throw new BadRequestException(

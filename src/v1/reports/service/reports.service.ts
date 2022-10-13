@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { getTotalHour } from 'src/util/utils';
 import { PictureDto } from 'src/v1/dto/reports/picture.dto';
 import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
@@ -326,8 +327,25 @@ export class ReportsService {
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
+    let money: number;
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
+    }
+    if (body.meetingAt) {
+      const totalHour: number = getTotalHour(body.meetingAt);
+      money = Math.floor(totalHour) * 100000;
+      if (totalHour <= 0) {
+        throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
+      }
+      try {
+        await this.mentoringLogsRepository.save({
+          id: report.mentoringLogs.id,
+          meetingAt: body.meetingAt,
+          meetingStart: body.meetingAt[0],
+        });
+      } catch (err) {
+        throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+      }
     }
     try {
       await this.reportsRepository.save({
@@ -340,6 +358,7 @@ export class ReportsService {
         feedback1: body.feedback1 ? +body.feedback1 : report.feedback1,
         feedback2: body.feedback2 ? +body.feedback2 : report.feedback2,
         feedback3: body.feedback3 ? +body.feedback3 : report.feedback3,
+        money,
       });
     } catch {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);

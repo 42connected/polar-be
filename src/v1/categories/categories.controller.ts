@@ -1,9 +1,12 @@
 import {
   BadRequestException,
+  CacheInterceptor,
+  CacheTTL,
   Controller,
   Get,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetMentorsQueryDto } from '../dto/mentors/get-mentors.dto';
@@ -17,6 +20,7 @@ import { MentorsListDto } from '../dto/categories/mentor-list.dto';
 import { CategoryDto } from '../dto/categories/categories.dto';
 
 @Controller()
+@UseInterceptors(CacheInterceptor)
 @ApiTags('Categories API')
 export class CategoriesController {
   constructor(
@@ -36,7 +40,7 @@ export class CategoriesController {
     isArray: true,
     status: 200,
   })
-  getCategories(): Promise<GetCategoriesDto[]> {
+  async getCategories(): Promise<GetCategoriesDto[]> {
     return this.categoriesService.getCategories();
   }
 
@@ -51,7 +55,7 @@ export class CategoriesController {
     isArray: true,
     status: 200,
   })
-  async getCategoriesWithKeywords() {
+  async getCategoriesWithKeywords(): Promise<CategoryDto[]> {
     const categories: Categories[] =
       await this.categoriesService.getAllCategories();
     return this.categoriesService.formatAllCategories(categories);
@@ -78,6 +82,7 @@ export class CategoriesController {
   }
 
   @Get(':category')
+  @CacheTTL(60)
   @ApiOperation({
     summary: 'Get mentor list',
     description:
