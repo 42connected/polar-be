@@ -1,10 +1,12 @@
 import {
   BadRequestException,
+  CacheInterceptor,
   CacheTTL,
   Controller,
   Get,
   Param,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetMentorsQueryDto } from '../dto/mentors/get-mentors.dto';
@@ -18,6 +20,7 @@ import { MentorsListDto } from '../dto/categories/mentor-list.dto';
 import { CategoryDto } from '../dto/categories/categories.dto';
 
 @Controller()
+@UseInterceptors(CacheInterceptor)
 @ApiTags('Categories API')
 export class CategoriesController {
   constructor(
