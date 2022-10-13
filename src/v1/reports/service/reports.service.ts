@@ -341,6 +341,7 @@ export class ReportsService {
         await this.mentoringLogsRepository.save({
           id: report.mentoringLogs.id,
           meetingAt: body.meetingAt,
+          meetingStart: body.meetingAt[0],
         });
       } catch (err) {
         throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
