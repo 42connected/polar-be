@@ -38,7 +38,7 @@ export class MentoringLogsController {
       userId: user.intraId,
       mentoringLogId: body.mentoringLogId,
       status: MentoringLogStatus.Approve,
-      meetingAt: body.meetingAt,
+      meetingAtIndex: body.meetingAtIndex,
     });
     this.emailService.sendMessage(log.id, MailType.Approve);
     return true;

@@ -1,4 +1,4 @@
-import { CacheInterceptor, CacheModule, Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { Categories } from '../entities/categories.entity';
@@ -12,7 +12,6 @@ import { CategoriesService } from './service/categories.service';
 import { KeywordsService } from './service/keywords.service';
 import { SearchMentorsService } from './service/search-mentors.service';
 import * as redisStore from 'cache-manager-redis-store';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
@@ -41,14 +40,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     AuthModule,
   ],
   controllers: [CategoriesController],
-  providers: [
-    CategoriesService,
-    SearchMentorsService,
-    KeywordsService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
-  ],
+  providers: [CategoriesService, SearchMentorsService, KeywordsService],
 })
 export class CategoriesModule {}
