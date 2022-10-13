@@ -4,6 +4,6 @@ export interface ChangeStatus {
   userId: string;
   mentoringLogId: string;
   status: MentoringLogStatus;
-  meetingAt?: Date[];
+  meetingAtIndex?: number;
   rejectMessage?: string;
 }
