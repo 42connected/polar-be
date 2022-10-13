@@ -79,7 +79,7 @@ export class MentorsController {
   }
 
   @Get('simplelogs/:mentorIntraId')
-  @CacheTTL(60 * 60)
+  @CacheTTL(60)
   @UseInterceptors(CacheInterceptor)
   @ApiOperation({
     summary: 'Get mentoring simple log',
