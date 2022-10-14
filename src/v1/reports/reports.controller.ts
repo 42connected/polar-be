@@ -72,7 +72,7 @@ export class ReportsController {
     const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
       reportId,
     );
-    if (report.mentors.intraId !== user.intraId) {
+    if (report.mentors.intraId !== user.intraId || report.status !== '작성중') {
       throw new ForbiddenException('레포트 수정 권한이 없습니다.');
     }
     return this.reportsService.deletePicture(report, { signature, image });
@@ -128,7 +128,7 @@ export class ReportsController {
     const report: Reports = await this.reportsService.findReportByIdWithAllInfo(
       reportId,
     );
-    if (report.mentors.intraId !== user.intraId) {
+    if (report.mentors.intraId !== user.intraId || report.status !== '작성중') {
       throw new ForbiddenException('레포트 수정 권한이 없습니다.');
     }
     if (files?.signature) {
