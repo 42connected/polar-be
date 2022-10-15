@@ -306,6 +306,11 @@ export class ReportsService {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
+      if (body.meetingAt[0].getTime() > Date.now()) {
+        throw new BadRequestException(
+          '멘토링 진행 시간을 미래로 설정할 수 없습니다.',
+        );
+      }
       const totalHour: number = getTotalHour(body.meetingAt);
       if (totalHour <= 0) {
         throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
@@ -321,17 +326,15 @@ export class ReportsService {
       }
     }
     try {
-      await this.reportsRepository.save({
-        id: report.id,
-        extraCadets: body.extraCadets,
-        place: body.place,
-        topic: body.topic,
-        content: body.content,
-        feedbackMessage: body.feedbackMessage,
-        feedback1: body.feedback1 ? +body.feedback1 : report.feedback1,
-        feedback2: body.feedback2 ? +body.feedback2 : report.feedback2,
-        feedback3: body.feedback3 ? +body.feedback3 : report.feedback3,
-      });
+      report.extraCadets = body.extraCadets;
+      report.place = body.place;
+      report.topic = body.topic;
+      report.content = body.content;
+      report.feedbackMessage = body.feedbackMessage;
+      report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
+      report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
+      report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
+      await this.reportsRepository.save(report);
     } catch {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
     }
