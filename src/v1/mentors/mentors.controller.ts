@@ -186,7 +186,7 @@ export class MentorsController {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
-    await this.mentorsService.updateMentorDetails('m-engeng', body);
+    await this.mentorsService.updateMentorDetails(user.intraId, body);
     const cacheKey = `/api/v1/mentors/${user.intraId}`;
     await this.cacheManager.del(cacheKey);
     return true;
