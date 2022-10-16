@@ -13,7 +13,6 @@ import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
@@ -160,58 +159,34 @@ export class ReportsService {
     start: Date,
     end: Date,
   ): Promise<number> {
-    let finishedMentorings: MentoringLogs[];
-    const finishedMentoringsInDay: MentoringLogs[] = [];
-    const finishedMentoringsInMonth: MentoringLogs[] = [];
-
-    let result: number = Math.floor(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60),
-    );
-
+    const MONTH_LIMIT = 1000000;
+    const DAY_LIMIT = 400000;
+    const pay = 100000;
+    let money: number = Math.floor(getTotalHour([start, end])) * pay;
+    let finishedReports: Reports[];
     try {
-      finishedMentorings = await this.mentoringLogsRepository.find({
-        select: { meetingAt: true },
-        where: { status: MentoringLogStatus.Done, mentors: { id: mentorId } },
-        relations: { mentors: true, reports: true },
+      finishedReports = await this.reportsRepository.find({
+        select: { money: true },
+        relations: { mentoringLogs: true },
+        where: { mentors: { id: mentorId }, status: '작성완료' },
       });
     } catch {
-      throw new ConflictException('멘토링 시간을 찾는 중 오류가 발생했습니다.');
+      throw new ConflictException('레포트 검색 중 오류가 발생했습니다.');
     }
-
-    finishedMentorings.map(mentoring => {
-      if (
-        mentoring.meetingAt[0].getMonth() === start.getMonth() &&
-        mentoring.meetingAt[0].getTime() !== start.getTime()
-      ) {
-        finishedMentoringsInMonth.push(mentoring);
+    let monthlyTotal = 0;
+    let dailyTotal = 0;
+    finishedReports.forEach(report => {
+      if (report.mentoringLogs.meetingAt[0].getMonth() === start.getMonth()) {
+        monthlyTotal += report.money;
+      }
+      if (report.mentoringLogs.meetingAt[0].getDate() === start.getDate()) {
+        dailyTotal += report.money;
       }
     });
-
-    finishedMentoringsInMonth.map(mentoring => {
-      if (mentoring.meetingAt[0].getDate() === start.getDate())
-        finishedMentoringsInDay.push(mentoring);
-    });
-
-    let mentoringTimePerDay = 0;
-    finishedMentoringsInDay.forEach(mentoring => {
-      if (mentoring?.reports?.money) {
-        mentoringTimePerDay += mentoring.reports.money / MONEY_PER_HOUR;
-      }
-    });
-
-    let mentoringTimePerMonth = 0;
-    finishedMentoringsInMonth.forEach(mentoring => {
-      if (mentoring?.reports?.money) {
-        mentoringTimePerMonth += mentoring.reports.money / MONEY_PER_HOUR;
-      }
-    });
-
-    if (mentoringTimePerDay >= 4 || mentoringTimePerMonth >= 10) return 0;
-    if (mentoringTimePerMonth + result >= 10)
-      result = 10 - mentoringTimePerMonth;
-    if (mentoringTimePerDay + result >= 4) result = 4 - mentoringTimePerDay;
-
-    return result;
+    if (dailyTotal >= DAY_LIMIT || monthlyTotal >= MONTH_LIMIT) return 0;
+    if (monthlyTotal + money >= MONTH_LIMIT) money = MONTH_LIMIT - monthlyTotal;
+    if (dailyTotal + money >= DAY_LIMIT) money = DAY_LIMIT - dailyTotal;
+    return money;
   }
 
   /*
@@ -327,13 +302,16 @@ export class ReportsService {
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    let money: number;
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
+      if (body.meetingAt[0].getTime() > Date.now()) {
+        throw new BadRequestException(
+          '멘토링 진행 시간을 미래로 설정할 수 없습니다.',
+        );
+      }
       const totalHour: number = getTotalHour(body.meetingAt);
-      money = Math.floor(totalHour) * 100000;
       if (totalHour <= 0) {
         throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
       }
@@ -348,43 +326,33 @@ export class ReportsService {
       }
     }
     try {
-      await this.reportsRepository.save({
-        id: report.id,
-        extraCadets: body.extraCadets,
-        place: body.place,
-        topic: body.topic,
-        content: body.content,
-        feedbackMessage: body.feedbackMessage,
-        feedback1: body.feedback1 ? +body.feedback1 : report.feedback1,
-        feedback2: body.feedback2 ? +body.feedback2 : report.feedback2,
-        feedback3: body.feedback3 ? +body.feedback3 : report.feedback3,
-        money,
-      });
+      report.extraCadets = body.extraCadets;
+      report.place = body.place;
+      report.topic = body.topic;
+      report.content = body.content;
+      report.feedbackMessage = body.feedbackMessage;
+      report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
+      report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
+      report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
+      await this.reportsRepository.save(report);
     } catch {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
     }
     if (body.isDone) {
-      await this.reportDone(report.id);
+      await this.reportDone(report);
     }
     return true;
   }
 
-  async reportDone(reportId: string): Promise<void> {
-    const report = await this.findReportWithMentoringLogsById(reportId);
+  async reportDone(report: Reports): Promise<void> {
     if (!(await this.isEnteredReport(report))) {
       throw new BadRequestException('입력이 완료되지 못해 제출할 수 없습니다');
     }
-    let money: number;
-    try {
-      money =
-        (await this.calculateTotalHour(
-          report.mentors.id,
-          report.mentoringLogs.meetingAt[0],
-          report.mentoringLogs.meetingAt[1],
-        )) * MONEY_PER_HOUR;
-    } catch (error) {
-      throw new ConflictException(error);
-    }
+    const money: number = await this.calculateTotalHour(
+      report.mentors.id,
+      report.mentoringLogs.meetingAt[0],
+      report.mentoringLogs.meetingAt[1],
+    );
     report.money = money;
     report.status = '작성완료';
     try {

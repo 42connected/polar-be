@@ -60,7 +60,7 @@ export class MentoringsService {
         },
         take: pagination.take,
         skip: pagination.take * (pagination.page - 1),
-        order: { createdAt: 'DESC' },
+        order: { meetingStart: 'DESC' },
       });
     } catch {
       throw new ConflictException('데이터 검색 중 에러가 발생했습니다.');
