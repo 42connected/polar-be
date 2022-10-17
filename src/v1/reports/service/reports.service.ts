@@ -178,9 +178,9 @@ export class ReportsService {
     finishedReports.forEach(report => {
       if (report.mentoringLogs.meetingAt[0].getMonth() === start.getMonth()) {
         monthlyTotal += report.money;
-      }
-      if (report.mentoringLogs.meetingAt[0].getDate() === start.getDate()) {
-        dailyTotal += report.money;
+        if (report.mentoringLogs.meetingAt[0].getDate() === start.getDate()) {
+          dailyTotal += report.money;
+        }
       }
     });
     if (dailyTotal >= DAY_LIMIT || monthlyTotal >= MONTH_LIMIT) return 0;
