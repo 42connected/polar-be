@@ -116,7 +116,7 @@ export class SearchMentorsService {
     const mentorList: MentorsListElement[] = await this.getMentorListElements(
       mentorsInfo,
     );
-    result.mentors = mentorList;
+    result.mentors = await this.sortMentorListByActiveStatus(mentorList);
     result.mentorCount = mentorList?.length;
     result.mentors.sort((a, b) => {
       if (a.mentor.isActive) {
@@ -261,6 +261,53 @@ export class SearchMentorsService {
       }
       mentorList.push({ mentor: mentorInfo, keywords: keywords });
     }
+    return mentorList;
+  }
+
+  /**
+   * @param mentorList 멘토 리스트
+   * @returns 멘토 이름을 기준으로 오름차순으로 정렬된 멘토 리스트 반환
+   */
+  async sortMentorListByAsc(
+    mentorList: MentorsListElement[],
+  ): Promise<MentorsListElement[]> {
+    mentorList.sort((m1, m2) => {
+      return m1.mentor.name < m2.mentor.name
+        ? -1
+        : m1.mentor.name > m2.mentor.name
+        ? 1
+        : 0;
+    });
+    return mentorList;
+  }
+
+  /**
+   * @param mentorList 멘토 리스트
+   * @returns 랜덤하게 섞인 멘토 리스트 반환
+   */
+  async suffleMentorList(
+    mentorList: MentorsListElement[],
+  ): Promise<MentorsListElement[]> {
+    const shuffle = () => Math.random() - 0.5;
+    return mentorList.sort(shuffle);
+  }
+
+  /**
+   * @param mentorList 멘토 리스트
+   * @returns 멘토 활성화 상태를 기준으로 정렬된 멘토 리스트 반환
+   */
+  async sortMentorListByActiveStatus(
+    mentorList: MentorsListElement[],
+  ): Promise<MentorsListElement[]> {
+    mentorList.sort((m1, m2) => {
+      if (m1.mentor.isActive) {
+        if (m2.mentor.isActive) return 0;
+        return -1;
+      } else {
+        if (m2.mentor.isActive) return 1;
+        return 0;
+      }
+    });
     return mentorList;
   }
 }
