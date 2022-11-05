@@ -29,11 +29,11 @@ export class SearchMentorsService {
    * @param mentorName 멘토 이름
    * @returns MentorSimpleInfo[]
    */
-  async getMentorsInfoByText(
+  async matchMentorsByName(
     mentorName: string,
     mentorSimpleInfo?: MentorSimpleInfo[],
   ): Promise<MentorSimpleInfo[]> {
-    let matchMentors: MentorSimpleInfo[] = [];
+    const matchMentors: MentorSimpleInfo[] = [];
 
     if (mentorSimpleInfo?.length !== 0) {
       try {
@@ -47,20 +47,6 @@ export class SearchMentorsService {
         });
       } catch (error) {
         throw new ConflictException(error);
-      }
-    } else {
-      try {
-        matchMentors = await this.mentorsRepository.find({
-          select: { id: true, name: true, intraId: true },
-          where: [
-            { intraId: Like(`%${mentorName}%`) },
-            { name: Like(`%${mentorName}%`) },
-          ],
-        });
-      } catch {
-        throw new ConflictException(
-          '멘토 정보를 가져오는 도중 오류가 발생했습니다..!',
-        );
       }
     }
     return matchMentors;
@@ -125,7 +111,7 @@ export class SearchMentorsService {
       mentorsInfo = await this.getMentorsInfoByCategory(category.id);
     }
     if (mentorName) {
-      mentorsInfo = await this.getMentorsInfoByText(mentorName, mentorsInfo);
+      mentorsInfo = await this.matchMentorsByName(mentorName, mentorsInfo);
     }
     const mentorList: MentorsListElement[] = await this.getMentorListElements(
       mentorsInfo,
