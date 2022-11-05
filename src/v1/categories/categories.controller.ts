@@ -19,6 +19,11 @@ import { GetCategoriesDto } from '../dto/categories/get-categories.dto';
 import { MentorsListDto } from '../dto/categories/mentor-list.dto';
 import { CategoryDto } from '../dto/categories/categories.dto';
 
+/**
+ * 키워드는 카테고리 안에 포함되는 개념이다.
+ *
+ * 카테고리 > 키워드
+ */
 @Controller()
 @UseInterceptors(CacheInterceptor)
 @ApiTags('Categories API')
@@ -29,6 +34,10 @@ export class CategoriesController {
     private keywordsService: KeywordsService,
   ) {}
 
+  /**
+   * 모든 카테고리를 배열로 반환한다.
+   * @returns [{name: %category}, ...]
+   */
   @Get()
   @ApiOperation({
     summary: 'Get category array',
@@ -44,6 +53,10 @@ export class CategoriesController {
     return this.categoriesService.getCategories();
   }
 
+  /**
+   * 모든 카테고리와, 각각의 카테고리가 포함하는 키워드를 배열로 반환한다.
+   * @returns [{name: %category, keywords: [keyword, ...]}, ...]
+   */
   @Get('/category/keywords')
   @ApiOperation({
     summary: 'Get category object array',
@@ -61,6 +74,11 @@ export class CategoriesController {
     return this.categoriesService.formatAllCategories(categories);
   }
 
+  /**
+   * 파라미터로 들어온 카테고리가 포함하는 키워드를 배열로 반환한다.
+   * @param categoryName 카테고리 이름
+   * @returns [keyword, ...]
+   */
   @Get('/:category/keywords')
   @ApiOperation({
     summary: 'Get category keywords',
@@ -81,6 +99,12 @@ export class CategoriesController {
     return this.searchMentorsService.getKeywordsByCategoryId(category.id);
   }
 
+  /**
+   * 해당 카테고리 내에서 Query로 들어온 키워드와 멘토 이름이 포함되는 멘토 리스트를 찾아 반환한다.
+   * @param getMentorsQueryDto 키워드[], 멘토 이름
+   * @param categoryName 카테고리 이름
+   * @returns 멘토 카운트와 멘토에 대한 정보를 배열로 반환한다.
+   * */
   @Get(':category')
   @CacheTTL(60)
   @ApiOperation({
