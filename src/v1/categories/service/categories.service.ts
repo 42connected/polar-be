@@ -16,6 +16,10 @@ export class CategoriesService {
     private categoriesRepository: Repository<Categories>,
   ) {}
 
+  /**
+   * 카테고리 테이블에 있는 카테고리를 찾아 반환한다.
+   * @returns 최대 8개 카테고리 반환
+   */
   async getCategories(): Promise<GetCategoriesDto[]> {
     try {
       const found: GetCategoriesDto[] = await this.categoriesRepository.find({
@@ -28,6 +32,9 @@ export class CategoriesService {
     }
   }
 
+  /**
+   * @returns 카테고리와 카테고리가 포함하는 키워드 객체를 배열로 반환
+   */
   async getAllCategories(): Promise<Categories[]> {
     try {
       const categories: Categories[] = await this.categoriesRepository.find({
@@ -47,6 +54,10 @@ export class CategoriesService {
     }
   }
 
+  /**
+   * 인자로 받은 카테고리 배열을 가공하는 함수
+   * @returns 카테고리와 카테고리가 포함하는 키워드를 배열로 반환
+   */
   formatAllCategories(categories: Categories[]): CategoryDto[] {
     const result = categories.map(category => {
       return {
@@ -59,6 +70,11 @@ export class CategoriesService {
     return result;
   }
 
+  /**
+   * 카테고리 이름과 일치하는 키워드 반환 함수
+   * @param name 카테고리 이름
+   * @returns 카테고리 이름과 일치하는 키워드 반환
+   */
   async getCategoryByName(name: string): Promise<Categories> {
     let category: Categories;
     try {
