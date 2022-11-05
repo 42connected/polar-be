@@ -24,6 +24,11 @@ export class SearchMentorsService {
     private keywordCategoriesRepository: Repository<KeywordCategories>,
   ) {}
 
+  /**
+   * 멘토 배열안에 멘토 이름과 일치하는 멘토를 반환한다
+   * @param mentorName 멘토 이름
+   * @returns MentorSimpleInfo[]
+   */
   async getMentorsInfoByText(
     mentorName: string,
     mentorSimpleInfo?: MentorSimpleInfo[],
@@ -73,6 +78,12 @@ export class SearchMentorsService {
     return keywords;
   }
 
+  /**
+   * 카테고리가 키워드 배열을 포함하는지 검사하는 함수
+   * @param categoryId 카테고리 이름
+   * @param keywords 키워드가 담긴 배열
+   * @returns boolean
+   */
   async validateKeywords(
     categoryId: string,
     keywords: string[],
@@ -89,6 +100,13 @@ export class SearchMentorsService {
     return result.every(val => val === true);
   }
 
+  /**
+   * 카테고리 내에 키워드를 포함하고 멘토 이름이 일치하는 멘토 리스트를 반환하는 함수
+   * @param category 카테고리 이름
+   * @param keywordIds 키워드 UUID
+   * @param mentorName 멘토 이름
+   * @returns MentorList
+   */
   async getMentorList(
     category: Categories,
     keywordIds?: string[],
@@ -146,6 +164,11 @@ export class SearchMentorsService {
     return keywordsId;
   }
 
+  /**
+   * 카테고리에 포함하는 멘토를 반환한다
+   * @param categoryId 카테고리 이름
+   * @returns MentorSimpleInfo[]
+   */
   async getMentorsInfoByCategory(
     categoryId: string,
   ): Promise<MentorSimpleInfo[]> {
@@ -202,6 +225,11 @@ export class SearchMentorsService {
     return rawMentorInfos;
   }
 
+  /**
+   * 키워드 ID 배열을 포함하는 멘토를 반환한다
+   * @param keywordId 키워드 ID 배열
+   * @returns MentorSimpleInfo[]
+   */
   async getMentorsInfoByKeywords(
     keywordId: string[],
   ): Promise<MentorSimpleInfo[]> {
