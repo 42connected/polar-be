@@ -379,4 +379,28 @@ export class ReportsService {
       );
     }
   }
+
+  async getReportHistory(reportId: string): Promise<ReportHistory[]> {
+    let history: ReportHistory[];
+
+    let report: Reports;
+    try {
+      report = await this.reportsRepository.findOne({
+        where: { id: reportId },
+        select: {
+          history: true,
+        },
+      });
+    } catch {
+      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
+    }
+    if (!report) {
+      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+    }
+
+    for (const his in report.history) {
+      history.push(JSON.parse(his));
+    }
+    return history;
+  }
 }

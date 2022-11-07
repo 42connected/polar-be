@@ -31,6 +31,7 @@ import * as AWS from 'aws-sdk';
 import { config } from 'dotenv';
 import { ReportDto } from '../dto/reports/report.dto';
 import { Reports } from '../entities/reports.entity';
+import { ReportHistory } from '../interface/reports/report-history.interface';
 config();
 
 @Controller()
@@ -182,5 +183,19 @@ export class ReportsController {
       );
     }
     return await this.reportsService.updateReport(report, user.intraId, body);
+  }
+
+  @Get('/history/:reportId')
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Get report history',
+    description: '레포트의 모든 히스토리를 반환합니다.',
+  })
+  async getReportHistory(
+    @Param('reportId') reportId: string,
+  ): Promise<ReportHistory[]> {
+    return await this.reportsService.getReportHistory(reportId);
   }
 }
