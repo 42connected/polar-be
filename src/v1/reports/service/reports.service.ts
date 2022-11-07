@@ -302,13 +302,26 @@ export class ReportsService {
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
+    let history;
+
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
-      this.changeMentoringMeetingAt(report, body.meetingAt);
+      try {
+        await this.changeMentoringMeetingAt(report, body.meetingAt);
+
+        history.meetingAt = report.mentoringLogs.meetingAt;
+        history.beforeMeetingStart = report.mentoringLogs.meetingStart;
+      } catch (err) {
+        throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+      }
     }
     try {
+      history.report = report;
+      history.time = new Date();
+      report.history.push(JSON.stringify(history));
+
       report.extraCadets = body.extraCadets;
       report.place = body.place;
       report.topic = body.topic;
@@ -317,7 +330,6 @@ export class ReportsService {
       report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
       report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
       report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
-      report.history.push(JSON.stringify(report));
       await this.reportsRepository.save(report);
     } catch {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
@@ -338,17 +350,13 @@ export class ReportsService {
     if (totalHour <= 0) {
       throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
     }
-    try {
-      await this.mentoringLogsRepository.save({
-        id: report.mentoringLogs.id,
-        meetingAt: meetingAt,
-        meetingStart: meetingAt[0],
-      });
-      //report.mentoringLogs.meetingAt = body.meetingAt;
-      //report.mentoringLogs.meetingStart = body.meetingAt[0];
-    } catch (err) {
-      throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
-    }
+    await this.mentoringLogsRepository.save({
+      id: report.mentoringLogs.id,
+      meetingAt: meetingAt,
+      meetingStart: meetingAt[0],
+    });
+    //report.mentoringLogs.meetingAt = body.meetingAt;
+    //report.mentoringLogs.meetingStart = body.meetingAt[0];
   }
 
   async reportDone(report: Reports): Promise<void> {
