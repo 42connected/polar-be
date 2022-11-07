@@ -21,7 +21,6 @@
 #           port: ${{ secrets.PORT }}
 #           script: |
 #             cd polar-be
-#             git checkout aws-ec2
 #             git pull
 #             PATH=$PATH:/home/ubuntu/.nvm/versions/node/v16.18.1/bin
 #             npm run redeploy
