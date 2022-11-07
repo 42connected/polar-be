@@ -1,26 +1,27 @@
-name: remote ssh command
-on:
-  push:
-    branches:
-      - aws-ec2
-  pull_request:
-    branches:
-      - aws-ec2
+# name: remote ssh command
+# on:
+#   push:
+#     branches:
+#       - aws-ec2
+#   pull_request:
+#     branches:
+#       - aws-ec2
 
-jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd polar42-be-dev
-            git pull
-            PATH=$PATH:/home/ubuntu/.nvm/versions/node/v16.18.1/bin
-            npm run redeploy
+# jobs:
+#   build:
+#     name: Build
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: executing remote ssh commands using password
+#         uses: appleboy/ssh-action@master
+#         with:
+#           host: ${{ secrets.HOST }}
+#           username: ${{ secrets.USERNAME }}
+#           password: ${{ secrets.PASSWORD }}
+#           port: ${{ secrets.PORT }}
+#           script: |
+#             cd polar-be
+#             git checkout aws-ec2
+#             git pull
+#             PATH=$PATH:/home/ubuntu/.nvm/versions/node/v16.18.1/bin
+#             npm run redeploy
