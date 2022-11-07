@@ -52,7 +52,7 @@
 
 - [ ] 보고서 히스토리 기능
 
-  - [ ] Reports Entity `history` 스트링 배열 컬럼 추가
+  - [x] Reports Entity `history` 스트링 배열 컬럼 추가
 
   - [ ] Reports ERD 수정
 

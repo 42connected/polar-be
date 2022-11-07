@@ -65,6 +65,9 @@ export class Reports {
   @Column({ length: 10 })
   status: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  history: string[];
+
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
   @JoinColumn()
   mentoringLogs: MentoringLogs;
