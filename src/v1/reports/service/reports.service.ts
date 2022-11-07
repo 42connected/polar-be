@@ -306,26 +306,7 @@ export class ReportsService {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
-      if (body.meetingAt[0].getTime() > Date.now()) {
-        throw new BadRequestException(
-          '멘토링 진행 시간을 미래로 설정할 수 없습니다.',
-        );
-      }
-      const totalHour: number = getTotalHour(body.meetingAt);
-      if (totalHour <= 0) {
-        throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
-      }
-      try {
-        await this.mentoringLogsRepository.save({
-          id: report.mentoringLogs.id,
-          meetingAt: body.meetingAt,
-          meetingStart: body.meetingAt[0],
-        });
-        report.mentoringLogs.meetingAt = body.meetingAt;
-        report.mentoringLogs.meetingStart = body.meetingAt[0];
-      } catch (err) {
-        throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
-      }
+      this.changeMentoringMeetingAt(report, body.meetingAt);
     }
     try {
       report.extraCadets = body.extraCadets;
@@ -336,6 +317,7 @@ export class ReportsService {
       report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
       report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
       report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
+      report.history.push(JSON.stringify(report));
       await this.reportsRepository.save(report);
     } catch {
       throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
@@ -344,6 +326,29 @@ export class ReportsService {
       await this.reportDone(report);
     }
     return true;
+  }
+
+  async changeMentoringMeetingAt(report: Reports, meetingAt: Date[]) {
+    if (meetingAt[0].getTime() > Date.now()) {
+      throw new BadRequestException(
+        '멘토링 진행 시간을 미래로 설정할 수 없습니다.',
+      );
+    }
+    const totalHour: number = getTotalHour(meetingAt);
+    if (totalHour <= 0) {
+      throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
+    }
+    try {
+      await this.mentoringLogsRepository.save({
+        id: report.mentoringLogs.id,
+        meetingAt: meetingAt,
+        meetingStart: meetingAt[0],
+      });
+      //report.mentoringLogs.meetingAt = body.meetingAt;
+      //report.mentoringLogs.meetingStart = body.meetingAt[0];
+    } catch (err) {
+      throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+    }
   }
 
   async reportDone(report: Reports): Promise<void> {
