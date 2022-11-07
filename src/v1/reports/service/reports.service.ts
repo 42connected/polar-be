@@ -13,6 +13,7 @@ import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
+import { ReportHistory } from 'src/v1/interface/reports/report-history.interface';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
@@ -302,7 +303,7 @@ export class ReportsService {
     body: UpdateReportDto,
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    let history;
+    let history: ReportHistory;
 
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
@@ -312,7 +313,7 @@ export class ReportsService {
         await this.changeMentoringMeetingAt(report, body.meetingAt);
 
         history.meetingAt = report.mentoringLogs.meetingAt;
-        history.beforeMeetingStart = report.mentoringLogs.meetingStart;
+        history.meetingStart = report.mentoringLogs.meetingStart;
       } catch (err) {
         throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
       }
