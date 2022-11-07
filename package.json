@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+		"deploy": "npm install && npm run build && npx pm2 start dist/main.js",
+    "redeploy": "npm install && npm run build && npx pm2 reload all",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
