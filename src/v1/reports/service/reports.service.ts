@@ -317,18 +317,21 @@ export class ReportsService {
         );
       }
     }
-    try {
-      report.extraCadets = body.extraCadets;
-      report.place = body.place;
-      report.topic = body.topic;
-      report.content = body.content;
-      report.feedbackMessage = body.feedbackMessage;
-      report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
-      report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
-      report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
-      report.history.push(JSON.stringify(history));
 
-      await appDataSource.transaction(async transactionalEntityManager => {
+    report.extraCadets = body.extraCadets;
+    report.place = body.place;
+    report.topic = body.topic;
+    report.content = body.content;
+    report.feedbackMessage = body.feedbackMessage;
+    report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
+    report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
+    report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
+    // FIXME: history push
+    //report.history.push(JSON.stringify(history));
+
+    // FIXME: TypeORMError: Driver not Connected 에러 해결
+    await appDataSource
+      .transaction(async transactionalEntityManager => {
         if (body.meetingAt) {
           await transactionalEntityManager.save(MentoringLogs, {
             id: report.mentoringLogs.id,
@@ -337,11 +340,12 @@ export class ReportsService {
           });
         }
         await transactionalEntityManager.save(Reports, report);
+      })
+      .catch(err => {
+        console.log('111', err);
+        throw new ConflictException(`레포트 저장중 에러가 발생했습니다`);
       });
-      await this.reportsRepository.save(report);
-    } catch {
-      throw new ConflictException(`레포트 저장중 에러가 발생했습니다`);
-    }
+
     if (body.isDone) {
       await this.reportDone(report);
     }
