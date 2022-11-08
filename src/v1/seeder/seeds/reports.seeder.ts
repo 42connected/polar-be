@@ -80,3 +80,4 @@ export class ReportsSeeder implements Seeder {
     // await reportsFactory.setMeta({ mentoringLogsMeta });
     // await reportsFactory.saveMany(4);
   }
+}
