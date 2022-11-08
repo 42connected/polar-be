@@ -1,7 +1,7 @@
 import { Reports } from 'src/v1/entities/reports.entity';
 
 export interface ReportHistory {
-  time: Date;
+  changedTime: Date;
   report: Reports;
   meetingAt: Date[];
   meetingStart: Date;
