@@ -182,7 +182,7 @@ export class ReportsController {
         '해당 레포트를 수정할 수 있는 권한이 없습니다',
       );
     }
-    return await this.reportsService.updateReport(report, user.intraId, body);
+    return await this.reportsService.updateReport(report, body);
   }
 
   @Get('/history/:reportId')

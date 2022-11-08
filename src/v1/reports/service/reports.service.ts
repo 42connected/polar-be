@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
+import { appDataSource } from 'src/data-source';
 import { getTotalHour } from 'src/util/utils';
 import { PictureDto } from 'src/v1/dto/reports/picture.dto';
 import { ReportDto } from 'src/v1/dto/reports/report.dto';
@@ -297,32 +298,26 @@ export class ReportsService {
   /*
    * @Patch
    */
-  async updateReport(
-    report: Reports,
-    mentorIntraId: string,
-    body: UpdateReportDto,
-  ): Promise<boolean> {
+  async updateReport(report: Reports, body: UpdateReportDto): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    let history: ReportHistory;
+    const history: ReportHistory = {
+      changedTime: new Date(),
+      report: report,
+      meetingAt: report.mentoringLogs.meetingAt,
+      meetingStart: report.mentoringLogs.meetingStart,
+    };
 
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
-      try {
-        await this.changeMentoringMeetingAt(report, body.meetingAt);
-
-        history.meetingAt = report.mentoringLogs.meetingAt;
-        history.meetingStart = report.mentoringLogs.meetingStart;
-      } catch (err) {
-        throw new ConflictException(err, '데이터 저장 중 에러가 발생했습니다.');
+      if (!this.verifyMeetingAtForChanging(body.meetingAt)) {
+        throw new BadRequestException(
+          `변경하고자 하는 시간이 유효하지 않습니다.\n요청된 시간: ${body.meetingAt}`,
+        );
       }
     }
     try {
-      history.report = report;
-      history.time = new Date();
-      report.history.push(JSON.stringify(history));
-
       report.extraCadets = body.extraCadets;
       report.place = body.place;
       report.topic = body.topic;
@@ -331,9 +326,21 @@ export class ReportsService {
       report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
       report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
       report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
+      report.history.push(JSON.stringify(history));
+
+      await appDataSource.transaction(async transactionalEntityManager => {
+        if (body.meetingAt) {
+          await transactionalEntityManager.save(MentoringLogs, {
+            id: report.mentoringLogs.id,
+            meetingAt: body.meetingAt,
+            meetingStart: body.meetingAt[0],
+          });
+        }
+        await transactionalEntityManager.save(Reports, report);
+      });
       await this.reportsRepository.save(report);
     } catch {
-      throw new ConflictException(`예기치 못한 에러가 발생했습니다`);
+      throw new ConflictException(`레포트 저장중 에러가 발생했습니다`);
     }
     if (body.isDone) {
       await this.reportDone(report);
@@ -341,23 +348,16 @@ export class ReportsService {
     return true;
   }
 
-  async changeMentoringMeetingAt(report: Reports, meetingAt: Date[]) {
-    if (meetingAt[0].getTime() > Date.now()) {
-      throw new BadRequestException(
-        '멘토링 진행 시간을 미래로 설정할 수 없습니다.',
-      );
+  verifyMeetingAtForChanging(meetingAt: Date[]): boolean {
+    const _start_time = 0;
+
+    if (
+      meetingAt[_start_time].getTime() > Date.now() ||
+      getTotalHour(meetingAt) <= 0
+    ) {
+      return false;
     }
-    const totalHour: number = getTotalHour(meetingAt);
-    if (totalHour <= 0) {
-      throw new BadRequestException('유효하지 않은 멘토링 진행 시간입니다.');
-    }
-    await this.mentoringLogsRepository.save({
-      id: report.mentoringLogs.id,
-      meetingAt: meetingAt,
-      meetingStart: meetingAt[0],
-    });
-    //report.mentoringLogs.meetingAt = body.meetingAt;
-    //report.mentoringLogs.meetingStart = body.meetingAt[0];
+    return true;
   }
 
   async reportDone(report: Reports): Promise<void> {
