@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { Roles } from 'src/v1/decorators/roles.decorator';
@@ -26,12 +27,14 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { MentoringInfoDto } from '../dto/cadets/mentoring-info.dto';
 import { MentorsService } from '../mentors/service/mentors.service';
 import { Mentors } from '../entities/mentors.entity';
 import { Cadets } from '../entities/cadets.entity';
+import { PaginationDto } from '../dto/pagination.dto';
 
 @Controller()
 @ApiTags('cadets API')
@@ -119,5 +122,38 @@ export class CadetsController {
     );
     this.emailService.sendMessage(mentoringLogs.id, MailType.Reservation);
     return true;
+  }
+
+  @Get('mentorings/pagi')
+  @Roles('cadet')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiQuery({
+    name: 'take',
+    type: Number,
+    description: '한 페이지에 띄울 멘토링 로그 정보의 수',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: Number,
+    description: '선택한 페이지(1페이지, 2페이지, ...)',
+  })
+  @ApiOperation({
+    summary: "Get cadet's mentoring logs",
+    description:
+      '카뎃이 신청했던 멘토링 로그(지정한 페이지 수 만큼) 정보와 카뎃 정보를 반환합니다.',
+  })
+  @ApiCreatedResponse({
+    description: '멘토링 로그 정보와 카뎃 정보',
+    type: MentoringInfoDto,
+  })
+  async getSimpleLogs(
+    @User() user: JwtUser,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<MentoringInfoDto> {
+    return await this.cadetsService.getMentoringLogsPagination(
+      user.intraId,
+      paginationDto,
+    );
   }
 }

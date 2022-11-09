@@ -15,12 +15,15 @@ import { Repository } from 'typeorm';
 import { MentoringInfoDto } from 'src/v1/dto/cadets/mentoring-info.dto';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
 import { Reports } from 'src/v1/entities/reports.entity';
+import { PaginationDto } from 'src/v1/dto/pagination.dto';
 
 @Injectable()
 export class CadetsService {
   constructor(
     @InjectRepository(Cadets) private cadetsRepository: Repository<Cadets>,
     @InjectRepository(Reports) private reportsRepository: Repository<Reports>,
+    @InjectRepository(MentoringLogs)
+    private mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
   async updateLogin(cadet: Cadets, newData: CreateCadetDto): Promise<JwtUser> {
@@ -49,6 +52,11 @@ export class CadetsService {
     }
   }
 
+  /**
+   * 카뎃 db 정보 반환 함수
+   * @param intraId 카뎃 인트라 아이디
+   * @returns 카뎃 db 정보
+   */
   async findByIntra(intraId: string): Promise<Cadets> {
     try {
       const foundUser: Cadets = await this.cadetsRepository.findOneBy({
@@ -124,6 +132,11 @@ export class CadetsService {
     }
   }
 
+  /**
+   * 멘토링 로그와 카뎃 정보를 반환하는 함수
+   * @param intraId 카뎃 인트라 아이디
+   * @returns Promise<MentoringInfoDto>
+   */
   async getMentoringLogs(intraId: string): Promise<MentoringInfoDto> {
     let cadet: Cadets;
     try {
@@ -147,6 +160,46 @@ export class CadetsService {
     }
     const mentorings: CadetMentoringLogs[] = this.formatMentorings(
       cadet.mentoringLogs,
+      cadet.isCommon,
+    );
+    await this.addFeedbackMsgToLogs(mentorings);
+    return { username: cadet.name, resumeUrl: cadet.resumeUrl, mentorings };
+  }
+
+  /**
+   * 지정한 페이지의 범위만큼 멘토링 로그와 카뎃 정보를 반환하는 함수
+   * @param intraId 카뎃 인트라 아이디
+   * @param paginationDto 페이지 범위
+   * @returns Promise<MentoringInfoDto>
+   */
+  async getMentoringLogsPagination(
+    intraId: string,
+    paginationDto: PaginationDto,
+  ): Promise<MentoringInfoDto> {
+    const cadet: Cadets = await this.findByIntra(intraId);
+    if (cadet === null) {
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
+    }
+
+    let myLogs: MentoringLogs[];
+    try {
+      myLogs = await this.mentoringLogsRepository.find({
+        where: {
+          cadets: { id: cadet.id },
+        },
+        relations: {
+          mentors: true,
+        },
+        take: paginationDto.take,
+        skip: paginationDto.take * (paginationDto.page - 1),
+        order: { meetingStart: 'DESC' },
+      });
+    } catch (e) {
+      throw new ConflictException(e, '예기치 못한 에러가 발생하였습니다');
+    }
+
+    const mentorings: CadetMentoringLogs[] = this.formatMentorings(
+      myLogs,
       cadet.isCommon,
     );
     await this.addFeedbackMsgToLogs(mentorings);
