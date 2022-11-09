@@ -39,7 +39,7 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get('history/:reportId')
-  @Roles('bocal', 'mentor')
+  @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
