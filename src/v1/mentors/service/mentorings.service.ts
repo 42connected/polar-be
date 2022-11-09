@@ -1,12 +1,6 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
-import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/v1/dto/pagination.dto';
 import { MentoringLogStatus } from 'src/v1/mentoring-logs/service/mentoring-logs.service';
@@ -18,8 +12,7 @@ import { SimpleLogDto } from '../../dto/mentoring-logs/simple-log.dto';
 export class MentoringsService {
   constructor(
     @InjectRepository(MentoringLogs)
-    private mentoringsLogsRepository: Repository<MentoringLogs>,
-    @InjectRepository(Mentors) private mentorsRepository: Repository<Mentors>,
+    private mentoringLogsRepository: Repository<MentoringLogs>,
   ) {}
 
   formatMentoringLog(log: MentoringLogs): MentoringLogsDto {
@@ -53,7 +46,7 @@ export class MentoringsService {
   ): Promise<MentoringInfoDto> {
     let result: [MentoringLogs[], number];
     try {
-      result = await this.mentoringsLogsRepository.findAndCount({
+      result = await this.mentoringLogsRepository.findAndCount({
         relations: { cadets: true, reports: true },
         where: {
           mentors: { intraId },
@@ -77,7 +70,7 @@ export class MentoringsService {
   ): Promise<[SimpleLogDto[], number]> {
     try {
       const simpleLogs: [SimpleLogDto[], number] =
-        await this.mentoringsLogsRepository.findAndCount({
+        await this.mentoringLogsRepository.findAndCount({
           select: {
             id: true,
             createdAt: true,
