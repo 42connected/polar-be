@@ -65,7 +65,7 @@ export class Reports {
   @Column({ length: 10 })
   status: string;
 
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: 'varchar', default: [], nullable: true })
   history: string[];
 
   @OneToOne(() => MentoringLogs, MentoringLogs => MentoringLogs.id)
