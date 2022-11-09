@@ -196,4 +196,20 @@ export class MentorsService {
     }
     return time;
   }
+
+  async updateMentorProfileImage(
+    intraId: string,
+    newUrl: string | null,
+  ): Promise<void> {
+    const foundUser: Mentors = await this.findMentorByIntraId(intraId);
+    foundUser.profileImage = newUrl;
+    try {
+      this.mentorsRepository.save(foundUser);
+    } catch (err) {
+      console.log('Error while save mentor profile image', err);
+      throw new ConflictException(
+        '멘토 프로필 사진 URL을 저장하는 도중 에러가 발생했습니다.',
+      );
+    }
+  }
 }

@@ -208,4 +208,33 @@ export class MentorsController {
   ): Promise<MentorDto> {
     return this.mentorsService.findMentorByIntraId(intraId);
   }
+
+  /**
+   * 멘토링 프로필 이미지 URL 변경, 삭제하고 싶으면 null
+   * @param user 토큰 유저
+   * @param intraId 멘토 인트라 아이디
+   * @param body {수정될 url}
+   * @returns Promise<boolean>
+   */
+  @Patch('/:intraId/image')
+  @Roles('mentor')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Update mentor profile Image',
+    description: '멘토 프로필 사진을 변경합니다.',
+  })
+  async updateMentorProfileImage(
+    @User() user: JwtUser,
+    @Param('intraId') intraId: string,
+    @Body() body: { url: string },
+  ): Promise<boolean> {
+    if (user.intraId !== intraId) {
+      throw new BadRequestException('수정 권한이 없습니다.');
+    }
+    await this.mentorsService.updateMentorProfileImage(user.intraId, body.url);
+    const cacheKey = `/api/v1/mentors/${user.intraId}`;
+    await this.cacheManager.del(cacheKey);
+    return true;
+  }
 }
