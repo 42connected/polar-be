@@ -1,10 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { map } from 'rxjs';
 import { Keywords } from 'src/v1/entities/keywords.entity';
 import { MentorKeywords } from 'src/v1/entities/mentor-keywords.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
-import { IsNull, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class KeywordsService {
