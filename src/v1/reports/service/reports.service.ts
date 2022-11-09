@@ -7,14 +7,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as AWS from 'aws-sdk';
-import { appDataSource } from 'src/data-source';
 import { getTotalHour } from 'src/util/utils';
 import { PictureDto } from 'src/v1/dto/reports/picture.dto';
 import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { ReportHistory } from 'src/v1/interface/reports/report-history.interface';
 import { Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
@@ -300,12 +298,9 @@ export class ReportsService {
    */
   async updateReport(report: Reports, body: UpdateReportDto): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    const history: ReportHistory = {
-      changedTime: new Date(),
-      report: report,
-      meetingAt: report.mentoringLogs.meetingAt,
-      meetingStart: report.mentoringLogs.meetingStart,
-    };
+
+    const reportBeforeChanging: Reports = JSON.parse(JSON.stringify(report));
+    reportBeforeChanging.history = undefined;
 
     if (!rs.verify()) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
@@ -326,25 +321,23 @@ export class ReportsService {
     report.feedback1 = body.feedback1 ? +body.feedback1 : report.feedback1;
     report.feedback2 = body.feedback2 ? +body.feedback2 : report.feedback2;
     report.feedback3 = body.feedback3 ? +body.feedback3 : report.feedback3;
-    // FIXME: history push
-    //report.history.push(JSON.stringify(history));
+    report.history.push(JSON.stringify(reportBeforeChanging));
 
-    // FIXME: TypeORMError: Driver not Connected 에러 해결
-    await appDataSource
-      .transaction(async transactionalEntityManager => {
-        if (body.meetingAt) {
-          await transactionalEntityManager.save(MentoringLogs, {
-            id: report.mentoringLogs.id,
-            meetingAt: body.meetingAt,
-            meetingStart: body.meetingAt[0],
-          });
-        }
-        await transactionalEntityManager.save(Reports, report);
-      })
-      .catch(err => {
-        console.log('111', err);
-        throw new ConflictException(`레포트 저장중 에러가 발생했습니다`);
-      });
+    try {
+      if (body.meetingAt) {
+        await this.mentoringLogsRepository.save({
+          id: report.mentoringLogs.id,
+          meetingAt: body.meetingAt,
+          meetingStart: body.meetingAt[0],
+        });
+      }
+      await this.reportsRepository.save(report);
+    } catch (err) {
+      console.log('report save error', err);
+      throw new ConflictException(
+        '레포트 저장중 에러가 발생하였습니다. 관리자에게 문의해주세요.',
+      );
+    }
 
     if (body.isDone) {
       await this.reportDone(report);
@@ -384,27 +377,20 @@ export class ReportsService {
     }
   }
 
-  async getReportHistory(reportId: string): Promise<ReportHistory[]> {
-    let history: ReportHistory[];
+  async getReportHistory(reportId: string): Promise<ReportDto[]> {
+    const history: ReportDto[] = [];
 
-    let report: Reports;
-    try {
-      report = await this.reportsRepository.findOne({
-        where: { id: reportId },
-        select: {
-          history: true,
-        },
-      });
-    } catch {
-      throw new ConflictException('레포트를 찾는중 오류가 발생하였습니다');
-    }
-    if (!report) {
-      throw new NotFoundException(`해당 레포트를 찾을 수 없습니다`);
+    const report: Reports = await this.findReportWithMentoringLogsById(
+      reportId,
+    );
+
+    for (let i = 0; i < report.history.length; ++i) {
+      history.push(JSON.parse(report.history[i]));
     }
 
-    for (const his in report.history) {
-      history.push(JSON.parse(his));
-    }
+    report.history = undefined;
+    history.push(report);
+
     return history;
   }
 }
