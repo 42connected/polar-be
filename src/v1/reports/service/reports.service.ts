@@ -302,7 +302,7 @@ export class ReportsService {
     const reportBeforeChanging: Reports = JSON.parse(JSON.stringify(report));
     reportBeforeChanging.history = undefined;
 
-    if (!rs.verify() && report.canTempModify == false) {
+    if (!rs.verify() && report.tempEdit == false) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
@@ -392,5 +392,12 @@ export class ReportsService {
     history.push(report);
 
     return history;
+  }
+
+  async switchTempEdit(report: Reports): Promise<boolean> {
+    report.tempEdit = !report.tempEdit;
+    await this.reportsRepository.save(report);
+
+    return report.tempEdit;
   }
 }

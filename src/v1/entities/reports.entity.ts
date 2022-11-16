@@ -66,7 +66,7 @@ export class Reports {
   status: string;
 
   @Column({ type: 'boolean', default: false })
-  canTempModify: boolean;
+  tempEdit: boolean;
 
   @Column({ type: 'varchar', default: [], array: true })
   history: string[];

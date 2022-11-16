@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   ForbiddenException,
@@ -24,6 +25,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import * as multerS3 from 'multer-s3';
@@ -196,5 +198,28 @@ export class ReportsController {
       );
     }
     return await this.reportsService.updateReport(report, body);
+  }
+
+  @Patch(':reportId/edit')
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'switchTempEdit',
+    description: '레포트 임시 수정 상태를 가능 또는 불가능으로 변경',
+  })
+  @ApiResponse({
+    description: '현재 tempEdit 컬럼의 상태를 리턴',
+  })
+  async switchTempEdit(@Param('reportId') reportId: string): Promise<boolean> {
+    try {
+      const report: Reports =
+        await this.reportsService.findReportWithMentoringLogsById(reportId);
+      return await this.reportsService.switchTempEdit(report);
+    } catch {
+      throw new ConflictException(
+        `[ERROR]: 레포트 임시 수정 권한 변경 중 예기치 못한 에러가 발생하였습니다.`,
+      );
+    }
   }
 }
