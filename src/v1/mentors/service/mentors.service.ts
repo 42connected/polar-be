@@ -212,4 +212,10 @@ export class MentorsService {
       );
     }
   }
+
+  async changeIsActive(mentor: Mentors, isActive: boolean): Promise<boolean> {
+    mentor.isActive = isActive;
+    await this.mentorsRepository.save(mentor);
+    return true;
+  }
 }

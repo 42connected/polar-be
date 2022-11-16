@@ -12,6 +12,7 @@ import {
   CacheTTL,
   UseInterceptors,
   CacheInterceptor,
+  ConflictException,
 } from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { User } from '../decorators/user.decorator';
@@ -35,6 +36,7 @@ import { LogPaginationDto } from '../dto/mentoring-logs/log-pagination.dto';
 import { MentorDto } from '../dto/mentors/mentor.dto';
 import { KeywordsService } from '../categories/service/keywords.service';
 import { Cache } from 'cache-manager';
+import { Mentors } from '../entities/mentors.entity';
 
 @Controller()
 @ApiTags('mentors API')
@@ -236,5 +238,29 @@ export class MentorsController {
     const cacheKey = `/api/v1/mentors/${user.intraId}`;
     await this.cacheManager.del(cacheKey);
     return true;
+  }
+
+  @Patch('/:intraId/active/:bool')
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: '보컬이 멘토의 활성화 상태를 변경할 수 있는 컨트롤러',
+    description: '멘토의 활성화 상태를 변경',
+  })
+  async updateIsActive(
+    @Param('intraId') intraId: string,
+    @Param('bool') isActive: boolean,
+  ): Promise<boolean> {
+    try {
+      const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
+        intraId,
+      );
+      return this.mentorsService.changeIsActive(mentor, isActive);
+    } catch {
+      throw new ConflictException(
+        `[ERROR]: 멘토 활성화 상태 변경 중 예기치 못한 에러가 발생하였습니다.`,
+      );
+    }
   }
 }
