@@ -161,7 +161,7 @@ export class MentorsController {
     if (user.intraId !== intraId) {
       throw new BadRequestException('수정 권한이 없습니다.');
     }
-    const mentor = await this.mentorsService.findByIntra(intraId);
+    const mentor = await this.mentorsService.findMentorByIntraId(intraId);
     await this.keywordsService.deleteAllKeywords(mentor);
     const keywordIds = await this.keywordsService.getKeywordIds(keywords);
     keywordIds.forEach(async id => {
@@ -240,6 +240,12 @@ export class MentorsController {
     return true;
   }
 
+  /**
+   * 보컬이 멘토 활성화 상태 변경할 수 있는 컨트롤러
+   * @param intraId 멘토 인트라 아이디
+   * @param isActive 활성화 상태 boolean
+   * @returns 성공시 true
+   */
   @Patch('/:intraId/active/:bool')
   @Roles('bocal')
   @UseGuards(JwtGuard, RolesGuard)
