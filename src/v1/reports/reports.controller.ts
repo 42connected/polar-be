@@ -67,7 +67,7 @@ export class ReportsController {
     type: ReportDto,
   })
   async getReport(@Param('reportId') reportId: string): Promise<ReportDto> {
-    return await this.reportsService.getReport(reportId);
+    return await this.reportsService.findReportById(reportId);
   }
 
   @Delete(':reportId/picture')

@@ -61,6 +61,9 @@ export class ReportDto {
   @ApiProperty()
   money: number;
 
+  @ApiProperty()
+  tempEdit: boolean;
+
   @ApiProperty({
     description: '레포트 상태',
     example: '작성중',

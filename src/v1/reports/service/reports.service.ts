@@ -115,6 +115,7 @@ export class ReportsService {
         Expires: 60 * 60,
       });
     }
+    report.history = undefined;
     return report;
   }
 
@@ -187,13 +188,6 @@ export class ReportsService {
     if (monthlyTotal + money >= MONTH_LIMIT) money = MONTH_LIMIT - monthlyTotal;
     if (dailyTotal + money >= DAY_LIMIT) money = DAY_LIMIT - dailyTotal;
     return money;
-  }
-
-  /*
-   * @Get
-   */
-  async getReport(reportId: string): Promise<ReportDto> {
-    return await this.findReportById(reportId);
   }
 
   /*
