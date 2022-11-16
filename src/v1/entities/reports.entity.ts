@@ -65,6 +65,9 @@ export class Reports {
   @Column({ length: 10 })
   status: string;
 
+  @Column({ type: 'boolean', default: false })
+  tempEdit: boolean;
+
   @Column({ type: 'varchar', default: [], array: true })
   history: string[];
 
