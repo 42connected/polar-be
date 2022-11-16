@@ -222,4 +222,38 @@ export class ReportsController {
       );
     }
   }
+
+  /**
+   * URL 예시) /api/v1/reports/edit/true?from=2022-10-01&to=2022-11-20
+   * @param isTempEdit 변경하고자 하는 상태
+   * @param date ?from=""&to="" 변경하고자 하는 기간의 범위
+   * @returns 성공시 true
+   */
+  @Patch('edit/:bool')
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    description:
+      'from부터 to까지 기간에 생성된 레포트 임시 수정 상태를 가능 또는 불가능으로 변경',
+  })
+  @ApiResponse({
+    description: '성공시 true',
+  })
+  async changeTempEditByDate(
+    @Param('bool') isTempEdit: boolean,
+    @Query() date: { from: string; to: string },
+  ): Promise<boolean> {
+    try {
+      return await this.reportsService.changeTempEditByDate(
+        isTempEdit,
+        date.from,
+        date.to,
+      );
+    } catch {
+      throw new ConflictException(
+        `[ERROR]: 범위 레포트 임시 수정 권한 변경 중 예기치 못한 에러가 발생하였습니다.`,
+      );
+    }
+  }
 }

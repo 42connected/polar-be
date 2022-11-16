@@ -13,7 +13,7 @@ import { ReportDto } from 'src/v1/dto/reports/report.dto';
 import { UpdateReportDto } from 'src/v1/dto/reports/update-report.dto';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Reports } from 'src/v1/entities/reports.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { ReportStatus } from '../ReportStatus';
 
 export const MONEY_PER_HOUR = 100000;
@@ -393,5 +393,23 @@ export class ReportsService {
     await this.reportsRepository.save(report);
 
     return report.tempEdit;
+  }
+
+  async changeTempEditByDate(
+    isTempEdit: boolean,
+    from: string,
+    to: string,
+  ): Promise<boolean> {
+    const reports: Reports[] = await this.reportsRepository.find({
+      where: {
+        createdAt: Between(new Date(from), new Date(to)),
+      },
+    });
+    reports.forEach(e => {
+      e.tempEdit = isTempEdit;
+    });
+    await this.reportsRepository.save(reports);
+
+    return true;
   }
 }
