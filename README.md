@@ -26,7 +26,7 @@
 ## 2. Link ✔
 
 - [42polar 홈페이지](https://www.42polar.kr/) <br>
-- [회의록](https://velog.io/@6792kjs/42polar-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B86%EC%9B%94%ED%9A%8C%EC%9D%98%EB%A1%9D)<br>
+- [프로젝트 회의 & 회고 기록](https://velog.io/@6792kjs/42polar-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B86%EC%9B%94%ED%9A%8C%EC%9D%98%EB%A1%9D)<br>
 - 공부기록 : 업데이트 예정 <br>
 - [Figma_pc](https://www.figma.com/file/nSElac6eVtP6sycHtZnjrk/%ED%8F%B4%EB%9D%BC-ver1.1-%EB%94%94%EC%9E%90%EC%9D%B8?node-id=77%3A1869&t=tgvFKPhLRKpIGjQH-1) <br>
 - [Figma_mobile](https://www.figma.com/file/nSElac6eVtP6sycHtZnjrk/%ED%8F%B4%EB%9D%BC-ver1.1-%EB%94%94%EC%9E%90%EC%9D%B8?node-id=0%3A1&t=tgvFKPhLRKpIGjQH-1) <br>
@@ -37,22 +37,22 @@
 
 - ### Frontend <br>
 
-<img src="https://img.shields.io/badge/React-black?style=flat-square&logo=React&logoColor=blue"/> <img src="https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Styled_components-DB7093?style=flat-square&logo=styled-components&logoColor=black"/> <img src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=ESLint&logoColor=white"/>
+ 　 　<img src="https://img.shields.io/badge/React-black?style=flat-square&logo=React&logoColor=blue"/> <img src="https://img.shields.io/badge/TypeScript-blue?style=flat-square&logo=TypeScript&logoColor=white"/> <img src="https://img.shields.io/badge/Styled_components-DB7093?style=flat-square&logo=styled-components&logoColor=black"/> <img src="https://img.shields.io/badge/ESLint-4B32C3?style=flat-square&logo=ESLint&logoColor=white"/>
 
 - ### Backend
 
-<img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=NestJS&logoColor=white"/> <img src="https://img.shields.io/badge/Heroku-430098?style=flat-square&logo=Heroku&logoColor=white"/> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=PostgreSQL&logoColor=black"/> <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=Swagger&logoColor=black"/> <img src="https://img.shields.io/badge/Amazon_S3-569A31?style=flat-square&logo=Amazon S3&logoColor=white"/>
+ 　 　<img src="https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=NestJS&logoColor=white"/> <img src="https://img.shields.io/badge/Heroku-430098?style=flat-square&logo=Heroku&logoColor=white"/> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=PostgreSQL&logoColor=black"/> <img src="https://img.shields.io/badge/Swagger-85EA2D?style=flat-square&logo=Swagger&logoColor=black"/> <img src="https://img.shields.io/badge/Amazon_S3-569A31?style=flat-square&logo=Amazon S3&logoColor=white"/>
 
 <br>
 
 ## 4. Diagram 🔥
 
 - ### Architecture <br>
-
+ 　 　
 <img src="https://user-images.githubusercontent.com/46805289/202971942-3d5fa485-f200-4ba7-928c-2fd023df822e.png" width="50%" height="50%" /> <br>
 
 - ### ERD <br>
-
+ 　 　
 <img src="https://user-images.githubusercontent.com/46805289/202990780-0cad0c08-aad5-4820-8bde-945dd5f882df.png" width="50%" height="50%" /> <br>
 
 <br>
