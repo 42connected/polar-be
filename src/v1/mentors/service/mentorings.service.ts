@@ -1,10 +1,5 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { MentoringLogs } from 'src/v1/entities/mentoring-logs.entity';
 import { Mentors } from 'src/v1/entities/mentors.entity';
 import { Repository } from 'typeorm';
@@ -51,6 +46,9 @@ export class MentoringsService {
     intraId: string,
     pagination: PaginationDto,
   ): Promise<MentoringInfoDto> {
+    const MENTORING_LOG_INDEX = 0;
+    const MENTORING_COUNT_INDEX = 1;
+
     let result: [MentoringLogs[], number];
     try {
       result = await this.mentoringsLogsRepository.findAndCount({
@@ -60,15 +58,15 @@ export class MentoringsService {
         },
         take: pagination.take,
         skip: pagination.take * (pagination.page - 1),
-        order: { meetingStart: 'DESC' },
+        order: { createdAt: 'DESC' },
       });
     } catch {
       throw new ConflictException('데이터 검색 중 에러가 발생했습니다.');
     }
-    const logs: MentoringLogsDto[] = result[0].map(log => {
+    const logs: MentoringLogsDto[] = result[MENTORING_LOG_INDEX].map(log => {
       return this.formatMentoringLog(log);
     });
-    return { logs, total: result[1] };
+    return { logs, total: result[MENTORING_COUNT_INDEX] };
   }
 
   async getSimpleLogsPagination(
