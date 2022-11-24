@@ -15,11 +15,14 @@
 
 ## 1. Introduce 🎉
 
-> - ### What's 42polar?
->   > 42서울에서 진행되는 멘토링 서비스를 이용할 수 있도록 도와주는 웹사이트입니다.
+- ### What's 42polar?
+ 　 　``` 42서울에서 진행되는 멘토링 서비스를 이용할 수 있도록 도와주는 웹사이트입니다.```
 
-> - ### User
->   > **42cadet** : 멘토 검색 및 멘토링 신청 <br> > > **42mentor** : 멘토링 수락 및 보고서 작성 <br> > > **42bocal** : 보고서 확인 및 출력 <br>
+- ### User
+
+> **42cadet** : 멘토 검색 및 멘토링 신청 <br> 
+> **42mentor** : 멘토링 수락 및 보고서 작성 <br> 
+> **42bocal** : 보고서 확인 및 출력 <br>
 
 <br>
 
@@ -59,21 +62,21 @@
 
 ## 5. 42polar Service 🐣
 
-> ### 4.1 Main-page
+> ### 5.1 Main-page
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202891893-2b1695e2-ff50-4368-b657-88faf34a9466.png" width="50%" height="50%" /> <br>
 >
 > - 자신이 원하는 분야를 선택할 수 있어요
 > - 공지사항과 이용방법을 확인할 수 있어요 <br>
 
-> ### 4.2 Mentor-list
+> ### 5.2 Mentor-list
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202892020-99ceac2d-778e-4f0b-87cf-9f71c61888a5.png" width="50%" height="50%" > <br>
 >
 > - 세부 카테고리 별 멘토님을 만나볼 수 있어요
 > - 현재 멘토링을 진행 중인 멘토님을 모아볼 수 있어요 <br>
 
-> ### 4.3 Mentor-detail
+> ### 5.3 Mentor-detail
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202892038-6528332f-097b-4ba1-ae38-68bd44c42cc4.png" width="50%" height="50%"> <br> <img src="https://user-images.githubusercontent.com/46805289/202892047-7f24b42c-428f-4b74-bb10-772579d2aead.png" width="50%" height="50%"> <br>
 >
@@ -81,14 +84,14 @@
 > - 멘토님의 세부 소개를 확인할 수 있어요
 > - 해당 멘토님의 멘토링 후기를 확인할 수 있어요 <br>
 
-> ### 4.4 Appy
+> ### 5.4 Appy
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202892068-50b99178-3e21-4927-82cf-ae2c82370bcc.png" width="50%" height="50%"> <br> <img src="https://user-images.githubusercontent.com/46805289/201670672-7edfa1b2-4643-43af-9aa0-8e551944d36e.png" width="50%" height="50%"> <br>
 >
 > - 원하는 멘토님 시간표에 맞게 멘토링을 신청할 수 있어요
 > - 최대 3가지의 요청 시간을 선택할 수 있어요 <br>
 
-> ### 4.5 Mentoring - cadet
+> ### 5.5 Mentoring - cadet
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202891707-db94ca64-d073-446f-9f68-ba7ac3677e8a.png" width="50%" height="50%"> <br> <img src="https://user-images.githubusercontent.com/46805289/202891749-d10662eb-e61d-4c07-ab8c-8d5e85bed7b5.png" width="50%" height="50%"> <br>
 >
@@ -97,14 +100,14 @@
 
 <br>
 
-> ### 4.6 Mentoring - mentor
+> ### 5.6 Mentoring - mentor
 >
 > <img src="https://user-images.githubusercontent.com/46805289/202891761-4f40f26e-ee73-4e55-9e8f-5170804fef7c.png" width="50%" height="50%"> <br>
 >
 > - 지금까지의 멘토링을 확인, 수락, 거절 등 할 수 있어요
 > - 보고서를 보다 쉽게 작성하고 제출할 수 있어요 <br>
 
-> ### 4.7 Bocal
+> ### 5.7 Bocal
 >
 > - 멘토링 기록을 엑셀에 저장할 수 있어요
 > - 보고서를 확인, 출력할 수 있어요
@@ -121,7 +124,7 @@
 
 - ### Polar BE
 
-| <img src="https://cdn.intra.42.fr/users/95a6ed870052e0ecc629eb63a1e276c8/kanghyki.jpg" width="100" height="100" align="center"> | <img src="https://cdn.intra.42.fr/users/0a886368a314dfe57b38cabc38c063b4/nakkim.jpg" width="100" height="100" align="center"> | <img src="https://avatars.githubusercontent.com/u/34067179?v=4" width="100" height="100" align="center"> | <img src="https://avatars.githubusercontent.com/u/88752693?v=4" width="100" height="100" align="center"> |
+| <img src="https://cdn.intra.42.fr/users/95a6ed870052e0ecc629eb63a1e276c8/kanghyki.jpg" width="100" height="100" align="center"> | <img src="https://user-images.githubusercontent.com/46805289/203723894-e066cb20-1023-44e5-92f2-f95c385b1919.jpg" width="100" height="100" align="center"> | <img src="https://avatars.githubusercontent.com/u/34067179?v=4" width="100" height="100" align="center"> | <img src="https://avatars.githubusercontent.com/u/88752693?v=4" width="100" height="100" align="center"> |
 | :-: | :-: | :-: | :-: |
 | [**김강현: kanghyki**](https://github.com/kanghyki) | [**김나경: nakkim**](https://github.com/rurruur) | [**박정규: jeounpar**](https://github.com/jeounpar) | [**주종현: jojoo**](https://github.com/jooocy) |
 
