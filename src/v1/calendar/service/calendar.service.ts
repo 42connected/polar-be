@@ -51,9 +51,11 @@ export class CalendarService {
     try {
       const found: MentoringLogs[] = await this.mentoringlogsRepository.find({
         select: {
+          status: true,
           requestTime1: true,
           requestTime2: true,
           requestTime3: true,
+          meetingAt: true,
         },
         where: {
           mentors: { intraId: mentorIntraId },
@@ -71,9 +73,13 @@ export class CalendarService {
   ): Promise<Date[][]> {
     const result = [];
     mentoringLogs.forEach(element => {
-      result.push(element.requestTime1);
-      if (element.requestTime2) result.push(element.requestTime2);
-      if (element.requestTime3) result.push(element.requestTime3);
+      if (element.status == MentoringLogStatus.Approve) {
+        result.push(element.meetingAt);
+      } else {
+        result.push(element.requestTime1);
+        if (element.requestTime2) result.push(element.requestTime2);
+        if (element.requestTime3) result.push(element.requestTime3);
+      }
     });
     return result;
   }
