@@ -20,6 +20,7 @@ jobs:
             cd polar-be
             git reset --hard
             git fetch
+            git pull git@github.com:42connected/polar-be.git
             npm install
             npm run build
             pm2 restart main
