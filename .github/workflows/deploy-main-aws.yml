@@ -1,0 +1,25 @@
+name: deploy-develop-heroku CI
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  SSH:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run scripts in server
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          script: |
+            cd polar-be
+            git reset --hard
+            git fetch
+            npm install
+            npm run build
+            pm2 restart main
