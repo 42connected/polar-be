@@ -3,9 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as expressBasicAuth from 'express-basic-auth';
 import { setupSwagger } from './util/swagger';
+import * as Sentry from '@sentry/node';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    debug: true,
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
