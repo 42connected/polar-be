@@ -49,5 +49,5 @@ dump.rdb
 # Seeder
 # /src/v1/seeder
 
-*.md
+/src/**/*.md
 *.xlsx
