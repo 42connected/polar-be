@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import * as expressBasicAuth from 'express-basic-auth';
 import { setupSwagger } from './util/swagger';
 import * as Sentry from '@sentry/node';
+import { SentryInterceptor } from './sentry.intercepter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -12,6 +13,7 @@ async function bootstrap() {
     dsn: process.env.SENTRY_DSN,
     debug: true,
   });
+  app.useGlobalInterceptors(new SentryInterceptor());
 
   app.useGlobalPipes(
     new ValidationPipe({
