@@ -37,9 +37,6 @@ lerna-debug.log*
 # Environment
 .env
 
-# Migrations
-/src/migrations
-
 # Uploads
 /uploads
 
