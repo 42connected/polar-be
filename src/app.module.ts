@@ -29,11 +29,10 @@ import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 import { EmailVerificationModule } from './v1/email-verifications/email-verifications.module';
 import { AllExceptionsFilter } from './http-exception.filter';
 import { MentoringLogScheduler } from './v1/batch/mentoring-logs-scheduler';
-import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { SentryInterceptor } from './sentry.intercepter';
 
 @Module({
   imports: [
-    RavenModule,
     ScheduleModule.forRoot(),
     MailerModule.forRootAsync({
       useFactory: () => ({
@@ -128,7 +127,7 @@ import { RavenInterceptor, RavenModule } from 'nest-raven';
   providers: [
     {
       provide: APP_INTERCEPTOR,
-      useValue: new RavenInterceptor(),
+      useValue: SentryInterceptor,
     },
     AppService,
     {
