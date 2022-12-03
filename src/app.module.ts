@@ -6,12 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmConfigService } from './v1/config/typeorm.config';
 import { V1Module } from './v1/v1.module';
-import {
-  APP_FILTER,
-  APP_GUARD,
-  APP_INTERCEPTOR,
-  RouterModule,
-} from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, RouterModule } from '@nestjs/core';
 import { MentorsModule } from './v1/mentors/mentors.module';
 import { ReportsModule } from './v1/reports/reports.module';
 import { CategoriesModule } from './v1/categories/categories.module';
@@ -29,7 +24,6 @@ import { MentoringLogsModule } from './v1/mentoring-logs/mentoring-logs.module';
 import { EmailVerificationModule } from './v1/email-verifications/email-verifications.module';
 import { AllExceptionsFilter } from './http-exception.filter';
 import { MentoringLogScheduler } from './v1/batch/mentoring-logs-scheduler';
-import { SentryInterceptor } from './sentry.intercepter';
 
 @Module({
   imports: [
@@ -125,10 +119,6 @@ import { SentryInterceptor } from './sentry.intercepter';
   ],
   controllers: [AppController],
   providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      useValue: SentryInterceptor,
-    },
     AppService,
     {
       provide: APP_GUARD,
