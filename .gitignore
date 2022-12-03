@@ -37,9 +37,6 @@ lerna-debug.log*
 # Environment
 .env
 
-# Migrations
-/src/migrations
-
 # Uploads
 /uploads
 
@@ -48,6 +45,7 @@ dump.rdb
 
 # Seeder
 # /src/v1/seeder
+
 
 *.md
 *.xlsx
