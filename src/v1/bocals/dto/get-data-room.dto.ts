@@ -7,7 +7,6 @@ import {
   IsOptional,
   IsString,
   Min,
-  NotEquals,
 } from 'class-validator';
 import { REPORT_STATUS } from 'src/v1/reports/ReportStatus';
 

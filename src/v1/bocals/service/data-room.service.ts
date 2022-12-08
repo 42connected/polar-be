@@ -32,6 +32,7 @@ export class DataRoomService {
     try {
       return await this.reportsRepository.findAndCount({
         where: {
+          status: pagination.status,
           mentors: {
             intraId: pagination.mentorIntra,
             name: pagination.mentorName,
