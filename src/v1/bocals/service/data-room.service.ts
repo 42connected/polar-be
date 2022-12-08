@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetDataRoomDto } from 'src/v1/dto/bocals/get-data-room.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { Between, Repository } from 'typeorm';
 import { PaginationReportDto } from '../../dto/reports/pagination-report.dto';
+import { GetDataRoomDto } from '../dto/get-data-room.dto';
 
 @Injectable()
 export class DataRoomService {
@@ -39,7 +39,6 @@ export class DataRoomService {
           mentoringLogs: {
             meetingStart: Between(from, to),
           },
-          status: '작성완료',
         },
         relations: {
           mentoringLogs: true,
@@ -51,6 +50,7 @@ export class DataRoomService {
           extraCadets: true,
           place: true,
           createdAt: true,
+          updatedAt: true,
           signatureUrl: true,
           imageUrl: true,
           money: true,
@@ -67,7 +67,6 @@ export class DataRoomService {
           },
           cadets: {
             intraId: true,
-            name: true,
             isCommon: true,
           },
         },

@@ -4,7 +4,7 @@ import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BocalsService } from '../bocals/service/bocals.service';
 import { CadetsService } from '../cadets/service/cadets.service';
 import { AuthResponse } from '../dto/auth-response.dto';
-import { CreateBocalDto } from '../dto/bocals/create-bocals.dto';
+import { CreateBocalDto } from '../bocals/dto/create-bocals.dto';
 import { CreateCadetDto } from '../dto/cadets/create-cadet.dto';
 import { Bocals } from '../entities/bocals.entity';
 import { Cadets } from '../entities/cadets.entity';

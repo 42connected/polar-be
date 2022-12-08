@@ -9,22 +9,22 @@ import { SentryInterceptor } from './sentry.intercepter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    debug: true,
-  });
-  app.useGlobalInterceptors(new SentryInterceptor());
+  // Sentry.init({
+  //   dsn: process.env.SENTRY_DSN,
+  //   debug: true,
+  // });
+  // app.useGlobalInterceptors(new SentryInterceptor());
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     whitelist: true,
+  //     forbidNonWhitelisted: true,
+  //     transform: true,
+  //     transformOptions: {
+  //       enableImplicitConversion: true,
+  //     },
+  //   }),
+  // );
 
   app.enableCors({
     credentials: true,
