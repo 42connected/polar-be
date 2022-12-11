@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   Min,
 } from 'class-validator';
+import { REPORT_STATUS } from 'src/v1/reports/ReportStatus';
 
 export class GetDataRoomDto {
   @IsNumber()
@@ -67,4 +69,14 @@ export class GetDataRoomDto {
     type: String,
   })
   mentorIntra: string;
+
+  @IsOptional()
+  @IsEnum(REPORT_STATUS)
+  @IsString()
+  @ApiProperty({
+    description: '보고서 상태 조회',
+    required: false,
+    enum: REPORT_STATUS,
+  })
+  status: REPORT_STATUS;
 }

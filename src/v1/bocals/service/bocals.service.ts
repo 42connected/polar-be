@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
+import { CreateBocalDto } from 'src/v1/bocals/dto/create-bocals.dto';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';

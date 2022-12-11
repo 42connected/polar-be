@@ -1,9 +1,10 @@
-enum REPORT_STATUS {
-  UNABLE = 0,
-  ABLE,
-  WRITING,
-  DONE,
-  ERROR,
+export enum REPORT_STATUS {
+  UNABLE = '작성불가',
+  ABLE = '작성가능',
+  WRITING = '작성중',
+  DONE = '작성완료',
+  FIXING = '수정기간',
+  ERROR = 'ERROR',
 }
 
 export class ReportStatus {
