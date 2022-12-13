@@ -6,6 +6,7 @@ import {
   Res,
   Post,
   Body,
+  Patch,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,14 +16,15 @@ import {
 } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Roles } from '../decorators/roles.decorator';
+import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
 import { PaginationReportDto } from '../dto/reports/pagination-report.dto';
-import { GetDataRoomDto } from './dto/get-data-room.dto';
-import { REPORT_STATUS } from '../reports/ReportStatus';
-import { GetDataRoom } from './decorators/get-data-room.decorator';
+import { ReportIdDto } from '../dto/bocals/patch-report-status.dto';
 
 @ApiTags('bocals API')
 @Controller()
@@ -65,5 +67,41 @@ export class BocalsController {
     @Query() getDataRoomDto: GetDataRoomDto,
   ): Promise<PaginationReportDto> {
     return await this.dataRoomService.getReportPagination(getDataRoomDto);
+  }
+
+  @ApiOperation({
+    summary: 'patchReportStatusToEdit API',
+    description: '선택한 보고서 상태를 작성완료 -> 수정기간 상태로 변경',
+  })
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Patch('data-room/reports/edit')
+  async patchReportStatusToEdit(@Body() reportIdDto: ReportIdDto) {
+    return this.bocalsService.patchReportStatusToEdit(reportIdDto.id);
+  }
+
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Patch('data-room/reports/done')
+  async patchReportStatusToDone(@Body() reportIdDto: ReportIdDto) {
+    return this.bocalsService.patchReportStatusToDone(reportIdDto.id);
+  }
+
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Patch('data-room/reports/all/edit')
+  async patchAllReportStatusToEdit() {
+    return this.bocalsService.patchAllReportStatusToEdit();
+  }
+
+  @Roles('bocal')
+  @UseGuards(JwtGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
+  @Patch('data-room/reports/all/done')
+  async patchAllReportStatusToDone() {
+    return this.bocalsService.patchAllReportStatusToDone();
   }
 }

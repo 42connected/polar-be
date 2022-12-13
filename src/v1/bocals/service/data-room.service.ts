@@ -31,16 +31,28 @@ export class DataRoomService {
     const [from, to] = this.getFromTo(pagination.date);
     try {
       return await this.reportsRepository.findAndCount({
-        where: {
-          status: pagination.status,
-          mentors: {
-            intraId: pagination.mentorIntra,
-            name: pagination.mentorName,
+        where: [
+          {
+            mentors: {
+              intraId: pagination.mentorIntra,
+              name: pagination.mentorName,
+            },
+            mentoringLogs: {
+              meetingStart: Between(from, to),
+            },
+            status: '수정기간',
           },
-          mentoringLogs: {
-            meetingStart: Between(from, to),
+          {
+            mentors: {
+              intraId: pagination.mentorIntra,
+              name: pagination.mentorName,
+            },
+            mentoringLogs: {
+              meetingStart: Between(from, to),
+            },
+            status: '작성완료',
           },
-        },
+        ],
         relations: {
           mentoringLogs: true,
           cadets: true,
@@ -51,7 +63,6 @@ export class DataRoomService {
           extraCadets: true,
           place: true,
           createdAt: true,
-          updatedAt: true,
           signatureUrl: true,
           imageUrl: true,
           money: true,
@@ -68,6 +79,7 @@ export class DataRoomService {
           },
           cadets: {
             intraId: true,
+            name: true,
             isCommon: true,
           },
         },
