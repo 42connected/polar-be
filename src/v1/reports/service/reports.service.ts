@@ -300,9 +300,10 @@ export class ReportsService {
     report: Reports,
     mentorIntraId: string,
     body: UpdateReportDto,
+		isBocal : boolean
   ): Promise<boolean> {
     const rs: ReportStatus = new ReportStatus(report.status);
-    if (!rs.verify()) {
+    if (!rs.verify() && !isBocal) {
       throw new BadRequestException('해당 레포트를 수정할 수 없는 상태입니다');
     }
     if (body.meetingAt) {
