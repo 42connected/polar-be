@@ -55,7 +55,7 @@ export class ReportsController {
   }
 
   @Delete(':reportId/picture')
-  @Roles('mentor')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
