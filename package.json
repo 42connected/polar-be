@@ -31,8 +31,7 @@
     "db:createMigration": "typeorm migration:create",
     "seed": "ts-node ./node_modules/typeorm-extension/dist/cli/index.js seed",
     "token": "node genToken.js",
-    "migration": "npm run typeorm migration:generate src/migrations/migration; npm run typeorm migration:run",
-    "deploy-heroku:develop": "git push heroku develop:master"
+    "migration": "npm run typeorm migration:generate src/migrations/migration; npm run typeorm migration:run"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",

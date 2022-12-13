@@ -8,6 +8,14 @@ import {
   Body,
   Patch,
 } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Roles } from '../decorators/roles.decorator';
+
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
 import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
@@ -54,9 +62,7 @@ export class BocalsController {
       '모든 보고서를 pagination해서 반환. 날짜, 멘토, 오름차순 정렬 가능함',
   })
   @Get('data-room')
-  @Roles('bocal')
-  @UseGuards(JwtGuard, RolesGuard)
-  @ApiBearerAuth('access-token')
+  @GetDataRoom('bocal')
   async getReportPagination(
     @Query() getDataRoomDto: GetDataRoomDto,
   ): Promise<PaginationReportDto> {

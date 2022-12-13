@@ -1,9 +1,9 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { GetDataRoomDto } from 'src/v1/dto/bocals/get-data-room.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
 import { Between, Repository } from 'typeorm';
 import { PaginationReportDto } from '../../dto/reports/pagination-report.dto';
+import { GetDataRoomDto } from '../dto/get-data-room.dto';
 
 @Injectable()
 export class DataRoomService {

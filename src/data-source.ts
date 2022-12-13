@@ -7,7 +7,7 @@ export const appDataSource = new DataSource({
   type: 'postgres',
   database: process.env.POSTGRES_DATABASE,
   entities: ['**/*.entity.ts'],
-  migrations: ['src/migrations/*.ts'],
+  migrations: ['src/migrations/target/*.ts'],
   host: process.env.POSTGRES_HOST,
   port: parseInt(process.env.POSTGRES_PORT, 10),
   username: process.env.POSTGRES_USERNAME,
