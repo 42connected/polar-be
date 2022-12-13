@@ -63,6 +63,7 @@ export class DataRoomService {
           extraCadets: true,
           place: true,
           createdAt: true,
+          updatedAt: true,
           signatureUrl: true,
           imageUrl: true,
           money: true,
@@ -79,7 +80,6 @@ export class DataRoomService {
           },
           cadets: {
             intraId: true,
-            name: true,
             isCommon: true,
           },
         },

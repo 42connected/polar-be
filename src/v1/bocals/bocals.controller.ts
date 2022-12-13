@@ -8,23 +8,17 @@ import {
   Body,
   Patch,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Roles } from '../decorators/roles.decorator';
-
+import { ApiQuery } from '@nestjs/swagger';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Roles } from '../decorators/roles.decorator';
-import { GetDataRoomDto } from '../dto/bocals/get-data-room.dto';
 import { JwtGuard } from '../guards/jwt.guard';
 import { RolesGuard } from '../guards/role.guard';
 import { BocalsService } from './service/bocals.service';
 import { DataRoomService } from './service/data-room.service';
 import { PaginationReportDto } from '../dto/reports/pagination-report.dto';
 import { ReportIdDto } from '../dto/bocals/patch-report-status.dto';
+import { GetDataRoom } from './decorators/get-data-room.decorator';
+import { GetDataRoomDto } from './dto/get-data-room.dto';
 
 @ApiTags('bocals API')
 @Controller()
