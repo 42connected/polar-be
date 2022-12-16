@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateBocalDto } from 'src/v1/dto/bocals/create-bocals.dto';
+import { CreateBocalDto } from 'src/v1/bocals/dto/create-bocals.dto';
 import { JwtUser } from 'src/v1/interface/jwt-user.interface';
 import { Repository } from 'typeorm';
 import { MentoringExcelData } from 'src/v1/interface/bocals/mentoring-excel-data.interface';
@@ -212,5 +212,89 @@ export class BocalsService {
       cadetName: `${report.cadets.name}(${report.cadets.intraId}, ${report.extraCadets})`,
     };
     return result;
+  }
+
+  async patchReportStatusToEdit(reportIdArray: string[]): Promise<boolean> {
+    let report: Reports;
+    reportIdArray.forEach(async element => {
+      try {
+        report = await this.reportsRepository.findOne({
+          where: { id: element },
+          relations: {
+            mentors: true,
+            cadets: true,
+            mentoringLogs: true,
+          },
+        });
+      } catch {
+        throw new ConflictException(
+          '멘토링 정보를 찾는 중 오류가 발생했습니다.',
+        );
+      }
+      if (!report) {
+        throw new NotFoundException('레포트를 찾을 수 없습니다.');
+      }
+      report.status = '수정기간';
+      this.reportsRepository.save(report);
+    });
+    return true;
+  }
+
+  async patchReportStatusToDone(reportIdArray: string[]): Promise<boolean> {
+    let report: Reports;
+    reportIdArray.forEach(async element => {
+      try {
+        report = await this.reportsRepository.findOne({
+          where: { id: element },
+          relations: {
+            mentors: true,
+            cadets: true,
+            mentoringLogs: true,
+          },
+        });
+      } catch {
+        throw new ConflictException(
+          '멘토링 정보를 찾는 중 오류가 발생했습니다.',
+        );
+      }
+      if (!report) {
+        throw new NotFoundException('레포트를 찾을 수 없습니다.');
+      }
+      report.status = '작성완료';
+      this.reportsRepository.save(report);
+    });
+    return true;
+  }
+
+  async patchAllReportStatusToEdit(): Promise<boolean> {
+    let reports: Reports[];
+    try {
+      reports = await this.reportsRepository.find({
+        where: { status: '작성완료' },
+      });
+    } catch {
+      throw new ConflictException('레포트 정보를 찾는 중 오류가 발생했습니다.');
+    }
+    reports.forEach(async element => {
+      element.status = '수정기간';
+      this.reportsRepository.save(element);
+    });
+    return true;
+  }
+
+  async patchAllReportStatusToDone(): Promise<boolean> {
+    let reports: Reports[];
+    try {
+      reports = await this.reportsRepository.find({
+        where: { status: '수정기간' },
+      });
+    } catch {
+      throw new ConflictException('레포트 정보를 찾는 중 오류가 발생했습니다.');
+    }
+    reports.forEach(async element => {
+      element.status = '작성완료';
+      this.reportsRepository.save(element);
+    });
+    return true;
   }
 }

@@ -55,7 +55,7 @@ export class ReportsController {
   }
 
   @Delete(':reportId/picture')
-  @Roles('mentor')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
@@ -79,7 +79,7 @@ export class ReportsController {
   }
 
   @Patch(':reportId/picture')
-  @Roles('mentor')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
@@ -162,7 +162,7 @@ export class ReportsController {
   }
 
   @Patch(':reportId')
-  @Roles('mentor')
+  @Roles('mentor', 'bocal')
   @UseGuards(JwtGuard, RolesGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({
@@ -176,11 +176,19 @@ export class ReportsController {
   ): Promise<boolean> {
     const report: Reports =
       await this.reportsService.findReportWithMentoringLogsById(reportId);
-    if (report.mentors.intraId !== user.intraId) {
+    let isBocal: boolean;
+    if (user.role === 'bocal') isBocal = true;
+    else isBocal = false;
+    if (report.mentors.intraId !== user.intraId && !isBocal) {
       throw new ForbiddenException(
         '해당 레포트를 수정할 수 있는 권한이 없습니다',
       );
     }
-    return await this.reportsService.updateReport(report, user.intraId, body);
+    return await this.reportsService.updateReport(
+      report,
+      user.intraId,
+      body,
+      isBocal,
+    );
   }
 }

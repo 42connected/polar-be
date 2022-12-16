@@ -103,6 +103,7 @@ export class CadetsController {
     @User() user: JwtUser,
     @Body() createApplyDto: CreateApplyDto,
   ): Promise<boolean> {
+    this.applyService.validateRequestTime(createApplyDto);
     const mentor: Mentors = await this.mentorsService.findMentorByIntraId(
       mentorId,
     );

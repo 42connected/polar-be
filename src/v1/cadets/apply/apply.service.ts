@@ -194,4 +194,26 @@ export class ApplyService {
     });
     return results.every(result => result);
   }
+
+  validateRequestTime(data: CreateApplyDto): void {
+    const END_TIME = 1;
+
+    if (
+      isMentoringOver(data.requestTime1) ||
+      isMentoringOver(data.requestTime2) ||
+      isMentoringOver(data.requestTime3)
+    ) {
+      throw new BadRequestException('12월 19일 이후 멘토링 불가');
+    }
+
+    function isMentoringOver(requestTime: Date[]): boolean {
+      if (
+        requestTime &&
+        requestTime?.[END_TIME].getTime() > new Date(2022, 11, 19).getTime()
+      ) {
+        return true;
+      }
+      return false;
+    }
+  }
 }

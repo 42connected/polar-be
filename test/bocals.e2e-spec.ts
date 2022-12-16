@@ -14,7 +14,7 @@ import { JwtGuard } from 'src/v1/guards/jwt.guard';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Repository } from 'typeorm';
 import { BocalsModule } from 'src/v1/bocals/bocals.module';
-import { GetDataRoomDto } from 'src/v1/dto/bocals/get-data-room.dto';
+import { GetDataRoomDto } from 'src/v1/bocals/dto/bocals/get-data-room.dto';
 import { Reports } from 'src/v1/entities/reports.entity';
 
 describe('BocalsController (e2e)', () => {
