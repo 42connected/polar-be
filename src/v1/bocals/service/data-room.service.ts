@@ -84,7 +84,9 @@ export class DataRoomService {
           },
         },
         order: {
-          createdAt: pagination.isAscending ? 'ASC' : 'DESC',
+          mentoringLogs: {
+            meetingAt: pagination.isAscending ? 'ASC' : 'DESC',
+          },
         },
         skip: pagination.take * (pagination.page - 1),
         take: pagination.take,
