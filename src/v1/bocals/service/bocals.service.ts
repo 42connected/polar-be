@@ -192,16 +192,18 @@ export class BocalsService {
       mentorIntraId: report.mentors.intraId,
       mentorCompany: report.mentors.company,
       mentorDuty: report.mentors.duty,
-      date: report.mentoringLogs.meetingAt[0].toLocaleDateString('ko-KR'),
+      date: NewDateKr(report.mentoringLogs.meetingAt[0]).toLocaleDateString(
+        'ko-KR',
+      ),
       place: report.place,
       isCommon: report.cadets.isCommon ? '공통' : '심화',
-      startTime: report.mentoringLogs.meetingAt[0]
+      startTime: NewDateKr(report.mentoringLogs.meetingAt[0])
         .toTimeString()
         .slice(
           0,
           report.mentoringLogs.meetingAt[0].toTimeString().lastIndexOf(':'),
         ),
-      endTime: report.mentoringLogs.meetingAt[1]
+      endTime: NewDateKr(report.mentoringLogs.meetingAt[1])
         .toTimeString()
         .slice(
           0,
@@ -297,4 +299,48 @@ export class BocalsService {
     });
     return true;
   }
+}
+
+function StringToDateKr(dateString: string): Date {
+  const localDate = new Date(dateString);
+  const utcDate =
+    localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000;
+  const koreaTimeDiff = 9 * 60 * 60 * 1000;
+  const koreaDate = new Date(utcDate + koreaTimeDiff);
+  return koreaDate;
+}
+
+function NumToDateKr(
+  year: number,
+  month: number,
+  day: number,
+  hour?: number,
+  minute?: number,
+): Date {
+  let localDate;
+  if (hour && minute) localDate = new Date(year, month, day, hour, minute);
+  else localDate = new Date(year, month, day);
+  const utcDate =
+    localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000;
+  const koreaTimeDiff = 9 * 60 * 60 * 1000;
+  const koreaDate = new Date(utcDate + koreaTimeDiff);
+  return koreaDate;
+}
+
+function NewDateKr(date: Date): Date {
+  const localDate = new Date(date);
+  const utcDate =
+    localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000;
+  const koreaTimeDiff = 9 * 60 * 60 * 1000;
+  const koreaDate = new Date(utcDate + koreaTimeDiff);
+  return koreaDate;
+}
+
+function NowDateKr(): Date {
+  const localDate = new Date();
+  const utcDate =
+    localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000;
+  const koreaTimeDiff = 9 * 60 * 60 * 1000;
+  const koreaDate = new Date(utcDate + koreaTimeDiff);
+  return koreaDate;
 }
